@@ -17,7 +17,8 @@ namespace Medinova.Areas.Doctor
             context.MapRoute(
                 "Doctor_default",
                 "Doctor/{controller}/{action}/{id}",
-                new { action = "Index", id = UrlParameter.Optional }
+                new { action = "Index", id = UrlParameter.Optional },
+                namespaces: new[] { "Medinova.Areas.Doctor.Controllers" }
             );
         }
     }

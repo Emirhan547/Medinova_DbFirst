@@ -410,6 +410,7 @@
     <Content Include="Areas\Admin\Views\Dashboard\MLPredictions.cshtml" />
     <Content Include="Areas\Doctor\Views\Account\Login.cshtml" />
     <Content Include="Areas\Patient\Views\Account\Login.cshtml" />
+    <Content Include="Areas\Admin\Views\Account\Login.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -595,7 +596,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Data\" />
-    <Folder Include="Areas\Admin\Views\Account\" />
     <Folder Include="Areas\Admin\Views\Logs\" />
     <Folder Include="Areas\Admin\Views\Shared\" />
     <Folder Include="Areas\Doctor\Data\" />
