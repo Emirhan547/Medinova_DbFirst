@@ -1,0 +1,261 @@
+﻿@model Medinova.Models.Plan
+@{
+    ViewBag.Title = "CreatePlan";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Plan Oluştur</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Yeni sağlık planı/paketi ekleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "Plan", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("CreatePlan", "Plan", new { area = "Admin" })" enctype="multipart/form-data" class="space-y-6">
+            @Html.AntiForgeryToken()
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sol Sütun -->
+                <div class="space-y-6">
+                    <!-- Başlık -->
+                    <div>
+                        <label for="Title" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Plan Başlığı <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Title" name="Title"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: Temel Paket, Premium Plan, Aile Paketi"
+                               required>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                            Sağlık planınızın/paketinizin adı
+                        </p>
+                    </div>
+
+                    <!-- Süre -->
+                    <div>
+                        <label for="Duration" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Süre <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Duration" name="Duration"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: 1 Ay, 3 Ay, Yıllık"
+                               required>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                            Planın süre periyodu
+                        </p>
+                    </div>
+
+                    <!-- Buton Metni -->
+                    <div>
+                        <label for="ButtonText" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Buton Metni <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="ButtonText" name="ButtonText"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: Başlayın, Plan Seç, Abone Ol"
+                               required>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                            Eylem butonunda görünecek metin
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sağ Sütun - Resim Yükleme -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Plan Resmi <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                    </label>
+
+                    <!-- Resim Önizleme -->
+                    <div id="imagePreview" class="mb-4 hidden">
+                        <div class="relative">
+                            <div class="rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600 h-48"
+                                 id="previewImage"></div>
+                            <button type="button" onclick="removeImage()"
+                                    class="absolute top-3 right-3 size-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                                <span class="material-symbols-outlined !text-lg">delete</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dosya Yükleme -->
+                    <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                         onclick="document.getElementById('fileInput').click()"
+                         id="uploadArea">
+                        <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">image</span>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                            <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Resim Yükle</span>
+                        </p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 400x300px (JPG, PNG, WebP)</p>
+                        <input type="file" id="fileInput" name="ImageFile" accept="image/*"
+                               class="hidden" onchange="previewImage(event)">
+                    </div>
+
+                    <!-- Resim URL Girişi -->
+                    <div class="mt-4">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya resim URL'si girin</p>
+                        <input type="url" id="ImageUrl" name="ImageUrl"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="https://example.com/plan-image.jpg">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Özellikler Bölümü -->
+            <div class="pt-6 border-t border-slate-200 dark:border-slate-700">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Plan Özellikleri</h3>
+                <p class="text-sm text-slate-600 dark:text-slate-400 mb-6">Planınızın anahtar özelliklerini listeleyin (en az 1 gerekli)</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Özellik 1 -->
+                    <div>
+                        <label for="Feature1" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 1 <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Feature1" name="Feature1"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: 7/24 Doktor Desteği"
+                               required>
+                    </div>
+
+                    <!-- Özellik 2 -->
+                    <div>
+                        <label for="Feature2" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 2 <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+                        <input type="text" id="Feature2" name="Feature2"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: Ücretsiz Sağlık Kontrolleri">
+                    </div>
+
+                    <!-- Özellik 3 -->
+                    <div>
+                        <label for="Feature3" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 3 <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+                        <input type="text" id="Feature3" name="Feature3"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: Acil Servis Hizmetleri">
+                    </div>
+
+                    <!-- Özellik 4 -->
+                    <div>
+                        <label for="Feature4" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 4 <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+                        <input type="text" id="Feature4" name="Feature4"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="örn: İndirimli İlaçlar">
+                    </div>
+                </div>
+
+                <!-- Özellik Örnekleri -->
+                <div class="mt-6 bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-primary">lightbulb</span>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Özellik Örnekleri</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div class="text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="font-medium">Tıbbi:</span>
+                                    <ul class="list-disc list-inside mt-1 ml-2">
+                                        <li>7/24 Doktor Desteği</li>
+                                        <li>Ücretsiz Kontroller</li>
+                                        <li>Laboratuvar Testleri Dahil</li>
+                                    </ul>
+                                </div>
+                                <div class="text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="font-medium">Hizmetler:</span>
+                                    <ul class="list-disc list-inside mt-1 ml-2">
+                                        <li>Acil Bakım</li>
+                                        <li>Ambulans Hizmeti</li>
+                                        <li>Online Danışmanlık</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form İşlemleri -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+                <button type="button" onclick="window.history.back()"
+                        class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    İptal
+                </button>
+                <button type="submit"
+                        class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                    <span class="material-symbols-outlined !text-lg">save</span>
+                    Plan Oluştur
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Resim önizleme işlevselliği
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('previewImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.style.backgroundImage = `url('${e.target.result}')`;
+                imagePreview.classList.remove('hidden');
+                uploadArea.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeImage() {
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.value = '';
+        imagePreview.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+    }
+
+    // Sürükle bırak işlevselliği
+    const uploadArea = document.getElementById('uploadArea');
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('border-primary', 'bg-primary/5');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('border-primary', 'bg-primary/5');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('border-primary', 'bg-primary/5');
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const fileInput = document.getElementById('fileInput');
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            // Önizlemeyi tetikle
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        }
+    });
+</script>

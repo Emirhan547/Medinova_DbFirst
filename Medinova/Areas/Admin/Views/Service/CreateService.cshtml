@@ -1,0 +1,224 @@
+﻿@model Medinova.Models.Service
+@{
+    ViewBag.Title = "Hizmet Oluştur";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Hizmet Oluştur</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Yeni sağlık hizmeti ekleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "Service", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("CreateService", "Service", new { area = "Admin" })" class="space-y-6">
+            @Html.AntiForgeryToken()
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sol Sütun -->
+                <div class="space-y-6">
+                    <!-- Başlık -->
+                    <div>
+                        <label for="Title" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Hizmet Başlığı <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Title" name="Title"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Kardiyoloji, Nöroloji, Diş Bakımı"
+                               required>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                            Sağlık hizmetinizin adı
+                        </p>
+                    </div>
+
+                    <!-- Açıklama -->
+                    <div>
+                        <label for="Description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Açıklama <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="Description" name="Description" rows="6"
+                                  class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                                  placeholder="Hizmet detaylarını, faydalarını ve özelliklerini açıklayın..."
+                                  required></textarea>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                            Hizmetin detaylı açıklaması
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Sağ Sütun - İkon Seçimi -->
+                <div class="space-y-6">
+                    <!-- İkon Seçimi -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            İkon Seçin <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+
+                        <!-- Seçilen İkon Önizlemesi -->
+                        <div class="mb-4">
+                            <div class="inline-flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-200 dark:border-slate-600">
+                                <div id="selectedIconPreview" class="p-3 rounded-lg bg-primary/10 text-primary hidden">
+                                    <span class="material-symbols-outlined !text-2xl" id="iconPreview">medical_services</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Seçilen İkon:</p>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400" id="iconName">İkon seçilmedi</p>
+                                    <input type="hidden" id="Icon" name="Icon" value="">
+                                </div>
+                                <button type="button" onclick="clearIconSelection()"
+                                        class="ml-auto p-1.5 text-slate-400 hover:text-red-500 transition-colors">
+                                    <span class="material-symbols-outlined !text-lg">close</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Tıbbi İkonlar Grid -->
+                        <div class="grid grid-cols-6 sm:grid-cols-8 gap-3 max-h-80 overflow-y-auto p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                            @{
+                                var medicalIcons = new List<string>
+                                                    {
+                                    "medical_services", "stethoscope", "vaccines", "monitor_heart",
+                                    "ecg_heart", "lab_profile", "biotech", "psychology",
+                                    "ophthalmology", "dentistry", "hearing", "allergy",
+                                    "pulmonology", "orthopedics", "dermatology", "urology",
+                                    "gastroenterology", "endocrinology", "neurology", "cardiology",
+                                    "pediatrics", "geriatrics", "surgery", "radiology",
+                                    "anesthesiology", "pathology", "pharmacy", "nutrition",
+                                    "physiotherapy", "rehabilitation", "ambulance", "emergency",
+                                    "hospital", "clinical_notes", "syringe", "thermometer",
+                                    "bandage", "crutches", "wheelchair", "bed",
+                                    "medical_information", "medical_mask", "sanitizer", "soap",
+                                    "clean_hands", "water_drop", "fitness_center", "self_improvement",
+                                    "mental_health", "spa", "pool", "hotel",
+                                    "restaurant", "local_cafe", "shower", "bathtub",
+                                    "medication", "pill", "health_metrics", "monitor_weight"
+                                };
+                            }
+
+                            @foreach (var icon in medicalIcons)
+                            {
+                                <button type="button"
+                                        onclick="selectIcon('@icon')"
+                                        class="p-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-all flex flex-col items-center justify-center group">
+                                    <span class="material-symbols-outlined !text-xl text-slate-600 dark:text-slate-400 group-hover:text-primary">@icon</span>
+                                    <span class="text-[10px] text-slate-500 dark:text-slate-500 mt-1 truncate w-full text-center">@icon</span>
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Özel İkon Girişi -->
+                        <div class="mt-4">
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya özel ikon adı girin</p>
+                            <div class="flex gap-2">
+                                <input type="text" id="customIconInput"
+                                       class="flex-1 bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                       placeholder="Örn: medical_services, stethoscope">
+                                <button type="button" onclick="useCustomIcon()"
+                                        class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors">
+                                    Kullan
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                                Material Symbols ikon adlarını kullanın. Tıbbi ikonları
+                                <a href="https://fonts.google.com/icons?selected=Material+Symbols+Outlined:medical_services:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=medical"
+                                   target="_blank" class="text-primary hover:underline">fonts.google.com/icons</a> adresinde bulabilirsiniz
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Önizleme Bölümü -->
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Hizmet Önizlemesi</h3>
+                        <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                            <div class="flex items-start gap-3">
+                                <div id="previewIcon" class="p-2 rounded-lg bg-primary/10 text-primary">
+                                    <span class="material-symbols-outlined !text-xl">medical_services</span>
+                                </div>
+                                <div>
+                                    <h4 id="previewTitle" class="text-sm font-semibold text-slate-900 dark:text-white mb-1">Hizmet Başlığı</h4>
+                                    <p id="previewDescription" class="text-xs text-slate-600 dark:text-slate-400">
+                                        Hizmet açıklaması burada görünecek...
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Aksiyonları -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+                <button type="button" onclick="window.history.back()"
+                        class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    İptal
+                </button>
+                <button type="submit"
+                        class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                    <span class="material-symbols-outlined !text-lg">save</span>
+                    Hizmet Oluştur
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectIcon(iconName) {
+        document.getElementById('Icon').value = iconName;
+        document.getElementById('iconPreview').textContent = iconName;
+        document.getElementById('iconName').textContent = iconName;
+        document.getElementById('selectedIconPreview').classList.remove('hidden');
+        document.getElementById('previewIcon').innerHTML = `<span class="material-symbols-outlined !text-xl">${iconName}</span>`;
+
+        // Seçilen ikonu vurgula
+        document.querySelectorAll('[onclick^="selectIcon"]').forEach(btn => {
+            btn.classList.remove('border-primary', 'bg-primary/10', 'dark:bg-primary/20');
+            if (btn.getAttribute('onclick').includes(`'${iconName}'`)) {
+                btn.classList.add('border-primary', 'bg-primary/10', 'dark:bg-primary/20');
+            }
+        });
+    }
+
+    function clearIconSelection() {
+        document.getElementById('Icon').value = '';
+        document.getElementById('iconPreview').textContent = '';
+        document.getElementById('iconName').textContent = 'İkon seçilmedi';
+        document.getElementById('selectedIconPreview').classList.add('hidden');
+        document.getElementById('previewIcon').innerHTML = `<span class="material-symbols-outlined !text-xl">medical_services</span>`;
+
+        // Tüm ikonlardan vurguyu kaldır
+        document.querySelectorAll('[onclick^="selectIcon"]').forEach(btn => {
+            btn.classList.remove('border-primary', 'bg-primary/10', 'dark:bg-primary/20');
+        });
+    }
+
+    function useCustomIcon() {
+        const customIcon = document.getElementById('customIconInput').value.trim();
+        if (customIcon) {
+            selectIcon(customIcon);
+        }
+    }
+
+    // Gerçek zamanlı önizleme güncellemesi
+    document.getElementById('Title').addEventListener('input', function (e) {
+        document.getElementById('previewTitle').textContent = e.target.value || 'Hizmet Başlığı';
+    });
+
+    document.getElementById('Description').addEventListener('input', function (e) {
+        const description = e.target.value || 'Hizmet açıklaması burada görünecek...';
+        const shortDescription = description.length > 80 ? description.substring(0, 80) + '...' : description;
+        document.getElementById('previewDescription').textContent = shortDescription;
+    });
+
+    // İkonsuz başlat
+    document.addEventListener('DOMContentLoaded', function () {
+        clearIconSelection();
+    });
+</script>

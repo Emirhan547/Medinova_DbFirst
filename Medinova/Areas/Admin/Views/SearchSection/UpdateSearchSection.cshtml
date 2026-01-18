@@ -1,0 +1,133 @@
+﻿@model Medinova.Models.SearchSection
+@{
+    ViewBag.Title = "Arama Bölümü Güncelle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Arama Bölümü Düzenle</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Arama bölümü içeriğini güncelleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "SearchSection", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("UpdateSearchSection", "SearchSection", new { area = "Admin", id = Model.SearchSectionId })" class="space-y-6">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.SearchSectionId)
+
+            <div class="space-y-6">
+                <!-- Başlık -->
+                <div>
+                    <label for="Title" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Başlık <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="Title" name="Title" value="@Model.Title"
+                           class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                           placeholder="Örn: Doktor Bul, Hizmet Ara, Departman Bul"
+                           required>
+                </div>
+
+                <!-- Açıklama -->
+                <div>
+                    <label for="Description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Açıklama <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="Description" name="Description" rows="4"
+                              class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                              placeholder="Örn: İhtiyaçlarınız için doğru doktoru veya hizmeti bulun. İsim, uzmanlık veya departmana göre arama yapın."
+                              required>@Model.Description</textarea>
+                </div>
+
+                <!-- Mevcut Bilgiler -->
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Mevcut Bilgiler</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Arama Bölümü ID</div>
+                            <div class="text-sm font-medium text-slate-900 dark:text-white">@Model.SearchSectionId</div>
+                        </div>
+                        <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Karakter Sayısı</div>
+                            <div class="text-sm font-medium text-slate-900 dark:text-white">
+                                <span id="charCount">@Model.Description.Length</span> karakter
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mb-1">Son Güncelleme</div>
+                            <div class="text-sm text-slate-600 dark:text-slate-300">
+                                @DateTime.Now.ToString("dd MMM yyyy")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Önizleme Bölümü -->
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Önizleme</h3>
+
+                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="text-center mb-6">
+                            <h4 id="previewTitle" class="text-xl font-bold text-slate-900 dark:text-white mb-2">@Model.Title</h4>
+                            <p id="previewDescription" class="text-slate-600 dark:text-slate-400">@Model.Description</p>
+                        </div>
+
+                        <!-- Arama Girişi Önizlemesi -->
+                        <div class="max-w-2xl mx-auto">
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                                <input type="text"
+                                       class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
+                                       placeholder="Doktor, hizmet, departman ara..."
+                                       disabled>
+                                <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Ara
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Aksiyonları -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+                <a href="@Url.Action("Index", "SearchSection", new { area = "Admin" })"
+                   class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    İptal
+                </a>
+                <div class="flex items-center gap-3">
+                    <button type="submit"
+                            class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined !text-lg">save</span>
+                        Arama Bölümü Güncelle
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Gerçek zamanlı önizleme güncellemeleri
+    document.getElementById('Title').addEventListener('input', function(e) {
+        document.getElementById('previewTitle').textContent = e.target.value || '@Model.Title';
+    });
+
+    document.getElementById('Description').addEventListener('input', function(e) {
+        document.getElementById('previewDescription').textContent = e.target.value || '@Model.Description';
+        document.getElementById('charCount').textContent = e.target.value.length;
+    });
+
+    // Karakter sayısını başlat
+    document.addEventListener('DOMContentLoaded', function() {
+        const description = document.getElementById('Description');
+        document.getElementById('charCount').textContent = description.value.length;
+    });
+</script>

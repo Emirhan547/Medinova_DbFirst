@@ -1,0 +1,65 @@
+﻿<aside class="w-64 fixed inset-y-0 left-0 bg-white dark:bg-background-dark border-r border-slate-200 dark:border-slate-800 z-50 overflow-y-auto">
+    <div class="flex flex-col h-full p-4">
+        <div class="flex items-center gap-3 px-2 py-6">
+            <div class="bg-primary text-white rounded-lg p-1.5 flex items-center justify-center">
+                <span class="material-symbols-outlined !text-2xl">local_hospital</span>
+            </div>
+            <div>
+                <h1 class="text-[#0c141d] dark:text-white text-xl font-bold leading-tight">Medinova</h1>
+                <p class="text-slate-400 text-xs font-medium uppercase tracking-wider">Sağlık Yönetimi</p>
+            </div>
+        </div>
+        <nav class="flex flex-col gap-1 mt-4">
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary text-white" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="text-sm font-semibold">Dashboard</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Banner", new { area = "Admin" })">
+                <span class="material-symbols-outlined">view_carousel</span>
+                <span class="text-sm font-medium">Banner</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "About", new { area = "Admin" })">
+                <span class="material-symbols-outlined">info</span>
+                <span class="text-sm font-medium">Hakkında</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Service", new { area = "Admin" })">
+                <span class="material-symbols-outlined">medical_services</span>
+                <span class="text-sm font-medium">Hizmetler</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Plan", new { area = "Admin" })">
+                <span class="material-symbols-outlined">inventory_2</span>
+                <span class="text-sm font-medium">Paketler</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Doctor", new { area = "Admin" })">
+                <span class="material-symbols-outlined">personal_injury</span>
+                <span class="text-sm font-medium">Doktorlar</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Department", new { area = "Admin" })">
+                <span class="material-symbols-outlined">apartment</span>
+                <span class="text-sm font-medium">Departmanlar</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Appointment", new { area = "Admin" })">
+                <span class="material-symbols-outlined">calendar_month</span>
+                <span class="text-sm font-medium">Randevular</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "Testimonial", new { area = "Admin" })">
+                <span class="material-symbols-outlined">chat</span>
+                <span class="text-sm font-medium">Referanslar</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="@Url.Action("Index", "SearchSection", new { area = "Admin" })">
+                <span class="material-symbols-outlined">search</span>
+                <span class="text-sm font-medium">Arama</span>
+            </a>
+            <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+                <span class="material-symbols-outlined">group</span>
+                <span class="text-sm font-medium">Kullanıcılar</span>
+            </a>
+            <div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+                <a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" href="#">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="text-sm font-medium">Ayarlar</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+</aside>

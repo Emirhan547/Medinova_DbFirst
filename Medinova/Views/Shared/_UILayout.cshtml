@@ -1,0 +1,21 @@
+﻿!DOCTYPE html>
+<html lang="en">
+
+@Html.Action("UILayoutHead", "UILayout")
+
+<body>
+    <!-- Topbar Start -->
+    @Html.Action("UILayoutTopbar", "UILayout")
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    @Html.Action("UILayoutNavbar", "UILayout")
+    @RenderBody()
+    <!-- Navbar End -->
+
+    <!-- Footer Start -->
+    @Html.Action("UILayoutFooter", "UILayout")
+    <!-- Back to Top -->
+
+</body>
+
+</html>

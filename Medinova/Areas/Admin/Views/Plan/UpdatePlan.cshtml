@@ -1,0 +1,267 @@
+﻿@model Medinova.Models.Plan
+@{
+    ViewBag.Title = "UpdatePlan";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Plan Düzenle</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Plan detaylarını güncelleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "Plan", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("UpdatePlan", "Plan", new { area = "Admin", id = Model.PlanId })" enctype="multipart/form-data" class="space-y-6">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.PlanId)
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sol Sütun -->
+                <div class="space-y-6">
+                    <!-- Başlık -->
+                    <div>
+                        <label for="Title" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Plan Başlığı <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Title" name="Title" value="@Model.Title"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Temel Paket, Premium Plan"
+                               required>
+                    </div>
+
+                    <!-- Süre -->
+                    <div>
+                        <label for="Duration" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Süre <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Duration" name="Duration" value="@Model.Duration"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: 1 Ay, 3 Ay, Yıllık"
+                               required>
+                    </div>
+
+                    <!-- Buton Metni -->
+                    <div>
+                        <label for="ButtonText" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Buton Metni <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="ButtonText" name="ButtonText" value="@Model.ButtonText"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Hemen Başla, Planı Seç, Abone Ol"
+                               required>
+                    </div>
+                </div>
+
+                <!-- Sağ Sütun - Görsel Yükleme -->
+                <div>
+                    <!-- Mevcut Görsel -->
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Mevcut Görsel
+                            </label>
+                            <div class="relative">
+                                <div class="rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600 h-48"
+                                     style="background-image: url('@Model.ImageUrl')"></div>
+                                <div class="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+                                    Mevcut Görsel
+                                </div>
+                            </div>
+                            <div class="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                                <span class="font-medium">URL:</span>
+                                <span class="ml-2 text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">@Model.ImageUrl</span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Görsel Değiştir -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Görsel Değiştir <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+
+                        <!-- Yeni Görsel Önizleme -->
+                        <div id="imagePreview" class="mb-4 hidden">
+                            <div class="relative">
+                                <div class="rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600 h-48"
+                                     id="previewImage"></div>
+                                <button type="button" onclick="removeNewImage()"
+                                        class="absolute top-3 right-3 size-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                                    <span class="material-symbols-outlined !text-lg">delete</span>
+                                </button>
+                                <div class="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+                                    Yeni Görsel
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dosya Yükleme -->
+                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                             onclick="document.getElementById('fileInput').click()"
+                             id="uploadArea">
+                            <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                                <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yeni Görsel Yükle</span>
+                            </p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 400x300px (JPG, PNG, WebP)</p>
+                            <input type="file" id="fileInput" name="ImageFile" accept="image/*"
+                                   class="hidden" onchange="previewImage(event)">
+                        </div>
+
+                        <!-- Görsel URL Girişi -->
+                        <div class="mt-4">
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya yeni görsel URL'si girin</p>
+                            <input type="url" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl"
+                                   class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                   placeholder="https://ornek.com/plan-gorseli.jpg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Özellikler Bölümü -->
+            <div class="pt-6 border-t border-slate-200 dark:border-slate-700">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Plan Özellikleri</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Özellik 1 -->
+                    <div>
+                        <label for="Feature1" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 1 <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Feature1" name="Feature1" value="@Model.Feature1"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: 7/24 Doktor Desteği"
+                               required>
+                    </div>
+
+                    <!-- Özellik 2 -->
+                    <div>
+                        <label for="Feature2" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 2 <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+                        <input type="text" id="Feature2" name="Feature2" value="@Model.Feature2"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Ücretsiz Sağlık Kontrolleri">
+                    </div>
+
+                    <!-- Özellik 3 -->
+                    <div>
+                        <label for="Feature3" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 3 <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+                        <input type="text" id="Feature3" name="Feature3" value="@Model.Feature3"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Acil Servisler">
+                    </div>
+
+                    <!-- Özellik 4 -->
+                    <div>
+                        <label for="Feature4" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Özellik 4 <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+                        <input type="text" id="Feature4" name="Feature4" value="@Model.Feature4"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: İndirimli İlaçlar">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mevcut Plan Özeti -->
+            <div class="pt-6 border-t border-slate-200 dark:border-slate-700">
+                <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Mevcut Plan Özeti</h3>
+                <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Plan ID</p>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">@Model.PlanId</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Toplam Özellik</p>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">
+                                @{
+                                    var featureCount = new[] { Model.Feature1, Model.Feature2, Model.Feature3, Model.Feature4 }
+                                        .Count(f => !string.IsNullOrEmpty(f));
+                                }
+                                @featureCount / 4
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Görsel Durumu</p>
+                            <p class="text-sm font-medium @(string.IsNullOrEmpty(Model.ImageUrl) ? "text-amber-600 dark:text-amber-400" : "text-green-600 dark:text-green-400")">
+                                @(string.IsNullOrEmpty(Model.ImageUrl) ? "Görsel yok" : "Görsel var")
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Son Güncelleme</p>
+                            <p class="text-sm text-slate-600 dark:text-slate-300">
+                                @DateTime.Now.ToString("dd MMM yyyy")
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Aksiyonları -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+                <a href="@Url.Action("Index", "Plan", new { area = "Admin" })"
+                   class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    İptal
+                </a>
+                <div class="flex items-center gap-3">
+                    <button type="submit"
+                            class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined !text-lg">save</span>
+                        Planı Güncelle
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function removeNewImage() {
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.value = '';
+        imagePreview.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+    }
+
+    // Sayfa yüklendiğinde görsel URL'si değişirse preview güncelle
+    document.getElementById('ImageUrl').addEventListener('input', function (e) {
+        const url = e.target.value.trim();
+        if (url && isValidUrl(url)) {
+            const preview = document.getElementById('previewImage');
+            const imagePreview = document.getElementById('imagePreview');
+            const uploadArea = document.getElementById('uploadArea');
+
+            preview.style.backgroundImage = `url('${url}')`;
+            imagePreview.classList.remove('hidden');
+            uploadArea.classList.add('hidden');
+        }
+    });
+
+    function isValidUrl(string) {
+        try {
+            new URL(string);
+            return true;
+        } catch (_) {
+            return false;
+        }
+    }
+</script>
+

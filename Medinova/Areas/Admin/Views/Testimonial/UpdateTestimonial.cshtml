@@ -1,0 +1,290 @@
+﻿@model Medinova.Models.Testimonial
+
+@{
+    ViewBag.Title = "Referans Güncelle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Referans Düzenle</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Referans detaylarını güncelleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "Testimonial", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("UpdateTestimonial", "Testimonial", new { area = "Admin", id = Model.TestimonialId })" enctype="multipart/form-data" class="space-y-6">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.TestimonialId)
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sol Sütun - Kişisel Bilgiler -->
+                <div class="space-y-6">
+                    <!-- Tam Ad -->
+                    <div>
+                        <label for="FullName" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Tam Ad <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="FullName" name="FullName" value="@Model.FullName"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Ahmet Yılmaz, Ayşe Demir"
+                               required>
+                    </div>
+
+                    <!-- Meslek -->
+                    <div>
+                        <label for="Profession" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Meslek/Ünvan <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="Profession" name="Profession" value="@Model.Profession"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="Örn: Yazılım Mühendisi, Öğretmen, İşletme Sahibi"
+                               required>
+                    </div>
+
+                    <!-- Yorum -->
+                    <div>
+                        <label for="Comment" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Referans/Yorum <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="Comment" name="Comment" rows="6"
+                                  class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                                  placeholder="Müşterinin referansını veya yorumunu girin..."
+                                  required>@Model.Comment</textarea>
+                        <div class="flex items-center justify-between mt-2">
+                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                                Müşterinin geri bildirimi ve deneyimi
+                            </p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                                <span id="charCount">@Model.Comment.Length</span> karakter
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Sütun - Görsel Yükleme -->
+                <div class="space-y-6">
+                    <!-- Mevcut Görsel -->
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                                Mevcut Profil Görseli
+                            </label>
+                            <div class="relative mb-4">
+                                <div class="size-32 rounded-full bg-cover bg-center border-4 border-white dark:border-slate-800 shadow-lg"
+                                     style="background-image: url('@Model.ImageUrl')"></div>
+                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
+                                    Mevcut Görsel
+                                </div>
+                            </div>
+                            <div class="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                                <span class="font-medium">Görsel URL:</span>
+                                <span class="ml-2 text-xs font-mono bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded truncate block">@Model.ImageUrl</span>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Görsel Değiştir -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                            Görsel Değiştir <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                        </label>
+
+                        <!-- Yeni Görsel Önizleme -->
+                        <div id="imagePreview" class="mb-4 hidden">
+                            <div class="relative inline-block">
+                                <div class="size-32 rounded-full bg-cover bg-center border-4 border-white dark:border-slate-800 shadow-lg"
+                                     id="previewImage"></div>
+                                <button type="button" onclick="removeNewImage()"
+                                        class="absolute -top-2 -right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                                    <span class="material-symbols-outlined !text-lg">close</span>
+                                </button>
+                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
+                                    Yeni Görsel
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Varsayılan Avatar Seçenekleri -->
+                        <div id="avatarOptions" class="mb-4">
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Varsayılan avatar seçin:</p>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="selectDefaultAvatar('erkek')"
+                                        class="size-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 !text-2xl">person</span>
+                                </button>
+                                <button type="button" onclick="selectDefaultAvatar('kadın')"
+                                        class="size-16 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-pink-600 dark:text-pink-400 !text-2xl">person</span>
+                                </button>
+                                <button type="button" onclick="selectDefaultAvatar('nötr')"
+                                        class="size-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center hover:scale-105 transition-transform">
+                                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 !text-2xl">person</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dosya Yükleme -->
+                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                             onclick="document.getElementById('fileInput').click()"
+                             id="uploadArea">
+                            <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
+                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                                <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yeni Görsel Yükle</span>
+                            </p>
+                            <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 400x400px (JPG, PNG, WebP)</p>
+                            <input type="file" id="fileInput" name="ImageFile" accept="image/*"
+                                   class="hidden" onchange="previewImage(event)">
+                        </div>
+
+                        <!-- Görsel URL Girişi -->
+                        <div class="mt-4">
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya yeni görsel URL'si girin</p>
+                            <input type="url" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl"
+                                   class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                                   placeholder="https://ornek.com/profil.jpg">
+                        </div>
+                    </div>
+
+                    <!-- Referans Bilgileri -->
+                    <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                        <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Referans Bilgileri</h3>
+                        <div class="bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Referans ID</p>
+                                    <p class="text-sm font-medium text-slate-900 dark:text-white">@Model.TestimonialId</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Görsel Durumu</p>
+                                    <p class="text-sm font-medium @(string.IsNullOrEmpty(Model.ImageUrl) ? "text-amber-600 dark:text-amber-400" : "text-green-600 dark:text-green-400")">
+                                        @(string.IsNullOrEmpty(Model.ImageUrl) ? "Görsel yok" : "Görsel var")
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Kelime Sayısı</p>
+                                    <p class="text-sm font-medium text-slate-900 dark:text-white">
+                                        <span id="wordCount">@Model.Comment.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Length</span>
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">Son Güncelleme</p>
+                                    <p class="text-sm text-slate-600 dark:text-slate-300">
+                                        @DateTime.Now.ToString("dd MMM yyyy")
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Aksiyonları -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+                <a href="@Url.Action("Index", "Testimonial", new { area = "Admin" })"
+                   class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    İptal
+                </a>
+                <div class="flex items-center gap-3">
+                    <button type="submit"
+                            class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                        <span class="material-symbols-outlined !text-lg">save</span>
+                        Referansı Güncelle
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Karakter ve kelime sayısını güncelle
+    document.getElementById('Comment').addEventListener('input', function (e) {
+        const text = e.target.value;
+        document.getElementById('charCount').textContent = text.length;
+        document.getElementById('wordCount').textContent = text.split(/\s+/).filter(word => word.length > 0).length;
+    });
+
+    // Görsel önizleme fonksiyonelliği
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('previewImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+        const avatarOptions = document.getElementById('avatarOptions');
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const imageUrl = e.target.result;
+                preview.style.backgroundImage = `url('${imageUrl}')`;
+                imagePreview.classList.remove('hidden');
+                uploadArea.classList.add('hidden');
+                avatarOptions.classList.add('hidden');
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function removeNewImage() {
+        const fileInput = document.getElementById('fileInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+        const avatarOptions = document.getElementById('avatarOptions');
+
+        fileInput.value = '';
+        imagePreview.classList.add('hidden');
+        uploadArea.classList.remove('hidden');
+        avatarOptions.classList.remove('hidden');
+    }
+
+    function selectDefaultAvatar(type) {
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+        const avatarOptions = document.getElementById('avatarOptions');
+
+        // Yükleme alanını gizle ve avatar seçeneklerini göster
+        imagePreview.classList.add('hidden');
+        uploadArea.classList.add('hidden');
+        avatarOptions.classList.remove('hidden');
+
+        // Varsayılan avatar seçildiğinde ImageUrl alanını temizle
+        document.getElementById('ImageUrl').value = '';
+    }
+
+    // Sürükle bırak fonksiyonelliği
+    const uploadArea = document.getElementById('uploadArea');
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('border-primary', 'bg-primary/5');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('border-primary', 'bg-primary/5');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('border-primary', 'bg-primary/5');
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const fileInput = document.getElementById('fileInput');
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            fileInput.files = dataTransfer.files;
+
+            // Önizlemeyi tetikle
+            const event = new Event('change');
+            fileInput.dispatchEvent(event);
+        }
+    });
+</script>

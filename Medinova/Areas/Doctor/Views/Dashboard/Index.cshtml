@@ -1,0 +1,50 @@
+﻿@model Medinova.Dtos.DoctorAppointmentOverviewDto
+@using System.Linq
+@{
+    Layout = "~/Areas/Doctor/Views/Shared/_DoctorLayout.cshtml";
+}
+
+<div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900">Randevular</h2>
+            <p class="text-sm text-slate-500">@Model.DoctorName için aktif randevular</p>
+        </div>
+    </div>
+
+    @if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
+    {
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Hasta</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Tarih</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Saat</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200 bg-white">
+                    @foreach (var appointment in Model.ActiveAppointments)
+                    {
+                        <tr>
+                            <td class="px-4 py-3 text-sm text-slate-700">@appointment.FullName</td>
+                            <td class="px-4 py-3 text-sm text-slate-700">@appointment.AppointmentDate?.ToString("dd.MM.yyyy")</td>
+                            <td class="px-4 py-3 text-sm text-slate-700">@appointment.AppointmentTime</td>
+                            <td class="px-4 py-3 text-sm">
+                                @using (Html.BeginForm("Deactivate", "Dashboard", new { area = "Doctor", id = appointment.AppointmentId }, FormMethod.Post))
+                                {
+                                    <button type="submit" class="text-sm font-medium text-red-600 hover:text-red-700">Pasife Al</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-sm text-slate-500">Aktif randevu bulunmuyor.</p>
+    }
+</div>

@@ -1,0 +1,131 @@
+﻿@model IEnumerable<Medinova.Models.Plan>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Plan Yönetimi</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Sağlık planlarınızı/paketlerinizi yönetin</p>
+        </div>
+        <a href="@Url.Action("CreatePlan", "Plan", new { area = "Admin" })"
+           class="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+            <span class="material-symbols-outlined !text-lg">add</span>
+            Yeni Plan Oluştur
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var plan in Model)
+            {
+                count++;
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow">
+                    <!-- Plan Başlığı -->
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-700">
+                        <div class="flex items-start justify-between mb-4">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-900 dark:text-white">@plan.Title</h3>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="material-symbols-outlined !text-base text-slate-400">schedule</span>
+                                    <span class="text-sm text-slate-600 dark:text-slate-400">@plan.Duration</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <a href="@Url.Action("UpdatePlan", "Plan", new { area = "Admin", id = plan.PlanId })"
+                                   class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                                   title="Düzenle">
+                                    <span class="material-symbols-outlined !text-lg">edit</span>
+                                </a>
+                                <form method="post" action="@Url.Action("DeletePlan", "Plan", new { area = "Admin", id = plan.PlanId })"
+                                      onsubmit="return confirm('Bu planı silmek istediğinize emin misiniz?');" class="inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                            class="p-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                                            title="Sil">
+                                        <span class="material-symbols-outlined !text-lg">delete</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(plan.ImageUrl))
+                        {
+                            <div class="rounded-lg overflow-hidden mb-4">
+                                <div class="h-40 bg-cover bg-center" style="background-image: url('@plan.ImageUrl')"></div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Plan Özellikleri -->
+                    <div class="p-6">
+                        <h4 class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Özellikler</h4>
+                        <ul class="space-y-2">
+                            @if (!string.IsNullOrEmpty(plan.Feature1))
+                            {
+                                <li class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined !text-base text-green-500">check_circle</span>
+                                    <span>@plan.Feature1</span>
+                                </li>
+                            }
+                            @if (!string.IsNullOrEmpty(plan.Feature2))
+                            {
+                                <li class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined !text-base text-green-500">check_circle</span>
+                                    <span>@plan.Feature2</span>
+                                </li>
+                            }
+                            @if (!string.IsNullOrEmpty(plan.Feature3))
+                            {
+                                <li class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined !text-base text-green-500">check_circle</span>
+                                    <span>@plan.Feature3</span>
+                                </li>
+                            }
+                            @if (!string.IsNullOrEmpty(plan.Feature4))
+                            {
+                                <li class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                    <span class="material-symbols-outlined !text-base text-green-500">check_circle</span>
+                                    <span>@plan.Feature4</span>
+                                </li>
+                            }
+                        </ul>
+
+                        @if (!string.IsNullOrEmpty(plan.ButtonText))
+                        {
+                            <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <button class="w-full bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                                    @plan.ButtonText
+                                </button>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Plan Alt Bilgisi -->
+                    <div class="px-6 py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
+                        <div class="text-xs text-slate-500 dark:text-slate-400">
+                            # @count
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <span class="material-symbols-outlined !text-5xl text-slate-300 dark:text-slate-600 mb-4">inventory_2</span>
+            <h3 class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Plan Bulunamadı</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6">İlk sağlık planınızı/paketinizi oluşturun.</p>
+            <a href="@Url.Action("CreatePlan", "Plan", new { area = "Admin" })"
+               class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                <span class="material-symbols-outlined !text-lg">add</span>
+                Plan Oluştur
+            </a>
+        </div>
+    }
+</div>

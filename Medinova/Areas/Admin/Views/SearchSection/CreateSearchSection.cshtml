@@ -1,0 +1,111 @@
+﻿@model Medinova.Models.SearchSection
+@{
+    ViewBag.Title = "Arama Bölümü Oluştur";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Arama Bölümü Oluştur</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Web sitenize arama bölümü ekleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "SearchSection", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Geri Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("CreateSerchSection", "SearchSection", new { area = "Admin" })" class="space-y-6">
+            @Html.AntiForgeryToken()
+
+            <div class="space-y-6">
+                <!-- Başlık -->
+                <div>
+                    <label for="Title" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Başlık <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="Title" name="Title"
+                           class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                           placeholder="Örn: Doktor Bul, Hizmet Ara, Departman Bul"
+                           required>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                        Arama bölümünüz için ana başlık
+                    </p>
+                </div>
+
+                <!-- Açıklama -->
+                <div>
+                    <label for="Description" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Açıklama <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="Description" name="Description" rows="4"
+                              class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none"
+                              placeholder="Örn: İhtiyaçlarınız için doğru doktoru veya hizmeti bulun. İsim, uzmanlık veya departmana göre arama yapın."
+                              required></textarea>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                        Kullanıcıları yönlendirmek için kısa açıklama
+                    </p>
+                </div>
+
+                <!-- Önizleme Bölümü -->
+                <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4">Önizleme</h3>
+
+                    <div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+                        <div class="text-center mb-6">
+                            <h4 id="previewTitle" class="text-xl font-bold text-slate-900 dark:text-white mb-2">Arama Bölümü Başlığı</h4>
+                            <p id="previewDescription" class="text-slate-600 dark:text-slate-400">Arama bölümü açıklaması burada görünecek</p>
+                        </div>
+
+                        <!-- Arama Girişi Önizlemesi -->
+                        <div class="max-w-2xl mx-auto">
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                                <input type="text"
+                                       class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary outline-none transition-all"
+                                       placeholder="Doktor, hizmet, departman ara..."
+                                       disabled>
+                                <button class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    Ara
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-slate-500 dark:text-slate-400">
+                                Arama bölümünüz web sitesinde bu şekilde görünecek
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Aksiyonları -->
+            <div class="flex items-center justify-between pt-6 border-t border-slate-200 dark:border-slate-700">
+                <button type="button" onclick="window.history.back()"
+                        class="px-5 py-2.5 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    İptal
+                </button>
+                <button type="submit"
+                        class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+                    <span class="material-symbols-outlined !text-lg">save</span>
+                    Arama Bölümü Oluştur
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Gerçek zamanlı önizleme güncellemeleri
+    document.getElementById('Title').addEventListener('input', function (e) {
+        document.getElementById('previewTitle').textContent = e.target.value || 'Arama Bölümü Başlığı';
+    });
+
+    document.getElementById('Description').addEventListener('input', function (e) {
+        document.getElementById('previewDescription').textContent = e.target.value || 'Arama bölümü açıklaması burada görünecek';
+    });
+</script>

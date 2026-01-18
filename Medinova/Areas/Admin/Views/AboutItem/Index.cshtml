@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Medinova.Models.AboutItem>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Hakkımızda Öğeleri</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Hakkımızda bölümü öğelerini yönetin</p>
+        </div>
+        <a href="@Url.Action("CreateAboutItem", "AboutItem", new { area = "Admin" })"
+           class="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
+            <span class="material-symbols-outlined !text-lg">add</span>
+            Yeni Öğe Ekle
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @foreach (var item in Model)
+            {
+                <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-primary/10 text-primary">
+                            @if (!string.IsNullOrEmpty(item.Icon))
+                            {
+                                <span class="material-symbols-outlined !text-2xl">@item.Icon</span>
+                            }
+                            else
+                            {
+                                <span class="material-symbols-outlined !text-2xl">check_circle</span>
+                            }
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <a href="@Url.Action("UpdateAboutItem", "AboutItem", new { area = "Admin", id = item.AboutItemId })"
+                               class="p-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                               title="Düzenle">
+                                <span class="material-symbols-outlined !text-lg">edit</span>
+                            </a>
+                            <form method="post" action="@Url.Action("DeleteAboutItem", "AboutItem", new { area = "Admin", id = item.AboutItemId })"
+                                  onsubmit="return confirm('Silmek istediğinize emin misiniz?');" class="inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit"
+                                        class="p-1.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                                        title="Sil">
+                                    <span class="material-symbols-outlined !text-lg">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-2">@item.Name</h3>
+                    <div class="text-xs text-slate-500 dark:text-slate-400">
+                        <span class="inline-flex items-center gap-1">
+                            <span class="material-symbols-outlined !text-sm">tag</span>
+                            ID: @item.AboutItemId
+                        </span>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <span class="material-symbols-outlined !text-5xl text-slate-300 dark:text-slate-600 mb-4">featured_seasonal_and_gifts</span>
+            <h3 class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Hakkımızda Öğesi Bulunamadı</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6">Hakkımızda bölümünüze öğeler ekleyerek başlayın.</p>
+            <a href="@Url.Action("CreateAboutItem", "AboutItem", new { area = "Admin" })"
+               class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                <span class="material-symbols-outlined !text-lg">add</span>
+                İlk Öğeyi Ekle
+            </a>
+        </div>
+    }
+</div>

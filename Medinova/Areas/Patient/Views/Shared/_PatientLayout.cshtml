@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Medinova Hasta Paneli</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+    <header class="bg-white shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <div>
+                <h1 class="text-xl font-semibold">Hasta Paneli</h1>
+                <p class="text-sm text-slate-500">@Session["fullName"]</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <a class="text-sm font-medium text-blue-600 hover:text-blue-700" href="/">Ana Sayfa</a>
+                <a class="text-sm font-medium text-blue-600 hover:text-blue-700" href="@Url.Action("Logout", "Account", new { area = "Patient" })">Çıkış Yap</a>
+            </div>
+        </div>
+    </header>
+    <main class="max-w-6xl mx-auto px-6 py-8">
+        @RenderBody()
+    </main>
+</body>
+</html>

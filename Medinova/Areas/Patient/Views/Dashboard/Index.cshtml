@@ -1,0 +1,150 @@
+﻿@model Medinova.Dtos.PatientAppointmentOverviewDto
+@using System.Linq
+
+@{
+    ViewBag.Title = "Randevularım";
+    Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
+}
+
+<div class="grid gap-6">
+
+    <!-- AKTİF RANDEVULAR -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-2">Aktif Randevular</h2>
+        <p class="text-sm text-slate-500 mb-4">Yaklaşan randevularınızı buradan takip edebilirsiniz.</p>
+
+        @if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Doktor</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Tarih</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Saat</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        @foreach (var appointment in Model.ActiveAppointments)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.Doctor?.FullName
+                                </td>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.AppointmentDate?.ToString("dd.MM.yyyy")
+                                </td>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.AppointmentTime
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                    @using (Html.BeginForm(
+                                            "CancelMyAppointment",
+                                            "Dashboard",
+                                            new { area = "Patient", id = appointment.AppointmentId },
+                                            FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="text-sm font-medium text-red-600 hover:text-red-700">
+                                            Pasife Al
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-sm text-slate-500">Aktif randevunuz bulunmuyor.</p>
+        }
+    </div>
+
+    <!-- GEÇMİŞ RANDEVULAR -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-2">Geçmiş Randevular</h2>
+        <p class="text-sm text-slate-500 mb-4">Tamamlanan randevularınız listelenir.</p>
+
+        @if (Model.PastAppointments != null && Model.PastAppointments.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Doktor</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Tarih</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Saat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        @foreach (var appointment in Model.PastAppointments)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.Doctor?.FullName
+                                </td>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.AppointmentDate?.ToString("dd.MM.yyyy")
+                                </td>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.AppointmentTime
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-sm text-slate-500">Geçmiş randevunuz bulunmuyor.</p>
+        }
+    </div>
+
+    <!-- PASİF RANDEVULAR -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-slate-900 mb-2">Pasife Alınan Randevular</h2>
+        <p class="text-sm text-slate-500 mb-4">İptal ettiğiniz randevular burada görünür.</p>
+
+        @if (Model.PassiveAppointments != null && Model.PassiveAppointments.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Doktor</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Tarih</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase">Saat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        @foreach (var appointment in Model.PassiveAppointments)
+                        {
+                            <tr>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.Doctor?.FullName
+                                </td>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.AppointmentDate?.ToString("dd.MM.yyyy")
+                                </td>
+                                <td class="px-4 py-3 text-sm text-slate-700">
+                                    @appointment.AppointmentTime
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-sm text-slate-500">Pasife alınmış randevunuz bulunmuyor.</p>
+        }
+    </div>
+
+</div>
