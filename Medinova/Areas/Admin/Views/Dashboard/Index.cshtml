@@ -1,10 +1,66 @@
-﻿﻿<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+﻿@model Medinova.Areas.Admin.Models.DashboardViewModel
+@using System.Globalization
+
+@functions {
+    string GetInitials(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "--";
+        }
+
+        var parts = name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1)
+        {
+            return parts[0].Substring(0, 1).ToUpperInvariant();
+        }
+
+        return string.Concat(parts[0].Substring(0, 1), parts[parts.Length - 1].Substring(0, 1)).ToUpperInvariant();
+    }
+
+    string GetStatusClasses(string status)
+    {
+        var normalized = (status ?? string.Empty).ToLowerInvariant();
+        if (normalized.Contains("confirm"))
+        {
+            return "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400";
+        }
+
+        if (normalized.Contains("cancel"))
+        {
+            return "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400";
+        }
+
+        if (normalized.Contains("pend") || normalized.Contains("bekle"))
+        {
+            return "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400";
+        }
+
+        return "bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400";
+    }
+}
+
+@{
+    var distribution = Model.DepartmentDistribution?.ToList() ?? new List<Medinova.Areas.Admin.Models.DepartmentDistributionItemViewModel>();
+    var weeklyAppointments = Model.WeeklyAppointments?.ToList() ?? new List<Medinova.Areas.Admin.Models.WeeklyAppointmentStatViewModel>();
+    var segmentColors = new[] { "#007bff", "#10b981", "#94a3b8" };
+    var segmentClasses = new[]
+    {
+        "bg-primary",
+        "bg-green-500",
+        "bg-slate-300 dark:bg-slate-700"
+    };
+    var circumference = 2 * Math.PI * 50;
+    var offset = 0.0;
+}
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Doctors</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">48</h3>
-            <p class="text-green-500 text-xs font-semibold mt-2 flex items-center gap-1">
-                <span class="material-symbols-outlined !text-sm">arrow_upward</span> 4% vs last mo
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalDoctors.ToString("N0")</h3>
+            <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
+                <span class="material-symbols-outlined !text-sm">groups</span> Güncel toplam
             </p>
         </div>
         <div class="bg-primary/10 text-primary p-3 rounded-lg">
@@ -14,9 +70,9 @@
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Patients</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">1,240</h3>
-            <p class="text-green-500 text-xs font-semibold mt-2 flex items-center gap-1">
-                <span class="material-symbols-outlined !text-sm">arrow_upward</span> 12% vs last mo
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalPatients.ToString("N0")</h3>
+            <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
+                <span class="material-symbols-outlined !text-sm">group</span> Kayıtlı hasta sayısı
             </p>
         </div>
         <div class="bg-blue-500/10 text-blue-500 p-3 rounded-lg">
@@ -26,9 +82,9 @@
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Appointments</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">3,150</h3>
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalAppointments.ToString("N0")</h3>
             <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
-                <span class="material-symbols-outlined !text-sm">trending_flat</span> Steady
+                <span class="material-symbols-outlined !text-sm">calendar_month</span> Tüm randevular
             </p>
         </div>
         <div class="bg-indigo-500/10 text-indigo-500 p-3 rounded-lg">
@@ -38,9 +94,9 @@
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
             <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Appointments</p>
-            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">12</h3>
-            <p class="text-red-500 text-xs font-semibold mt-2 flex items-center gap-1">
-                <span class="material-symbols-outlined !text-sm">arrow_downward</span> 2 less than avg
+            <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TodayAppointments.ToString("N0")</h3>
+            <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
+                <span class="material-symbols-outlined !text-sm">event</span> Bugünkü randevular
             </p>
         </div>
         <div class="bg-amber-500/10 text-amber-500 p-3 rounded-lg">
@@ -49,7 +105,7 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
     <div class="lg:col-span-2 bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div class="flex items-center justify-between mb-6">
             <div>
@@ -69,15 +125,18 @@
                         <stop offset="100%" stop-color="#007bff" stop-opacity="0"></stop>
                     </linearGradient>
                 </defs>
-                <path d="M0,150 Q100,120 200,160 T400,80 T600,100 T800,40" fill="none" stroke="#007bff" stroke-linecap="round" stroke-width="4"></path>
-                <path d="M0,150 Q100,120 200,160 T400,80 T600,100 T800,40 L800,200 L0,200 Z" fill="url(#chartGradient)"></path>
-                <circle cx="400" cy="80" fill="#007bff" r="6" stroke="#fff" stroke-width="2"></circle>
-                <rect fill="#0f1923" height="30" rx="4" width="80" x="360" y="30"></rect>
-                <text fill="#fff" font-size="12" font-weight="bold" text-anchor="middle" x="400" y="50">Wed: 450</text>
+                <path id="weekly-line" fill="none" stroke="#007bff" stroke-linecap="round" stroke-width="4"></path>
+                <path id="weekly-area" fill="url(#chartGradient)"></path>
+                <circle id="weekly-peak-point" fill="#007bff" r="6" stroke="#fff" stroke-width="2"></circle>
+                <rect id="weekly-peak-box" fill="#0f1923" height="30" rx="4" width="120"></rect>
+                <text id="weekly-peak-text" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle"></text>
             </svg>
         </div>
         <div class="flex justify-between px-2 mt-4 text-slate-400 text-xs font-bold uppercase tracking-widest">
-            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            @foreach (var item in weeklyAppointments)
+            {
+                <span>@item.Label</span>
+            }
         </div>
     </div>
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -86,41 +145,48 @@
         <div class="relative h-48 flex items-center justify-center">
             <svg class="w-32 h-32 transform -rotate-90">
                 <circle class="dark:stroke-slate-800" cx="64" cy="64" fill="transparent" r="50" stroke="#e2e8f0" stroke-width="12"></circle>
-                <circle cx="64" cy="64" fill="transparent" r="50" stroke="#007bff" stroke-dasharray="314" stroke-dashoffset="100" stroke-linecap="round" stroke-width="12"></circle>
-                <circle cx="64" cy="64" fill="transparent" r="50" stroke="#10b981" stroke-dasharray="314" stroke-dashoffset="250" stroke-linecap="round" stroke-width="12"></circle>
+                @for (var i = 0; i < distribution.Count; i++)
+                {
+                    var item = distribution[i];
+                    var dash = circumference * item.Percentage / 100;
+                    var dashArray = string.Format(CultureInfo.InvariantCulture, "{0} {1}", dash, Math.Max(0, circumference - dash));
+                    var dashOffset = string.Format(CultureInfo.InvariantCulture, "{0}", -offset);
+                    offset += dash;
+                    var strokeColor = segmentColors[Math.Min(i, segmentColors.Length - 1)];
+                    <circle cx="64"
+                            cy="64"
+                            fill="transparent"
+                            r="50"
+                            stroke="@strokeColor"
+                            stroke-dasharray="@dashArray"
+                            stroke-dashoffset="@dashOffset"
+                            stroke-linecap="round"
+                            stroke-width="12"></circle>
+                }
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-2xl font-extrabold">1,240</span>
+                <span class="text-2xl font-extrabold">@Model.TotalPatients.ToString("N0")</span>
                 <span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Total</span>
             </div>
         </div>
         <div class="mt-8 space-y-3">
-            <div class="flex items-center justify-between text-sm">
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-primary"></div>
-                    <span class="text-slate-600 dark:text-slate-400">Cardiology</span>
+            @for (var i = 0; i < distribution.Count; i++)
+            {
+                var item = distribution[i];
+                var indicatorClass = segmentClasses[Math.Min(i, segmentClasses.Length - 1)];
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-3 h-3 rounded-full @indicatorClass"></div>
+                        <span class="text-slate-600 dark:text-slate-400">@item.Name</span>
+                    </div>
+                    <span class="font-bold">@item.Percentage%</span>
                 </div>
-                <span class="font-bold">45%</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span class="text-slate-600 dark:text-slate-400">Pediatrics</span>
-                </div>
-                <span class="font-bold">30%</span>
-            </div>
-            <div class="flex items-center justify-between text-sm">
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-700"></div>
-                    <span class="text-slate-600 dark:text-slate-400">Others</span>
-                </div>
-                <span class="font-bold">25%</span>
-            </div>
+            }
         </div>
     </div>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
     <div class="lg:col-span-2 bg-white dark:bg-background-dark rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <h4 class="text-slate-900 dark:text-white font-bold text-lg">Recent Appointments</h4>
@@ -132,60 +198,48 @@
                     <tr>
                         <th class="px-6 py-4">Patient</th>
                         <th class="px-6 py-4">Doctor</th>
-                        <th class="px-6 py-4">Date &amp; Time</th>
+                        <th class="px-6 py-4">Date & Time</th>
                         <th class="px-6 py-4">Status</th>
                         <th class="px-6 py-4 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary font-bold text-xs">JD</div>
-                                <span class="text-sm font-semibold text-slate-900 dark:text-white">John Doe</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Dr. Emily Smith</td>
-                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Oct 24, 09:30 AM</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">Confirmed</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="text-slate-400 hover:text-primary" type="button"><span class="material-symbols-outlined !text-xl">more_vert</span></button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="size-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 font-bold text-xs">AW</div>
-                                <span class="text-sm font-semibold text-slate-900 dark:text-white">Alice Wong</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Dr. Marcus Reed</td>
-                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Oct 24, 11:15 AM</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-wider">Pending</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="text-slate-400 hover:text-primary" type="button"><span class="material-symbols-outlined !text-xl">more_vert</span></button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="flex items-center gap-3">
-                                <div class="size-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 font-bold text-xs">TB</div>
-                                <span class="text-sm font-semibold text-slate-900 dark:text-white">Tom Brown</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Dr. Sarah Connor</td>
-                        <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">Oct 24, 02:45 PM</td>
-                        <td class="px-6 py-4">
-                            <span class="px-2.5 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold uppercase tracking-wider">Cancelled</span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <button class="text-slate-400 hover:text-primary" type="button"><span class="material-symbols-outlined !text-xl">more_vert</span></button>
-                        </td>
-                    </tr>
+                    @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
+                    {
+                        foreach (var appointment in Model.RecentAppointments)
+                        {
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-primary font-bold text-xs">
+                                            @GetInitials(appointment.PatientName)
+                                        </div>
+                                        <span class="text-sm font-semibold text-slate-900 dark:text-white">@appointment.PatientName</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">@appointment.DoctorName</td>
+                                <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+                                    @appointment.AppointmentDate?.ToString("dd MMM", CultureInfo.InvariantCulture) @appointment.AppointmentTime
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-1 rounded-full @GetStatusClasses(appointment.Status) text-[10px] font-bold uppercase tracking-wider">
+                                        @appointment.Status
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="text-slate-400 hover:text-primary" type="button">
+                                        <span class="material-symbols-outlined !text-xl">more_vert</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td class="px-6 py-6 text-center text-sm text-slate-400" colspan="5">Henüz randevu bulunmuyor.</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
@@ -193,66 +247,80 @@
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-6">Top 5 Doctors</h4>
         <div class="space-y-6">
-            <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doctor headshot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDYQiTHdNrHQxkGonGKZtNwBxBSaV-8m5rhIg9YRfFBmb6mX81YpOrXNd5pOqrkK2ycendiJlrUiHs-jShSZC4qed-F-4XmigriQo1jq36Id_sayj65xQ3u6W3x_sPjCafFY_159cK7Fx2REhAcsZBkDk-8UP2IAE0z-Is36Ac5ZEgzNnPqnkrPK6QPxDZHfL4W6BmoO-MI6QHE1pUAbSdZcXUF2SH4CFD9KAs-rVZqhgeERpLnPlzum5Uc-2VWlYd9IZFHmix7CRg4');"></div>
-                        <div>
-                            <p class="text-sm font-bold">Dr. Emily Smith</p>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-tighter">Cardiology</p>
+            @if (Model.TopDoctors != null && Model.TopDoctors.Any())
+            {
+                foreach (var doctor in Model.TopDoctors)
+                {
+                    var imageUrl = string.IsNullOrWhiteSpace(doctor.ImageUrl)
+                            ? "https://via.placeholder.com/80x80.png?text=DR"
+                            : doctor.ImageUrl;
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doctor headshot" style="background-image: url('@imageUrl');"></div>
+                                <div>
+                                    <p class="text-sm font-bold">@doctor.DoctorName</p>
+                                    <p class="text-[10px] text-slate-400 uppercase tracking-tighter">@doctor.DepartmentName</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-bold text-primary">@doctor.PerformancePercentage%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
+                            <div class="bg-primary h-full rounded-full" style="width: @doctor.PerformancePercentage%"></div>
                         </div>
                     </div>
-                    <span class="text-xs font-bold text-primary">98%</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-                    <div class="bg-primary h-full rounded-full" style="width: 98%"></div>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doctor headshot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCZ-iMoVqBH_PKMJAOQ-4OFbeXQLEZ5kpLvq1TZT7zmgb6gKXDgwBuRYskGd6CON344ZybrM53146hacF8k4aisEMVpvljEHTxS8Feak2dd89CIJddQkqAGFZeFN4_FPsC4nAdP-1I-3gqMUcel1sTXC1FMipWX6FNsuWabi1GCrtFMvTpDD8DZIap1IxqFzx8iMaDQc7wGsFqdhfN2mtePUFilzssluq8NBqAas2GQ1AvnTG_PPsmVU9jWSGTP92Jlk6i0n-ClIoik');"></div>
-                        <div>
-                            <p class="text-sm font-bold">Dr. Marcus Reed</p>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-tighter">Pediatrics</p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold text-primary">85%</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-                    <div class="bg-primary h-full rounded-full" style="width: 85%"></div>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doctor headshot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCYg5i3HuieOtlyCg_9tkleNdutHrnAXQFEm6RQx8r_kCeAEh83S7wQ0MINtRu1M9NaRp3VdTk2bJh1gAWSGN3xaANROCErvBIgU8EROnXTjG49xF43PsWo_U-JnycNMN2JnXux3jHFSYrskVGM1bWrW4B9DAmnBZjH4IaNKww7XVwkDNmdPAOO9rNvFOio_MaEhTVmqrzqgxFaalqAcW879jYO7vO4yT2Po1wHkzLyiLCbfegFshqDfCCureropUF88pnKVHcySsPr');"></div>
-                        <div>
-                            <p class="text-sm font-bold">Dr. Sarah Connor</p>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-tighter">General Med</p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold text-primary">72%</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-                    <div class="bg-primary h-full rounded-full" style="width: 72%"></div>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doctor headshot" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA_x6_gYU9oQiyt4ohMOpi_KVBkbH_dPEgS6xQzyIc64xTp5rkMod0E74XG9_td7fQ59ck-aII3F0Z2hKWR_0__TN2fqHOu3Anw4RzbQ5jdh_lxZqUi0GUMKPmqaqmYsy-zAMwaShMnDNEEHyEzr289x0zf2RP-GW0skYZwIsegyvnXoROfkHTxcY2owOKtOGRzoJLQExcdMVTkrZulr-UMzuIcEcUNEA65fELogl_n9tLUI8AGr6oif41QsX8j0eA9tmBjKXiSvJlN');"></div>
-                        <div>
-                            <p class="text-sm font-bold">Dr. Alan Turing</p>
-                            <p class="text-[10px] text-slate-400 uppercase tracking-tighter">Neurology</p>
-                        </div>
-                    </div>
-                    <span class="text-xs font-bold text-primary">60%</span>
-                </div>
-                <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full">
-                    <div class="bg-primary h-full rounded-full" style="width: 60%"></div>
-                </div>
-            </div>
+                }
+            }
+            else
+            {
+                <p class="text-sm text-slate-400">Henüz doktor verisi bulunmuyor.</p>
+            }
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        var weeklyData = @Html.Raw(Json.Encode(weeklyAppointments.Select(x => new { x.Label, x.Count })));
+        if (!weeklyData || weeklyData.length === 0) {
+            return;
+        }
+
+        var width = 800;
+        var height = 200;
+        var padding = 20;
+        var max = Math.max.apply(null, weeklyData.map(function(item) { return item.Count; })) || 1;
+        var step = weeklyData.length > 1 ? (width - padding * 2) / (weeklyData.length - 1) : 0;
+
+        var points = weeklyData.map(function(item, index) {
+            var x = padding + step * index;
+            var y = height - padding - (item.Count / max) * (height - padding * 2);
+            return { x: x, y: y, label: item.Label, count: item.Count };
+        });
+
+        var linePath = points.map(function(point, index) {
+            return (index === 0 ? "M" : "L") + point.x + "," + point.y;
+        }).join(" ");
+
+        var areaPath = linePath + " L" + points[points.length - 1].x + "," + (height - padding) +
+            " L" + points[0].x + "," + (height - padding) + " Z";
+
+        document.getElementById("weekly-line").setAttribute("d", linePath);
+        document.getElementById("weekly-area").setAttribute("d", areaPath);
+
+        var peakPoint = points.reduce(function(current, next) {
+            return next.count > current.count ? next : current;
+        }, points[0]);
+
+        document.getElementById("weekly-peak-point").setAttribute("cx", peakPoint.x);
+        document.getElementById("weekly-peak-point").setAttribute("cy", peakPoint.y);
+
+        var box = document.getElementById("weekly-peak-box");
+        var text = document.getElementById("weekly-peak-text");
+        box.setAttribute("x", peakPoint.x - 60);
+        box.setAttribute("y", Math.max(0, peakPoint.y - 40));
+        text.setAttribute("x", peakPoint.x);
+        text.setAttribute("y", Math.max(0, peakPoint.y - 20));
+        text.textContent = peakPoint.label + ": " + peakPoint.count;
+    })();
+</script>

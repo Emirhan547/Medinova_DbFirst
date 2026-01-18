@@ -40,7 +40,10 @@ namespace Medinova.Controllers
                 .Where(ur => ur.UserId == user.UserId)
                 .Select(ur => ur.Role.RoleName)
                 .FirstOrDefault();
-
+            if (userRole == "Doctor")
+            {
+                EnsureDoctorLink(user);
+            }
             FormsAuthentication.SetAuthCookie(user.UserName, false);
             Session["userId"] = user.UserId;
             Session["userName"] = user.UserName;
@@ -50,7 +53,8 @@ namespace Medinova.Controllers
             // Log activity
             LogActivity(user.UserId, "User Login", "Account", null);
 
-            // Redirect based on role
+            if (userRole == "Doctor")
+                EnsureDoctorLink(user);
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
@@ -152,6 +156,23 @@ namespace Medinova.Controllers
             if (disposing)
                 context.Dispose();
             base.Dispose(disposing);
+        }
+        private void EnsureDoctorLink(User user)
+        {
+            if (user == null)
+                return;
+
+            var existingDoctor = context.Doctors.FirstOrDefault(d => d.UserId == user.UserId);
+            if (existingDoctor != null)
+                return;
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == null && d.FullName == fullName);
+            if (doctor == null)
+                return;
+
+            doctor.UserId = user.UserId;
+            context.SaveChanges();
         }
     }
 }

@@ -7,17 +7,16 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Giriş Sayfası</title>
+    <title>Hasta Girişi</title>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
     <div>
         <div class="container">
-            <h4>Giriş Sayfası</h4>
-
+            <h4>Hasta Giriş Sayfası</h4>
 
             <form method="post">
-                @Html.AntiForgeryToken() <!-- BU SATIRI EKLEYİN -->
+                @Html.AntiForgeryToken()
 
                 <label>Kullanıcı Adı</label>
                 @Html.TextAreaFor(x => x.UserName, new { @class = "form-control" })

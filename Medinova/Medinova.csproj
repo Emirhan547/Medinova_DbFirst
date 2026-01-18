@@ -231,8 +231,15 @@
     <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
     <Compile Include="Areas\Admin\Controllers\SearchSectionController.cs" />
     <Compile Include="Areas\Admin\Controllers\TestimonialController.cs" />
+    <Compile Include="Areas\Admin\Models\DashboardRecentAppointmentViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\DashboardTopDoctorViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\DashboardViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\DepartmentDistributionItemViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\WeeklyAppointmentStatViewModel.cs" />
+    <Compile Include="Areas\Doctor\Controllers\AccountController.cs" />
     <Compile Include="Areas\Doctor\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Doctor\DoctorAreaRegistration.cs" />
+    <Compile Include="Areas\Patient\Controllers\AccountController.cs" />
     <Compile Include="Areas\Patient\Controllers\AIAssistantController.cs" />
     <Compile Include="Areas\Patient\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Patient\PatientAreaRegistration.cs" />
@@ -400,6 +407,9 @@
     <Content Include="Areas\Doctor\Views\Shared\_DoctorLayout.cshtml" />
     <Content Include="Areas\Doctor\Views\Dashboard\Index.cshtml" />
     <Content Include="Areas\Patient\Views\Dashboard\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\MLPredictions.cshtml" />
+    <Content Include="Areas\Doctor\Views\Account\Login.cshtml" />
+    <Content Include="Areas\Patient\Views\Account\Login.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

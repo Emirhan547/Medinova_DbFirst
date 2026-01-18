@@ -31,6 +31,17 @@
                                     <option selected>---Önce Bölümü Seçiniz---</option>
 
                                 </select>
+                                <div class="col-12">
+                                    <label>Şikayet Yaz</label>
+                                    <textarea id="ComplaintText" name="ComplaintText" class="form-control bg-light border-0" rows="3"
+                                              placeholder="Şikayetinizi yazın (örn: Baş ağrısı ve mide bulantısı)"></textarea>
+                                    <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
+                                        <button class="btn btn-outline-primary" type="button" id="getDepartmentSuggestion">
+                                            Bölüm Öner
+                                        </button>
+                                        <small id="departmentSuggestionResult" class="text-muted"></small>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-12 col-sm-6">
                                 <input type="text" name="FullName" class="form-control bg-light border-0" placeholder="Adınız Soyadınız"
@@ -88,9 +99,39 @@
                     text: "Randevu almak için önce giriş yapmalısınız.",
                     confirmButtonText: "Girişe git"
                 }).then(function () {
-                    window.location.href = "/Account/Login";
+                    window.location.href = "/Patient/Account/Login";
                 });
             }
+        });
+        $("#getDepartmentSuggestion").on("click", function () {
+            var complaintText = $("#ComplaintText").val().trim();
+            var suggestionResult = $("#departmentSuggestionResult");
+
+            if (!complaintText) {
+                suggestionResult.text("Lütfen önce şikayetinizi yazın.");
+                return;
+            }
+
+            suggestionResult.html('<span class="spinner-border spinner-border-sm"></span> Öneri alınıyor...');
+
+            $.ajax({
+                url: '/Patient/AIAssistant/GetDepartmentSuggestion',
+                type: 'POST',
+                dataType: 'json',
+                data: { symptoms: complaintText },
+                success: function (result) {
+                    if (result.success) {
+                        var recommendation = result.recommendation || "";
+                        suggestionResult.text("Önerilen bölüm: " + recommendation);
+                        preselectDepartment(recommendation);
+                    } else {
+                        suggestionResult.text("Öneri alınamadı: " + result.message);
+                    }
+                },
+                error: function () {
+                    suggestionResult.text("Öneri alınırken hata oluştu.");
+                }
+            });
         });
         $("#DepartmentId").change(function () {
 
@@ -170,7 +211,27 @@
             });
 
         });
+        function preselectDepartment(recommendation) {
+            if (!recommendation) {
+                return;
+            }
 
+            var normalizedRecommendation = recommendation.toLowerCase();
+            var departmentDropdown = $("#DepartmentId");
+            var matchedOption = null;
+
+            departmentDropdown.find("option").each(function () {
+                var optionText = $(this).text().toLowerCase();
+                if (optionText === normalizedRecommendation || optionText.includes(normalizedRecommendation) || normalizedRecommendation.includes(optionText)) {
+                    matchedOption = $(this);
+                    return false;
+                }
+            });
+
+            if (matchedOption && matchedOption.val()) {
+                departmentDropdown.val(matchedOption.val()).trigger("change");
+            }
+        }
 
     });
 

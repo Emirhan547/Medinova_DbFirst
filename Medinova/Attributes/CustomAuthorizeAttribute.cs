@@ -43,6 +43,17 @@ namespace Medinova.Attributes
         {
             if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
+                if (_allowedRoles != null && _allowedRoles.Contains("Doctor"))
+                {
+                    filterContext.Result = new RedirectResult("~/Doctor/Account/Login");
+                    return;
+                }
+
+                if (_allowedRoles != null && _allowedRoles.Contains("Patient"))
+                {
+                    filterContext.Result = new RedirectResult("~/Patient/Account/Login");
+                    return;
+                }
                 filterContext.Result = new RedirectResult("~/Account/Login");
             }
             else
