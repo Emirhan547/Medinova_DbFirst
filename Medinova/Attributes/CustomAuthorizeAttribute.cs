@@ -43,23 +43,12 @@ namespace Medinova.Attributes
         {
             if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
-                if (_allowedRoles != null && _allowedRoles.Contains("Doctor"))
-                {
-                    filterContext.Result = new RedirectResult("~/Doctor/Account/Login");
-                    return;
-                }
-
-                if (_allowedRoles != null && _allowedRoles.Contains("Patient"))
-                {
-                    filterContext.Result = new RedirectResult("~/Patient/Account/Login");
-                    return;
-                }
-                filterContext.Result = new RedirectResult("~/Account/Login");
-            }
-            else
-            {
-                filterContext.Result = new RedirectResult("~/Account/AccessDenied");
-            }
+                var returnUrl = HttpUtility.UrlEncode(filterContext.HttpContext.Request.RawUrl ?? "/");
+            filterContext.Result = new RedirectResult($"~/Account/Login?returnUrl={returnUrl}");
+            return;
         }
+
+        filterContext.Result = new RedirectResult("~/Account/AccessDenied");
+    }
     }
 }

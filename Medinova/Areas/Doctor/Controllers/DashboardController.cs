@@ -22,7 +22,7 @@ namespace Medinova.Areas.Doctor.Controllers
 
             var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId.Value);
             if (doctor == null)
-                return RedirectToAction("Login", "Account", new { area = "Doctor" });
+                return RedirectToAction("Login", "Account", new { area = "" });
 
 
             var today = DateTime.Today;

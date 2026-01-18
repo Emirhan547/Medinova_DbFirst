@@ -10,7 +10,7 @@ namespace Medinova.Controllers
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly MedinovaContext context = new MedinovaContext();
+         MedinovaContext context = new MedinovaContext();
 
         // GET: Login
         public ActionResult Login(string returnUrl)

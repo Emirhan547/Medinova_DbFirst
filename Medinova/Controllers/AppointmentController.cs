@@ -21,7 +21,7 @@ namespace Medinova.Controllers
             if (Session["userId"] == null)
             {
                 TempData["LoginRequired"] = "Randevu almak için giriş yapmalısınız";
-                return RedirectToAction("Login", "Account", new { area = "Patient" });
+                return RedirectToAction("Login", "Account", new { area = "", returnUrl = Request.RawUrl });
             }
 
             return View();
