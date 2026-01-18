@@ -18,7 +18,8 @@
             <div class="col-lg-6">
                 <div class="bg-white text-center rounded p-5">
                     <h1 class="mb-4">Book An Appointment</h1>
-                    <form method="post" action="/Default/MakeAppointment">
+                    <form method="post" action="/Appointment/MakeAppointment" id="appointmentForm">
+                        @Html.AntiForgeryToken()
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">
                                 <label>Bölüm Seçiniz</label>
@@ -45,8 +46,11 @@
                             </div>
                             <div class="col-12 col-sm-6">
                                 <div class="date" id="date" data-target-input="nearest">
-                                    @Html.DropDownList("AppointmentDate",(List<SelectListItem>)
-                                    ViewBag.dateList,"---Tarih Seçiniz---",new{@class="{form-control"})
+                                    @Html.DropDownList(
+                                         "AppointmentDate",
+                                         (List<SelectListItem>)ViewBag.dateList,
+                                         "---Tarih Seçiniz---",
+                                         new { @class = "form-control" })
                                 </div>
                             </div>
                             <div class="col-12 col-sm-6">
@@ -68,12 +72,26 @@
             </div>
         </div>
     </div>
-</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script type="text/javascript">
     $(document).ready(function () {
+        var isAuthenticated = @((Session["userId"] != null).ToString().ToLower());
 
+        $("#appointmentForm").on("submit", function (event) {
+            if (!isAuthenticated) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: "warning",
+                    title: "Giriş gerekli",
+                    text: "Randevu almak için önce giriş yapmalısınız.",
+                    confirmButtonText: "Girişe git"
+                }).then(function () {
+                    window.location.href = "/Account/Login";
+                });
+            }
+        });
         $("#DepartmentId").change(function () {
 
             var selectedDepId = $(this).val();
@@ -85,9 +103,9 @@
             $('#AppointmentDate').val('').trigger('change');
             $('#AppointmentTime').val('').trigger('change');
 
-           
+
             $.ajax({
-                url: '/Default/GetDoctorsByDepartmentId',
+                url: '/Appointment/GetDoctorsByDepartmentId',
                 type: 'GET',
                 data: { departmentId: selectedDepId },
                 dataType: 'json',
@@ -117,7 +135,7 @@
             }
 
             $.ajax({
-                url: '/Default/GetAvailableHours',
+                url: '/Appointment/GetAvailableHours',
                 type: 'POST',
                 dataType: 'json',
                 data: { selectedDate: selectedDate, doctorId: selectedDoctorId },

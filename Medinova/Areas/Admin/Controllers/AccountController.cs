@@ -22,7 +22,7 @@ namespace Medinova.Areas.Admin.Controllers
         public ActionResult Login(LoginDto model)
         {
             var user = context.Users
-                .Include(x => x.UserRoles)
+               .Include(x => x.UserRoles.Select(ur => ur.Role))
                 .FirstOrDefault(x => x.UserName == model.UserName && x.Password == model.Password);
             if (user == null)
             {
@@ -30,7 +30,7 @@ namespace Medinova.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var roles = user.UserRoles.Select(x => x.Name).ToArray();
+            var roles = user.UserRoles.Select(x => x.Role.RoleName).ToArray();
             AccountAuthHelper.SignIn(Response, user.UserName, roles, false);
             Session["userName"] = user.UserName;
             Session["fullName"] = user.FirstName + " " + user.LastName;

@@ -2,6 +2,7 @@
 using Medinova.Models;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace Medinova.Areas.Doctor.Controllers
@@ -69,7 +70,7 @@ namespace Medinova.Areas.Doctor.Controllers
         }
 
         [HttpPost]
-        public ActionResult CancelAppointment(int id, string reason)
+        public async Task<ActionResult> CancelAppointment(int id, string reason)
         {
             var appointment = context.Appointments.Find(id);
             if (appointment != null)
@@ -86,9 +87,12 @@ namespace Medinova.Areas.Doctor.Controllers
             return RedirectToAction("Appointments");
         }
 
-        private void SendCancellationEmail(Appointment appointment)
+        private async Task SendCancellationEmail(Appointment appointment)
         {
-            // Email gönderme kodunu ADIM 6'da ekleyeceğiz
+            using (var emailService = new Services.EmailService())
+            {
+                await emailService.SendAppointmentCancellation(appointment);
+            }
         }
 
         protected override void Dispose(bool disposing)
