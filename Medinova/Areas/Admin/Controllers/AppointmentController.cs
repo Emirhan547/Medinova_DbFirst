@@ -1,4 +1,5 @@
-﻿using Medinova.Models;
+﻿using Medinova.Attributes;
+using Medinova.Models;
 using System;
 using System.Data.Entity;
 using System.Linq;
@@ -6,7 +7,8 @@ using System.Web.Mvc;
 
 namespace Medinova.Areas.Admin.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [RouteArea("Admin")]
+    [CustomAuthorize(Roles = "Admin")]
     public class AppointmentController : Controller
     {
         private readonly MedinovaContext context = new MedinovaContext();

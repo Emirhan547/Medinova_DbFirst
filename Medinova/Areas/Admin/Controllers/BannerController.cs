@@ -8,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Medinova.Areas.Admin.Controllers
 {
-
+    [RouteArea("Admin")]
     [CustomAuthorize("Admin")]
     public class BannerController : Controller
     {

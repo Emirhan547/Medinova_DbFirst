@@ -1,11 +1,13 @@
-﻿using Medinova.Models;
+﻿using Medinova.Attributes;
+using Medinova.Models;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 
 namespace Medinova.Areas.Admin.Controllers
 {
-   [CustomAuthorize("Admin")]]
+    [RouteArea("Admin")]
+    [CustomAuthorize("Admin")]
     public class DoctorController : Controller
     {
         private readonly MedinovaContext context = new MedinovaContext();

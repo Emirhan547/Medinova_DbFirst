@@ -231,13 +231,18 @@
     <Compile Include="Areas\Admin\Controllers\DoctorController.cs" />
     <Compile Include="Areas\Admin\Controllers\LogsController.cs" />
     <Compile Include="Areas\Admin\Controllers\PlanController.cs" />
+    <Compile Include="Areas\Admin\Controllers\RoleController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
     <Compile Include="Areas\Admin\Controllers\SearchSectionController.cs" />
     <Compile Include="Areas\Admin\Controllers\TestimonialController.cs" />
+    <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Areas\Admin\Models\DashboardRecentAppointmentViewModel.cs" />
     <Compile Include="Areas\Admin\Models\DashboardTopDoctorViewModel.cs" />
     <Compile Include="Areas\Admin\Models\DashboardViewModel.cs" />
     <Compile Include="Areas\Admin\Models\DepartmentDistributionItemViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\RoleOptionViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\UserListViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\UserRoleItemViewModel.cs" />
     <Compile Include="Areas\Admin\Models\WeeklyAppointmentStatViewModel.cs" />
     <Compile Include="Areas\Doctor\Controllers\AccountController.cs" />
     <Compile Include="Areas\Doctor\Controllers\DashboardController.cs" />
@@ -421,6 +426,8 @@
     <Content Include="Areas\Admin\Views\Doctor\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Doctor\Update.cshtml" />
     <Content Include="Areas\Admin\Views\Appointment\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Role\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\User\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -602,6 +609,7 @@
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\Shared\_AdminHeader.cshtml" />
     <Content Include="Views\Shared\_AdminSidebar.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
