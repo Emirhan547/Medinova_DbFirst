@@ -10,7 +10,7 @@ namespace Medinova.Controllers
     [AllowAnonymous]
     public class AccountController : Controller
     {
-         MedinovaContext context = new MedinovaContext();
+        MedinovaContext context = new MedinovaContext();
 
         // GET: Login
         public ActionResult Login(string returnUrl)
@@ -157,22 +157,25 @@ namespace Medinova.Controllers
                 context.Dispose();
             base.Dispose(disposing);
         }
-        private void EnsureDoctorLink(User user)
-        {
-            if (user == null)
-                return;
+       private void EnsureDoctorLink(User user)
+{
+    if (user == null)
+        return;
 
-            var existingDoctor = context.Doctors.FirstOrDefault(d => d.UserId == user.UserId);
-            if (existingDoctor != null)
-                return;
+    // Lambda ifadesinde doğrudan property kullanmak yerine
+    var userId = user.UserId;
+    
+    var existingDoctor = context.Doctors.Where(d => d.UserId == userId).FirstOrDefault();
+    if (existingDoctor != null)
+        return;
 
-            var fullName = $"{user.FirstName} {user.LastName}".Trim();
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == null && d.FullName == fullName);
-            if (doctor == null)
-                return;
+    var fullName = $"{user.FirstName} {user.LastName}".Trim();
+    var doctor = context.Doctors.Where(d => !d.UserId.HasValue && d.FullName == fullName).FirstOrDefault();
+    if (doctor == null)
+        return;
 
-            doctor.UserId = user.UserId;
-            context.SaveChanges();
-        }
+    doctor.UserId = userId;
+    context.SaveChanges();
+}
     }
 }

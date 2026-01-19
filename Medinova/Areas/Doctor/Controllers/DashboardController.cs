@@ -20,16 +20,22 @@ namespace Medinova.Areas.Doctor.Controllers
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId.Value);
+            // 🔥 EF burada biter
+            var doctor = context.Doctors
+                .ToList()
+                .FirstOrDefault(d => d.UserId == userId.Value);
+
             if (doctor == null)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
-
             var today = DateTime.Today;
+
+            // ⚠ EF DateTime karşılaştırma fix
             var todayAppointments = context.Appointments
                 .Where(a => a.DoctorId == doctor.DoctorId &&
-                           a.AppointmentDate == today &&
-                           a.Status == "Active")
+                            a.AppointmentDate >= today &&
+                            a.AppointmentDate < today.AddDays(1) &&
+                            a.Status == "Active")
                 .OrderBy(a => a.AppointmentTime)
                 .ToList();
 
@@ -42,17 +48,16 @@ namespace Medinova.Areas.Doctor.Controllers
             ViewBag.TodayAppointments = todayAppointments;
             ViewBag.TotalToday = todayAppointments.Count;
 
-            // Upcoming appointments (next 7 days)
             var nextWeek = today.AddDays(7);
+
             var upcomingCount = context.Appointments
                 .Count(a => a.DoctorId == doctor.DoctorId &&
-                           a.AppointmentDate > today &&
-                           a.AppointmentDate <= nextWeek &&
-                           a.Status == "Active");
+                            a.AppointmentDate > today &&
+                            a.AppointmentDate <= nextWeek &&
+                            a.Status == "Active");
 
             ViewBag.UpcomingCount = upcomingCount;
 
-            // Total patients
             var totalPatients = context.Appointments
                 .Where(a => a.DoctorId == doctor.DoctorId)
                 .Select(a => a.PatientId)
@@ -64,13 +69,17 @@ namespace Medinova.Areas.Doctor.Controllers
             return View(overview);
         }
 
+
         public ActionResult Appointments()
         {
             var userId = Session["userId"] as int?;
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId.Value);
+            var doctor = context.Doctors
+                .ToList()
+                .FirstOrDefault(d => d.UserId == userId.Value);
+
             if (doctor == null)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
@@ -82,6 +91,7 @@ namespace Medinova.Areas.Doctor.Controllers
 
             return View(appointments);
         }
+
 
         [HttpPost]
         public async Task<ActionResult> CancelAppointment(int id, string reason)

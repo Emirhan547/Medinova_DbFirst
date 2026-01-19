@@ -43,12 +43,31 @@ namespace Medinova.Attributes
         {
             if (!filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
-                var returnUrl = HttpUtility.UrlEncode(filterContext.HttpContext.Request.RawUrl ?? "/");
-            filterContext.Result = new RedirectResult($"~/Account/Login?returnUrl={returnUrl}");
-            return;
+                var returnUrl = HttpUtility.UrlEncode(
+                    filterContext.HttpContext.Request.RawUrl ?? "/"
+                );
+
+                filterContext.Result = new RedirectToRouteResult(
+                    new System.Web.Routing.RouteValueDictionary(new
+                    {
+                        controller = "Account",
+                        action = "Login",
+                        area = "",
+                        returnUrl = returnUrl
+                    })
+                );
+                return;
+            }
+
+            filterContext.Result = new RedirectToRouteResult(
+                new System.Web.Routing.RouteValueDictionary(new
+                {
+                    controller = "Account",
+                    action = "AccessDenied",
+                    area = ""
+                })
+            );
         }
 
-        filterContext.Result = new RedirectResult("~/Account/AccessDenied");
-    }
     }
 }

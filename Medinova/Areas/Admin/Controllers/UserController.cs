@@ -24,17 +24,27 @@ namespace Medinova.Areas.Admin.Controllers
                 })
                 .ToList();
 
-            var users = context.Users
+            // 1) DB'den entity olarak çek
+            var userEntities = context.Users
                 .Include(u => u.UserRoles.Select(ur => ur.Role))
                 .OrderBy(u => u.FirstName)
                 .ThenBy(u => u.LastName)
+                .ToList();
+
+            // 2) ViewModel map'i LINQ-to-Objects (memory)
+            var users = userEntities
                 .Select(u => new UserRoleItemViewModel
                 {
                     UserId = u.UserId,
                     UserName = u.UserName,
-                    FullName = (u.FirstName + " " + u.LastName).Trim(),
-                    Roles = u.UserRoles.Select(ur => ur.Role.RoleName).ToList(),
-                    SelectedRoleId = u.UserRoles.Select(ur => (int?)ur.RoleId).FirstOrDefault()
+                    FullName = ((u.FirstName ?? "") + " " + (u.LastName ?? "")).Trim(),
+                    Roles = (u.UserRoles ?? Enumerable.Empty<UserRole>())
+                                .Where(ur => ur.Role != null)
+                                .Select(ur => ur.Role.RoleName)
+                                .ToList(),
+                    SelectedRoleId = (u.UserRoles ?? Enumerable.Empty<UserRole>())
+                                .Select(ur => (int?)ur.RoleId)
+                                .FirstOrDefault()
                 })
                 .ToList();
 
@@ -46,6 +56,7 @@ namespace Medinova.Areas.Admin.Controllers
 
             return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
