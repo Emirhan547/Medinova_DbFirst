@@ -1,0 +1,144 @@
+﻿@model IEnumerable<Medinova.Models.Appointment>
+@{
+    ViewBag.Title = "Randevu Yönetimi";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Randevu Yönetimi</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Randevuları görüntüleyin ve durumlarını yönetin</p>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        @using (Html.BeginForm("Index", "Appointment", new { area = "Admin" }, FormMethod.Get, new { @class = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end" }))
+        {
+            <div>
+                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Başlangıç Tarihi</label>
+                <input type="date"
+                       name="startDate"
+                       value="@ViewBag.StartDate"
+                       class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm px-3 py-2" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Bitiş Tarihi</label>
+                <input type="date"
+                       name="endDate"
+                       value="@ViewBag.EndDate"
+                       class="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm px-3 py-2" />
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Departman</label>
+                @Html.DropDownList(
+                    "departmentId",
+                    ViewBag.Departments as SelectList,
+                    "Tüm Departmanlar",
+                    new { @class = "w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm px-3 py-2" })
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-slate-600 dark:text-slate-300 mb-2">Doktor</label>
+                @Html.DropDownList(
+                    "doctorId",
+                    ViewBag.Doctors as SelectList,
+                    "Tüm Doktorlar",
+                    new { @class = "w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm px-3 py-2" })
+            </div>
+            <div class="flex gap-2">
+                <button type="submit"
+                        class="flex-1 bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                    Filtrele
+                </button>
+                <a href="@Url.Action("Index", "Appointment", new { area = "Admin" })"
+                   class="flex-1 text-center border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                    Sıfırla
+                </a>
+            </div>
+        }
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-slate-50 dark:bg-slate-900/40 text-slate-600 dark:text-slate-300">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">Tarih / Saat</th>
+                            <th class="px-4 py-3 text-left font-semibold">Doktor</th>
+                            <th class="px-4 py-3 text-left font-semibold">Hasta</th>
+                            <th class="px-4 py-3 text-left font-semibold">Durum</th>
+                            <th class="px-4 py-3 text-left font-semibold">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                        @foreach (var appointment in Model)
+                        {
+                            var patientName = appointment.User != null
+                                ? string.Format("{0} {1}", appointment.User.FirstName, appointment.User.LastName).Trim()
+                                : appointment.FullName;
+                            var status = appointment.Status ?? "Belirsiz";
+                            var statusClass = status == "Active"
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
+                                : status == "Cancelled"
+                                    ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+                                    : "bg-slate-100 text-slate-600 dark:bg-slate-900/40 dark:text-slate-300";
+                            <tr class="text-slate-700 dark:text-slate-200">
+                                <td class="px-4 py-3">
+                                    <div class="font-semibold">@appointment.AppointmentDate?.ToString("dd.MM.yyyy")</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">@appointment.AppointmentTime</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="font-semibold">@appointment.Doctor?.FullName</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">@appointment.Doctor?.Department?.Name</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="font-semibold">@patientName</div>
+                                    <div class="text-xs text-slate-500 dark:text-slate-400">@appointment.Email</div>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold @statusClass">@status</span>
+                                    @if (!string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                                    {
+                                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">@appointment.CancellationReason</div>
+                                    }
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex flex-wrap gap-2">
+                                        @using (Html.BeginForm("Deactivate", "Appointment", new { area = "Admin", id = appointment.AppointmentId }, FormMethod.Post, new { @class = "inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-200 dark:hover:bg-amber-900/50"
+                                                    onclick="return confirm('Randevuyu pasife almak istediğinize emin misiniz?');">
+                                                Pasife Al
+                                            </button>
+                                        }
+                                        @using (Html.BeginForm("Cancel", "Appointment", new { area = "Admin", id = appointment.AppointmentId }, FormMethod.Post, new { @class = "inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-200 dark:hover:bg-red-900/50"
+                                                    onclick="return confirm('Randevuyu iptal etmek istediğinize emin misiniz?');">
+                                                İptal Et
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-12 text-center">
+            <span class="material-symbols-outlined !text-5xl text-slate-300 dark:text-slate-600 mb-4">calendar_month</span>
+            <h3 class="text-lg font-semibold text-slate-700 dark:text-slate-300 mb-2">Randevu Bulunamadı</h3>
+            <p class="text-slate-500 dark:text-slate-400">Seçili filtrelere uygun randevu bulunmuyor.</p>
+        </div>
+    }
+</div>
