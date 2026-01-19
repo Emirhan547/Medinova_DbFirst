@@ -224,8 +224,11 @@
     <Compile Include="Areas\Admin\Controllers\AboutController.cs" />
     <Compile Include="Areas\Admin\Controllers\AboutItemController.cs" />
     <Compile Include="Areas\Admin\Controllers\AccountController.cs" />
+    <Compile Include="Areas\Admin\Controllers\AppointmentController.cs" />
     <Compile Include="Areas\Admin\Controllers\BannerController.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DepartmentController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DoctorController.cs" />
     <Compile Include="Areas\Admin\Controllers\LogsController.cs" />
     <Compile Include="Areas\Admin\Controllers\PlanController.cs" />
     <Compile Include="Areas\Admin\Controllers\ServiceController.cs" />
@@ -411,6 +414,13 @@
     <Content Include="Areas\Doctor\Views\Account\Login.cshtml" />
     <Content Include="Areas\Patient\Views\Account\Login.cshtml" />
     <Content Include="Areas\Admin\Views\Account\Login.cshtml" />
+    <Content Include="Areas\Admin\Views\Department\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Department\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Department\Update.cshtml" />
+    <Content Include="Areas\Admin\Views\Doctor\Create.cshtml" />
+    <Content Include="Areas\Admin\Views\Doctor\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Doctor\Update.cshtml" />
+    <Content Include="Areas\Admin\Views\Appointment\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

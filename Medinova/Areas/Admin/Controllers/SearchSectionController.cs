@@ -1,4 +1,5 @@
-﻿using Medinova.Models;
+﻿using Medinova.Attributes;
+using Medinova.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Web.Mvc;
 
 namespace Medinova.Areas.Admin.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [CustomAuthorize("Admin")]
     public class SearchSectionController : Controller
     {
         MedinovaContext context =new MedinovaContext();

@@ -1,16 +1,16 @@
 ﻿using Medinova.Areas.Admin.Models;
+using Medinova.Attributes;
 using Medinova.Models;
 using Medinova.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Medinova.Areas.Admin.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [CustomAuthorize("Admin")]
     public class DashboardController : Controller
     {
         // GET: Admin/Dashboard
@@ -18,27 +18,39 @@ namespace Medinova.Areas.Admin.Controllers
         {
             using (var context = new MedinovaContext())
             {
+                // 🔹 Tarihler (EF6 uyumlu şekilde DIŞARIDA hesaplanır)
                 var today = DateTime.Today;
+                var tomorrow = today.AddDays(1);
+                var startDate = today.AddDays(-6);
+
+                // 🔹 Genel istatistikler
                 var totalDoctors = context.Doctors.Count();
                 var totalPatients = context.Users.Count();
                 var totalAppointments = context.Appointments.Count();
-                var todayAppointments = context.Appointments.Count(a =>
-                    a.AppointmentDate >= today && a.AppointmentDate < today.AddDays(1));
 
+                var todayAppointments = context.Appointments.Count(a =>
+                    a.AppointmentDate >= today && a.AppointmentDate < tomorrow);
+
+                // 🔹 Son randevular
                 var recentAppointments = context.Appointments
                     .OrderByDescending(a => a.AppointmentDate ?? a.CreatedDate)
                     .Take(5)
                     .Select(a => new DashboardRecentAppointmentViewModel
                     {
                         PatientName = a.FullName
-                            ?? (a.User != null ? (a.User.FirstName + " " + a.User.LastName) : "Bilinmiyor"),
-                        DoctorName = a.Doctor != null ? a.Doctor.FullName : "Bilinmiyor",
+                            ?? (a.User != null
+                                ? a.User.FirstName + " " + a.User.LastName
+                                : "Bilinmiyor"),
+                        DoctorName = a.Doctor != null
+                            ? a.Doctor.FullName
+                            : "Bilinmiyor",
                         AppointmentDate = a.AppointmentDate,
                         AppointmentTime = a.AppointmentTime,
                         Status = a.Status ?? "Beklemede"
                     })
                     .ToList();
 
+                // 🔹 En yoğun doktorlar
                 var topDoctorEntries = context.Doctors
                     .Select(d => new
                     {
@@ -51,7 +63,10 @@ namespace Medinova.Areas.Admin.Controllers
                     .Take(5)
                     .ToList();
 
-                var maxDoctorAppointments = topDoctorEntries.Any() ? topDoctorEntries.Max(d => d.AppointmentCount) : 0;
+                var maxDoctorAppointments = topDoctorEntries.Any()
+                    ? topDoctorEntries.Max(d => d.AppointmentCount)
+                    : 0;
+
                 var topDoctors = topDoctorEntries
                     .Select(d => new DashboardTopDoctorViewModel
                     {
@@ -65,10 +80,15 @@ namespace Medinova.Areas.Admin.Controllers
                     })
                     .ToList();
 
+                // 🔹 Departman dağılımı
                 var departmentStats = context.Appointments
                     .Where(a => a.DoctorId != null && a.Doctor.DepartmentId != null)
                     .GroupBy(a => a.Doctor.Department.Name)
-                    .Select(g => new { DepartmentName = g.Key, Count = g.Count() })
+                    .Select(g => new
+                    {
+                        DepartmentName = g.Key,
+                        Count = g.Count()
+                    })
                     .OrderByDescending(g => g.Count)
                     .ToList();
 
@@ -77,6 +97,7 @@ namespace Medinova.Areas.Admin.Controllers
                 var remainingCount = totalDepartmentAppointments - topDepartments.Sum(x => x.Count);
 
                 var departmentDistribution = new List<DepartmentDistributionItemViewModel>();
+
                 foreach (var department in topDepartments)
                 {
                     departmentDistribution.Add(new DepartmentDistributionItemViewModel
@@ -96,11 +117,15 @@ namespace Medinova.Areas.Admin.Controllers
                         : 0
                 });
 
-                var startDate = today.AddDays(-6);
+                // 🔹 Haftalık randevu istatistikleri
                 var weeklyCounts = context.Appointments
-                    .Where(a => a.AppointmentDate >= startDate && a.AppointmentDate < today.AddDays(1))
+                    .Where(a => a.AppointmentDate >= startDate && a.AppointmentDate < tomorrow)
                     .GroupBy(a => DbFunctions.TruncateTime(a.AppointmentDate))
-                    .Select(g => new { Day = g.Key.Value, Count = g.Count() })
+                    .Select(g => new
+                    {
+                        Day = g.Key.Value,
+                        Count = g.Count()
+                    })
                     .ToList()
                     .ToDictionary(x => x.Day.Date, x => x.Count);
 
@@ -117,6 +142,7 @@ namespace Medinova.Areas.Admin.Controllers
                     })
                     .ToList();
 
+                // 🔹 ViewModel
                 var viewModel = new DashboardViewModel
                 {
                     TotalDoctors = totalDoctors,
@@ -132,6 +158,8 @@ namespace Medinova.Areas.Admin.Controllers
                 return View(viewModel);
             }
         }
+
+        // GET: Admin/Dashboard/MLPredictions
         public ActionResult MLPredictions()
         {
             var predictionService = new PredictionService();
@@ -149,6 +177,5 @@ namespace Medinova.Areas.Admin.Controllers
 
             return View(monthlyPredictions);
         }
-
     }
 }

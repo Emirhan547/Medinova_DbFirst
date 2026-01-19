@@ -1,0 +1,45 @@
+﻿@model Medinova.Models.Department
+@{
+    ViewBag.Title = "Departman Güncelle";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Departman Güncelle</h1>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">Departman bilgilerini düzenleyin</p>
+        </div>
+        <a href="@Url.Action("Index", "Department", new { area = "Admin" })"
+           class="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2 text-sm font-medium">
+            <span class="material-symbols-outlined !text-lg">arrow_back</span>
+            Listeye Dön
+        </a>
+    </div>
+
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
+        <form method="post" action="@Url.Action("Update", "Department", new { area = "Admin" })" class="space-y-6">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.DepartmentId)
+
+            <div>
+                <label for="Name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Departman Adı</label>
+                @Html.TextBoxFor(model => model.Name, new
+                {
+                    @class = "w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                })
+            </div>
+
+            <div class="flex items-center justify-end gap-3">
+                <a href="@Url.Action("Index", "Department", new { area = "Admin" })"
+                   class="px-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                    Vazgeç
+                </a>
+                <button type="submit"
+                        class="bg-primary hover:bg-primary/90 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                    Güncelle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

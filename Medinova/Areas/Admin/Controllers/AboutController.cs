@@ -1,5 +1,6 @@
 ﻿
 
+using Medinova.Attributes;
 using Medinova.Models;
 using System.Linq;
 using System.Web;
@@ -9,7 +10,7 @@ using System.Web.Security;
 namespace Medinova.Areas.Admin.Controllers
 {
     [RouteArea("Admin")]
-    [Authorize(Roles = "Admin")]
+    [CustomAuthorize("Admin")]
     public class AboutController : Controller
     {
         MedinovaContext context= new MedinovaContext();

@@ -41,6 +41,7 @@
 }
 
 @{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var distribution = Model.DepartmentDistribution?.ToList() ?? new List<Medinova.Areas.Admin.Models.DepartmentDistributionItemViewModel>();
     var weeklyAppointments = Model.WeeklyAppointments?.ToList() ?? new List<Medinova.Areas.Admin.Models.WeeklyAppointmentStatViewModel>();
     var segmentColors = new[] { "#007bff", "#10b981", "#94a3b8" };
