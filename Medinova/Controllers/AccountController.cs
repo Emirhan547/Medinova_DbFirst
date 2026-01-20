@@ -30,14 +30,14 @@ namespace Medinova.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            
-            Logger.Information("Login attempt for {UserName}", model.UserName);
 
-           
-                var loginResult = AccountLoginService.ValidateCredentials(context, model);
+            Logger.Information("{UserName} için giriş denemesi", model.UserName);
+
+
+            var loginResult = AccountLoginService.ValidateCredentials(context, model);
             if (!loginResult.IsSuccess)
             {
-                Logger.Warning("Login failed for {UserName}", model.UserName);
+                Logger.Warning("{UserName} için giriş başarısız", model.UserName);
                 ModelState.AddModelError("", loginResult.ErrorMessage);
                 return View(model);
             }
@@ -72,10 +72,10 @@ namespace Medinova.Controllers
             Session["fullName"] = user.FirstName + " " + user.LastName;
             Session["userRole"] = userRole;
 
-            Logger.Information("User logged in {UserId} {UserName} with role {UserRole}", user.UserId, user.UserName, userRole);
+            Logger.Information("Kullanıcı giriş yaptı {UserId} {UserName} rol {UserRole}", user.UserId, user.UserName, userRole);
 
             // Log activity
-            LogActivity(user.UserId, "User Login", "Account", null);
+            LogActivity(user.UserId, "Kullanıcı Girişi", "Account", null);
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
@@ -106,11 +106,11 @@ namespace Medinova.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            Logger.Information("Registration attempt for {UserName}", model.UserName);
+            Logger.Information("{UserName} için kayıt denemesi", model.UserName);
 
             if (context.Users.Any(u => u.UserName == model.UserName))
             {
-                Logger.Warning("Registration blocked for existing username {UserName}", model.UserName);
+                Logger.Warning("Mevcut kullanıcı adı nedeniyle kayıt engellendi {UserName}", model.UserName);
                 ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten kullanılıyor");
                 return View(model);
             }
@@ -138,7 +138,7 @@ namespace Medinova.Controllers
                 context.SaveChanges();
             }
 
-            Logger.Information("User registered {UserId} {UserName}", user.UserId, user.UserName);
+            Logger.Information("Kullanıcı kaydı oluşturuldu {UserId} {UserName}", user.UserId, user.UserName);
 
             return RedirectToAction("Login");
         }

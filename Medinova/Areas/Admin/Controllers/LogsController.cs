@@ -4,10 +4,11 @@ using Medinova.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Data.Entity;
+using System.Web.UI.WebControls.WebParts;
 
 
 namespace Medinova.Areas.Admin.Controllers
@@ -20,8 +21,8 @@ namespace Medinova.Areas.Admin.Controllers
         private static readonly ILogger Logger = Log.ForContext<LogsController>();
         public ActionResult Index(DateTime? startDate, DateTime? endDate, int? userId, string category = "All")
         {
-            Logger.Information("Log overview requested {StartDate} {EndDate} {UserId} {Category}", startDate, endDate, userId, category);
-            LogActivity("Logs Viewed", "Log overview page opened.");
+            Logger.Information("Log özeti istendi {StartDate} {EndDate} {UserId} {Category}", startDate, endDate, userId, category);
+            LogActivity("Loglar Görüntülendi", "Log özeti sayfası açıldı.");
 
             var activityQuery = context.ActivityLogs.Include(l => l.User).AsQueryable();
             if (startDate.HasValue)
@@ -47,7 +48,7 @@ namespace Medinova.Areas.Admin.Controllers
                 {
                     Category = ResolveActivityCategory(l),
                     Source = "Activity",
-                    Title = l.Action ?? "Activity",
+                    Title = l.Action ?? "Aktivite",
                     Description = BuildActivityDescription(l),
                     UserName = l.User != null ? l.User.UserName : "Sistem",
                     Timestamp = l.LogDate,
@@ -74,7 +75,7 @@ namespace Medinova.Areas.Admin.Controllers
                 {
                     Category = "Email",
                     Source = "Email",
-                    Title = string.IsNullOrWhiteSpace(l.Subject) ? "Email Log" : l.Subject,
+                    Title = string.IsNullOrWhiteSpace(l.Subject) ? "E-posta Kaydı" : l.Subject,
                     Description = BuildEmailDescription(l),
                     UserName = l.RecipientEmail,
                     Timestamp = l.SentDate,
@@ -105,7 +106,7 @@ namespace Medinova.Areas.Admin.Controllers
         }
         public ActionResult ActivityLogs(DateTime? startDate, DateTime? endDate, int? userId)
         {
-            Logger.Information("Activity logs requested {StartDate} {EndDate} {UserId}", startDate, endDate, userId);
+            Logger.Information("Aktivite logları istendi {StartDate} {EndDate} {UserId}", startDate, endDate, userId);
             var query = context.ActivityLogs.AsQueryable();
 
             if (startDate.HasValue)
@@ -133,7 +134,7 @@ namespace Medinova.Areas.Admin.Controllers
 
         public ActionResult EmailLogs()
         {
-            Logger.Information("Email logs requested");
+            Logger.Information("E-posta logları istendi");
             var logs = context.EmailLogs
                 .OrderByDescending(e => e.SentDate)
                 .Take(500)
@@ -229,12 +230,12 @@ namespace Medinova.Areas.Admin.Controllers
             var parts = new List<string>();
             if (!string.IsNullOrWhiteSpace(log.RecipientEmail))
             {
-                parts.Add($"To: {log.RecipientEmail}");
+                parts.Add($"Alıcı: {log.RecipientEmail}");
             }
 
             if (!string.IsNullOrWhiteSpace(log.ErrorMessage))
             {
-                parts.Add($"Error: {log.ErrorMessage}");
+                parts.Add($"Hata: {log.ErrorMessage}");
             }
 
             return parts.Count > 0 ? string.Join(" · ", parts) : "-";
@@ -266,10 +267,10 @@ namespace Medinova.Areas.Admin.Controllers
             {
                 new SelectListItem { Text = "Tümü", Value = "All", Selected = category == "All" },
                 new SelectListItem { Text = "Aktivite", Value = "Activity", Selected = category == "Activity" },
-                new SelectListItem { Text = "Email", Value = "Email", Selected = category == "Email" },
-                new SelectListItem { Text = "Account", Value = "Account", Selected = category == "Account" },
-                new SelectListItem { Text = "Appointment", Value = "Appointment", Selected = category == "Appointment" },
-                new SelectListItem { Text = "Admin", Value = "Admin", Selected = category == "Admin" }
+                new SelectListItem { Text = "E-posta", Value = "Email", Selected = category == "Email" },
+                new SelectListItem { Text = "Hesap", Value = "Account", Selected = category == "Account" },
+                new SelectListItem { Text = "Randevu", Value = "Appointment", Selected = category == "Appointment" },
+                new SelectListItem { Text = "Yönetim", Value = "Admin", Selected = category == "Admin" }
             };
         }
     }

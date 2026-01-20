@@ -16,11 +16,11 @@
                 <div class="flex flex-wrap gap-3">
                     <div class="rounded-lg bg-white px-4 py-3 shadow-sm border border-gray-200">
                         <p class="text-xs font-bold uppercase text-gray-400">Aktif</p>
-                        <p class="text-lg font-extrabold text-navy-accent">@(Model.ActiveAppointments?.Count() ?? 0)</p>
+                        <p class="text-lg font-extrabold text-navy-accent">@(Model != null && Model.ActiveAppointments != null ? Model.ActiveAppointments.Count() : 0)</p>
                     </div>
                     <div class="rounded-lg bg-white px-4 py-3 shadow-sm border border-gray-200">
                         <p class="text-xs font-bold uppercase text-gray-400">Bugün</p>
-                        <p class="text-lg font-extrabold text-navy-accent">@(Model.ActiveAppointments?.Count(a => a.AppointmentDate.HasValue && a.AppointmentDate.Value.Date == DateTime.Today) ?? 0)</p>
+                        <p class="text-lg font-extrabold text-navy-accent">@(Model != null && Model.ActiveAppointments != null ? Model.ActiveAppointments.Count(a => a.AppointmentDate.HasValue && a.AppointmentDate.Value.Date == DateTime.Today) : 0)</p>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@
                                         <tr>
                                             
                                             <td class="px-4 py-3 text-gray-700">@appointment.FullName</td>
-                                            <td class="px-4 py-3 text-gray-700">@appointment.AppointmentDate?.ToString("dd.MM.yyyy")</td>
+                                            <td class="px-4 py-3 text-gray-700">@(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)</td>
                                             <td class="px-4 py-3 text-gray-700">@appointment.AppointmentTime</td>
                                             <td class="px-4 py-3 text-gray-700">
                                                 @using (Html.BeginForm("Deactivate", "Dashboard", new { area = "Doctor", id = appointment.AppointmentId }, FormMethod.Post))

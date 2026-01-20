@@ -122,7 +122,7 @@
                     <a href="@Url.Action("Index", "Dashboard", new { area = "Patient" })"
                        class="flex items-center gap-3 px-6 py-3 text-navy/70 hover:bg-background-light transition">
                         <span class="material-symbols-outlined">dashboard</span>
-                        <span class="text-sm font-medium">Dashboard</span>
+                        <span class="text-sm font-medium">Ana Sayfa</span>
                     </a>
 
                     <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
@@ -141,17 +141,13 @@
                         Hesap
                     </div>
 
-                    <a href="#"
+                    <a href="@Url.Action("Edit", "Profile", new { area = "Patient" })"
                        class="flex items-center gap-3 px-6 py-3 text-navy/70 hover:bg-background-light transition">
                         <span class="material-symbols-outlined">settings</span>
                         <span class="text-sm font-medium">Profil Ayarları</span>
                     </a>
 
-                    <a href="#"
-                       class="flex items-center gap-3 px-6 py-3 text-navy/70 hover:bg-background-light transition">
-                        <span class="material-symbols-outlined">help</span>
-                        <span class="text-sm font-medium">Destek</span>
-                    </a>
+                   
                 </nav>
 
                 <!-- TIP BOX -->

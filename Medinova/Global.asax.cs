@@ -14,7 +14,7 @@ namespace Medinova
         protected void Application_Start()
         {
             LoggingConfig.ConfigureLogging();
-            Log.Information("Application starting");
+            Log.Information("Uygulama başlatılıyor");
 
             GlobalFilters.Filters.Add(new AuthorizeAttribute());
 

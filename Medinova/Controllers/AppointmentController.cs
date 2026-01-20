@@ -59,12 +59,12 @@ namespace Medinova.Controllers
         {
             if (Session["userId"] == null)
             {
-                Logger.Warning("Appointment attempt rejected due to missing session");
+                Logger.Warning("Oturum bilgisi olmadığından randevu denemesi reddedildi");
                 return Json(new { success = false, message = "Lütfen giriş yapın" });
             }
 
             var userId = (int)Session["userId"];
-            Logger.Information("Appointment request received {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
+            Logger.Information("Randevu isteği alındı {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
             // Check if time slot is available
             var existingAppointment = context.Appointments.FirstOrDefault(a =>
                 a.DoctorId == appointment.DoctorId &&
@@ -74,7 +74,7 @@ namespace Medinova.Controllers
 
             if (existingAppointment != null)
             {
-                Logger.Warning("Appointment slot conflict {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
+                Logger.Warning("Randevu saat çakışması {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
                 return Json(new { success = false, message = "Bu saat dolu!" });
             }
 
@@ -90,8 +90,8 @@ namespace Medinova.Controllers
             SendAppointmentConfirmationEmail(appointment);
 
             // Log activity
-            LogActivity(userId, "Appointment Created", "Appointment", null);
-            Logger.Information("Appointment created {UserId} {AppointmentId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.AppointmentId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
+            LogActivity(userId, "Randevu Oluşturuldu", "Appointment", null);
+            Logger.Information("Randevu oluşturuldu {UserId} {AppointmentId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.AppointmentId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
 
             return RedirectToAction("Index", "Dashboard", new { area = "Patient" });
         }

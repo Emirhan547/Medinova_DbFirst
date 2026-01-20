@@ -21,21 +21,21 @@
     <div class="rounded-xl bg-white p-4 shadow-sm border border-[#e2e8f0]">
         <p class="text-xs font-bold uppercase text-navy/50">Aktif Randevu</p>
         <div class="mt-2 text-2xl font-extrabold text-navy">
-            @(Model.ActiveAppointments?.Count() ?? 0)
+            @(Model != null && Model.ActiveAppointments != null ? Model.ActiveAppointments.Count() : 0)
         </div>
     </div>
 
     <div class="rounded-xl bg-white p-4 shadow-sm border border-[#e2e8f0]">
         <p class="text-xs font-bold uppercase text-navy/50">Geçmiş Randevu</p>
         <div class="mt-2 text-2xl font-extrabold text-navy">
-            @(Model.PastAppointments?.Count() ?? 0)
+            @(Model != null && Model.PastAppointments != null ? Model.PastAppointments.Count() : 0)
         </div>
     </div>
 
     <div class="rounded-xl bg-white p-4 shadow-sm border border-[#e2e8f0]">
         <p class="text-xs font-bold uppercase text-navy/50">İptal Edilen</p>
         <div class="mt-2 text-2xl font-extrabold text-navy">
-            @(Model.PassiveAppointments?.Count() ?? 0)
+            @(Model != null && Model.PassiveAppointments != null ? Model.PassiveAppointments.Count() : 0)
         </div>
     </div>
 </div>
@@ -66,10 +66,10 @@
                         {
                             <tr>
                                 <td class="px-4 py-3 text-navy">
-                                    @appointment.Doctor?.FullName
+                                    @(appointment.Doctor != null ? appointment.Doctor.FullName : string.Empty)
                                 </td>
                                 <td class="px-4 py-3 text-navy">
-                                    @appointment.AppointmentDate?.ToString("dd.MM.yyyy")
+                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)
                                 </td>
                                 <td class="px-4 py-3 text-navy">
                                     @appointment.AppointmentTime
@@ -125,10 +125,10 @@
                         {
                             <tr>
                                 <td class="px-4 py-3 text-navy">
-                                    @appointment.Doctor?.FullName
+                                    @(appointment.Doctor != null ? appointment.Doctor.FullName : string.Empty)
                                 </td>
                                 <td class="px-4 py-3 text-navy">
-                                    @appointment.AppointmentDate?.ToString("dd.MM.yyyy")
+                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)
                                 </td>
                                 <td class="px-4 py-3 text-navy">
                                     @appointment.AppointmentTime
@@ -170,10 +170,10 @@
                         {
                             <tr>
                                 <td class="px-4 py-3 text-navy">
-                                    @appointment.Doctor?.FullName
+                                    @(appointment.Doctor != null ? appointment.Doctor.FullName : string.Empty)
                                 </td>
                                 <td class="px-4 py-3 text-navy">
-                                    @appointment.AppointmentDate?.ToString("dd.MM.yyyy")
+                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)
                                 </td>
                                 <td class="px-4 py-3 text-navy">
                                     @appointment.AppointmentTime

@@ -42,7 +42,7 @@
                                 <div class="mt-auto p-4">
                                     <h3>@doctor.FullName</h3>
                                     <h6 class="fw-normal fst-italic text-primary mb-4">
-                                        @doctor.Department?.Name
+                                        @(doctor.Department != null ? doctor.Department.Name : string.Empty)
                                     </h6>
                                     <p class="m-0">@doctor.Description</p>
                                 </div>

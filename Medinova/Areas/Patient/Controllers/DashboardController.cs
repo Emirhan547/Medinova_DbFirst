@@ -56,6 +56,7 @@ namespace Medinova.Areas.Patient.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult CancelMyAppointment(int id)
         {
             var userId = (int)Session["userId"];
@@ -71,8 +72,9 @@ namespace Medinova.Areas.Patient.Controllers
                 TempData["Success"] = "Randevunuz iptal edildi";
             }
 
-            return RedirectToAction("MyAppointments");
+            return RedirectToAction("Index"); // 🔥 KRİTİK SATIR
         }
+
 
         protected override void Dispose(bool disposing)
         {
