@@ -68,7 +68,22 @@ namespace Medinova.Areas.Patient.Controllers
         {
             try
             {
-                var recommendation = await aiService.GetDepartmentRecommendation(symptoms);
+                var departmentNames = context.Departments
+                    .Select(department => department.Name)
+                    .Where(name => !string.IsNullOrWhiteSpace(name))
+                    .Distinct()
+                    .ToList();
+
+                if (!departmentNames.Any())
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Departman listesi bulunamadı. Lütfen daha sonra tekrar deneyin."
+                    });
+                }
+
+                var recommendation = await aiService.GetDepartmentRecommendation(symptoms, departmentNames);
                 return Json(new { success = true, recommendation });
             }
             catch (Exception ex)

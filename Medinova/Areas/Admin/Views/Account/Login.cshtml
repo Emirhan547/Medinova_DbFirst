@@ -16,7 +16,9 @@
         <div class="container">
             <h4>Admin Giriş Sayfası</h4>
             <form method="post">
+                @Html.AntiForgeryToken()
                 <label>Kullanıcı Adı</label>
+
                 @Html.TextAreaFor(x => x.UserName, new { @class = "form-control" })
                 <br />
                 <label>Şifre</label>

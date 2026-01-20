@@ -1,5 +1,7 @@
 ﻿using Medinova.Dtos;
+using Medinova.Helpers;
 using Medinova.Models;
+using Serilog;
 using System;
 using System.Linq;
 using System.Web.Mvc;
@@ -10,6 +12,7 @@ namespace Medinova.Controllers
     [AllowAnonymous]
     public class AccountController : Controller
     {
+        private static readonly ILogger Logger = Log.ForContext<AccountController>();
         MedinovaContext context = new MedinovaContext();
 
         // GET: Login
@@ -26,35 +29,32 @@ namespace Medinova.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            var user = context.Users.FirstOrDefault(u =>
-                u.UserName == model.UserName && u.Password == model.Password);
+            
+            Logger.Information("Login attempt for {UserName}", model.UserName);
 
-            if (user == null)
+           
+                var loginResult = AccountLoginService.ValidateCredentials(context, model);
+            if (!loginResult.IsSuccess)
             {
-                ModelState.AddModelError("", "Kullanıcı adı veya şifre hatalı");
+                Logger.Warning("Login failed for {UserName}", model.UserName);
+                ModelState.AddModelError("", loginResult.ErrorMessage);
                 return View(model);
             }
+           
+            var user = loginResult.User;
+            var userRole = loginResult.RoleName;
 
-            // Get user roles
-            var userRole = context.UserRoles
-                .Where(ur => ur.UserId == user.UserId)
-                .Select(ur => ur.Role.RoleName)
-                .FirstOrDefault();
-            if (userRole == "Doctor")
-            {
-                EnsureDoctorLink(user);
-            }
             FormsAuthentication.SetAuthCookie(user.UserName, false);
             Session["userId"] = user.UserId;
             Session["userName"] = user.UserName;
             Session["fullName"] = user.FirstName + " " + user.LastName;
             Session["userRole"] = userRole;
 
+            Logger.Information("User logged in {UserId} {UserName} with role {UserRole}", user.UserId, user.UserName, userRole);
+
             // Log activity
             LogActivity(user.UserId, "User Login", "Account", null);
 
-            if (userRole == "Doctor")
-                EnsureDoctorLink(user);
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
@@ -84,8 +84,11 @@ namespace Medinova.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            Logger.Information("Registration attempt for {UserName}", model.UserName);
+
             if (context.Users.Any(u => u.UserName == model.UserName))
             {
+                Logger.Warning("Registration blocked for existing username {UserName}", model.UserName);
                 ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten kullanılıyor");
                 return View(model);
             }
@@ -113,6 +116,8 @@ namespace Medinova.Controllers
                 context.SaveChanges();
             }
 
+            Logger.Information("User registered {UserId} {UserName}", user.UserId, user.UserName);
+
             return RedirectToAction("Login");
         }
 
@@ -120,6 +125,7 @@ namespace Medinova.Controllers
         {
             if (Session["userId"] != null)
             {
+                Logger.Information("User logout {UserId} {UserName}", Session["userId"], Session["userName"]);
                 LogActivity((int)Session["userId"], "User Logout", "Account", null);
             }
 
@@ -157,25 +163,6 @@ namespace Medinova.Controllers
                 context.Dispose();
             base.Dispose(disposing);
         }
-       private void EnsureDoctorLink(User user)
-{
-    if (user == null)
-        return;
-
-    // Lambda ifadesinde doğrudan property kullanmak yerine
-    var userId = user.UserId;
-    
-    var existingDoctor = context.Doctors.Where(d => d.UserId == userId).FirstOrDefault();
-    if (existingDoctor != null)
-        return;
-
-    var fullName = $"{user.FirstName} {user.LastName}".Trim();
-    var doctor = context.Doctors.Where(d => !d.UserId.HasValue && d.FullName == fullName).FirstOrDefault();
-    if (doctor == null)
-        return;
-
-    doctor.UserId = userId;
-    context.SaveChanges();
-}
+        
     }
 }

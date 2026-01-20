@@ -1,5 +1,6 @@
 ﻿using Medinova.Attributes;
 using Medinova.Models;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,10 @@ namespace Medinova.Areas.Admin.Controllers
     public class LogsController : Controller
     {
         private readonly MedinovaContext context = new MedinovaContext();
-
+        private static readonly ILogger Logger = Log.ForContext<LogsController>();
         public ActionResult ActivityLogs(DateTime? startDate, DateTime? endDate, int? userId)
         {
+            Logger.Information("Activity logs requested {StartDate} {EndDate} {UserId}", startDate, endDate, userId);
             var query = context.ActivityLogs.AsQueryable();
 
             if (startDate.HasValue)
@@ -43,6 +45,7 @@ namespace Medinova.Areas.Admin.Controllers
 
         public ActionResult EmailLogs()
         {
+            Logger.Information("Email logs requested");
             var logs = context.EmailLogs
                 .OrderByDescending(e => e.SentDate)
                 .Take(500)

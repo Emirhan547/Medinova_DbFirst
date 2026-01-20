@@ -18,6 +18,8 @@
             <form method="post">
                 @Html.AntiForgeryToken()
 
+                @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+
                 <label>Kullanıcı Adı</label>
                 @Html.TextAreaFor(x => x.UserName, new { @class = "form-control" })
                 <br />

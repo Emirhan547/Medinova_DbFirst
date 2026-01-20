@@ -3,6 +3,7 @@ using Medinova.Dtos;
 using Medinova.Enums;
 using Medinova.Models;
 using Medinova.Services;
+using Serilog;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +13,8 @@ namespace Medinova.Controllers
 {
     public class AppointmentController : Controller
     {
-         MedinovaContext context = new MedinovaContext();
+        private static readonly ILogger Logger = Log.ForContext<AppointmentController>();
+        MedinovaContext context = new MedinovaContext();
 
         [HttpGet]
         public ActionResult Index()
@@ -57,11 +59,12 @@ namespace Medinova.Controllers
         {
             if (Session["userId"] == null)
             {
+                Logger.Warning("Appointment attempt rejected due to missing session");
                 return Json(new { success = false, message = "Lütfen giriş yapın" });
             }
 
             var userId = (int)Session["userId"];
-
+            Logger.Information("Appointment request received {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
             // Check if time slot is available
             var existingAppointment = context.Appointments.FirstOrDefault(a =>
                 a.DoctorId == appointment.DoctorId &&
@@ -71,6 +74,7 @@ namespace Medinova.Controllers
 
             if (existingAppointment != null)
             {
+                Logger.Warning("Appointment slot conflict {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
                 return Json(new { success = false, message = "Bu saat dolu!" });
             }
 
@@ -87,6 +91,7 @@ namespace Medinova.Controllers
 
             // Log activity
             LogActivity(userId, "Appointment Created", "Appointment", null);
+            Logger.Information("Appointment created {UserId} {AppointmentId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.AppointmentId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
 
             return RedirectToAction("Index", "Dashboard", new { area = "Patient" });
         }
@@ -125,7 +130,7 @@ namespace Medinova.Controllers
             return Json(availabilityList, JsonRequestBehavior.AllowGet);
         }
 
-              private void LogActivity(int userId, string action, string controller, string area)
+        private void LogActivity(int userId, string action, string controller, string area)
         {
             try
             {

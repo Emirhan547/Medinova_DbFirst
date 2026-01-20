@@ -15,10 +15,12 @@ namespace Medinova.Services
             _client = new AnthropicClient(apiKey);
         }
 
-        public async Task<string> GetDepartmentRecommendation(string symptoms)
+        public async Task<string> GetDepartmentRecommendation(string symptoms, IReadOnlyCollection<string> departmentNames)
         {
-            var systemPrompt = @"Sen bir sağlık asistanısın. Hastaların belirtilerine göre hangi hastane bölümüne gitmeleri gerektiğini öneriyorsun.
-Mevcut bölümler: Kardiyoloji, Nöroloji, Ortopedi, Dahiliye, Göz Hastalıkları, KBB, Dermatoloji, Çocuk Sağlığı.
+            var departmentsList = string.Join(", ", departmentNames);
+            var systemPrompt = $@"Sen bir sağlık asistanısın. Hastaların belirtilerine göre hangi hastane bölümüne gitmeleri gerektiğini öneriyorsun.
+Mevcut bölümler: {departmentsList}.
+Önerini yalnızca bu listede yer alan bölümler üzerinden yap.
 Kısa ve net öneride bulun. Acil durumları belirt.";
 
             var messages = new List<Message>
