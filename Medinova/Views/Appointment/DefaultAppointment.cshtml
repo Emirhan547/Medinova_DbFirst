@@ -1,88 +1,144 @@
 ﻿
-    <div class="container py-5">
-        <div class="row gx-5">
-            <div class="col-lg-6 mb-5 mb-lg-0">
-                <div class="mb-4">
-                    <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">Appointment</h5>
-                    <h1 class="display-4">Make An Appointment For Your Family</h1>
-                </div>
-                <p class="text-white mb-5">
-                    Eirmod sed tempor lorem ut dolores. Aliquyam sit sadipscing kasd ipsum.
-                    Dolor ea et dolore et at sea ea at dolor, justo ipsum duo rebum sea invidunt voluptua. Eos vero
-                    eos vero ea et dolore eirmod et. Dolores diam duo invidunt lorem. Elitr ut dolores magna sit.
-                    Sea dolore sanctus sed et. Takimata takimata sanctus sed.
-                </p>
-                <a class="btn btn-dark rounded-pill py-3 px-5 me-3" href="#!">Find Doctor</a>
-                <a class="btn btn-outline-dark rounded-pill py-3 px-5" href="#!">Read More</a>
+<div class="container py-5">
+    <div class="row align-items-center gx-5">
+
+        <!-- LEFT / HERO -->
+        <div class="col-lg-6 mb-5 mb-lg-0">
+            <div class="mb-4">
+                <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">
+                    Appointment
+                </h5>
+                <h1 class="display-4 fw-bold text-dark mt-3">
+                    Make An Appointment<br />For Your Family
+                </h1>
             </div>
-            <div class="col-lg-6">
-                <div class="bg-white text-center rounded p-5">
-                    <h1 class="mb-4">Book An Appointment</h1>
-                    <form method="post" action="/Appointment/MakeAppointment" id="appointmentForm">
-                        @Html.AntiForgeryToken()
-                        <div class="row g-3">
-                            <div class="col-12 col-sm-6">
-                                <label>Bölüm Seçiniz</label>
-                                @Html.DropDownList("DepartmentId", (List<SelectListItem>)ViewBag.departments, "---Bölüm Seçiniz---", new { @class = "form-control" })
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <label>Doktor Seçiniz</label>
-                                <select id="DoctorId" name="DoctorId" class="form-control bg-light border-0" style="height: 55px;">
-                                    <option selected>---Önce Bölümü Seçiniz---</option>
 
-                                </select>
-                                <div class="col-12">
-                                    <label>Şikayet Yaz</label>
-                                    <textarea id="ComplaintText" name="ComplaintText" class="form-control bg-light border-0" rows="3"
-                                              placeholder="Şikayetinizi yazın (örn: Baş ağrısı ve mide bulantısı)"></textarea>
-                                    <div class="d-flex flex-wrap gap-2 align-items-center mt-2">
-                                        <button class="btn btn-outline-primary" type="button" id="getDepartmentSuggestion">
-                                            Bölüm Öner
-                                        </button>
-                                        <small id="departmentSuggestionResult" class="text-muted"></small>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <input type="text" name="FullName" class="form-control bg-light border-0" placeholder="Adınız Soyadınız"
-                                       style="height: 55px;">
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <input type="email" name="Email" class="form-control bg-light border-0" placeholder="Email Adresiniz"
-                                       style="height: 55px;">
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <input type="text" name="PhoneNumber" class="form-control bg-light border-0" placeholder="Telefon Numaranız"
-                                       style="height: 55px;">
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="date" id="date" data-target-input="nearest">
-                                    @Html.DropDownList(
-                                         "AppointmentDate",
-                                         (List<SelectListItem>)ViewBag.dateList,
-                                         "---Tarih Seçiniz---",
-                                         new { @class = "form-control" })
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="time" id="time" data-target-input="nearest">
-                                    <select id="AppointmentTime" name="AppointmentTime" class="form-control bg-light border-0" style="height: 55px;">
-                                        <option selected>---Önce Tarih Seçiniz---</option>
+            <p class="text-muted mb-4">
+                Sağlığınız bizim için önemli. Uzman doktorlarımızdan hızlı ve kolay
+                şekilde randevu alabilir, şikayetlerinize göre doğru bölüme yönlendirilebilirsiniz.
+            </p>
 
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3" type="submit">
-                                    Randevu oluştur
+            <div class="d-flex gap-3">
+                <a class="btn btn-dark rounded-pill py-3 px-5" href="#appointmentForm">
+                    Find Doctor
+                </a>
+                <a class="btn btn-outline-dark rounded-pill py-3 px-5" href="/Default/About">
+                    Read More
+                </a>
+            </div>
+        </div>
+
+        <!-- RIGHT / FORM -->
+        <div class="col-lg-6">
+            <div class="bg-white rounded-4 shadow p-5">
+                <h2 class="text-center fw-bold mb-4">
+                    Book An Appointment
+                </h2>
+
+                <form method="post" action="/Appointment/MakeAppointment" id="appointmentForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-3">
+
+                        <!-- Department -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Bölüm Seçiniz</label>
+                            @Html.DropDownList(
+                                "DepartmentId",
+                                (List<SelectListItem>)ViewBag.departments,
+                                "--- Bölüm Seçiniz ---",
+                                new { @class = "form-control bg-light border-0", style = "height:55px" })
+                        </div>
+
+                        <!-- Doctor -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Doktor Seçiniz</label>
+                            <select id="DoctorId" name="DoctorId"
+                                    class="form-control bg-light border-0"
+                                    style="height:55px">
+                                <option selected>--- Önce Bölümü Seçiniz ---</option>
+                            </select>
+                        </div>
+
+                        <!-- Complaint -->
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Şikayetiniz</label>
+                            <textarea id="ComplaintText"
+                                      name="ComplaintText"
+                                      class="form-control bg-light border-0"
+                                      rows="3"
+                                      placeholder="Şikayetinizi yazın (örn: baş ağrısı, mide bulantısı)"></textarea>
+
+                            <div class="d-flex align-items-center gap-2 mt-2">
+                                <button type="button"
+                                        id="getDepartmentSuggestion"
+                                        class="btn btn-outline-primary btn-sm">
+                                    Bölüm Öner
                                 </button>
+                                <small id="departmentSuggestionResult" class="text-muted"></small>
                             </div>
                         </div>
-                    </form>
-                </div>
+
+                        <!-- Name -->
+                        <div class="col-md-6">
+                            <input type="text"
+                                   name="FullName"
+                                   class="form-control bg-light border-0"
+                                   placeholder="Adınız Soyadınız"
+                                   style="height:55px">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+                            <input type="email"
+                                   name="Email"
+                                   class="form-control bg-light border-0"
+                                   placeholder="Email Adresiniz"
+                                   style="height:55px">
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="col-md-6">
+                            <input type="text"
+                                   name="PhoneNumber"
+                                   class="form-control bg-light border-0"
+                                   placeholder="Telefon Numaranız"
+                                   style="height:55px">
+                        </div>
+
+                        <!-- Date -->
+                        <div class="col-md-6">
+                            @Html.DropDownList(
+                                "AppointmentDate",
+                                (List<SelectListItem>)ViewBag.dateList,
+                                "--- Tarih Seçiniz ---",
+                                new { @class = "form-control bg-light border-0", style = "height:55px" })
+                        </div>
+
+                        <!-- Time -->
+                        <div class="col-12">
+                            <select id="AppointmentTime"
+                                    name="AppointmentTime"
+                                    class="form-control bg-light border-0"
+                                    style="height:55px">
+                                <option selected>--- Önce Tarih Seçiniz ---</option>
+                            </select>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="col-12 mt-3">
+                            <button class="btn btn-primary w-100 py-3 fw-semibold" type="submit">
+                                Randevu Oluştur
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -99,7 +155,7 @@
                     text: "Randevu almak için önce giriş yapmalısınız.",
                     confirmButtonText: "Girişe git"
                 }).then(function () {
-                    window.location.href = "/Patient/Account/Login";
+                    window.location.href = "/Account/Login";
                 });
             }
         });

@@ -1,5 +1,6 @@
 ﻿using Medinova.Attributes;
 using Medinova.Models;
+using Medinova.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace Medinova.Areas.Admin.Controllers
     [CustomAuthorize("Admin")]
     public class PlanController : Controller
     {
-        MedinovaContext context=new MedinovaContext();
+        private readonly MedinovaContext context = new MedinovaContext();
+        private readonly AwsImageUploadService imageUploadService = new AwsImageUploadService();
         public ActionResult Index()
         {
             var plans=context.Plans.ToList();
@@ -25,7 +27,7 @@ namespace Medinova.Areas.Admin.Controllers
             return View(plans);
         }
         [HttpPost]
-        public ActionResult UpdatePlan(Plan plan)
+        public ActionResult UpdatePlan(Plan plan, HttpPostedFileBase ImageFile)
         {
             var value = context.Plans.Find(plan.PlanId);
             value.Duration = plan.Duration;
@@ -34,7 +36,10 @@ namespace Medinova.Areas.Admin.Controllers
             value.Feature2 = plan.Feature2;
             value.Feature3 = plan.Feature3;
             value.Feature4 = plan.Feature4;
-            value.ImageUrl = plan.ImageUrl;
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                value.ImageUrl = imageUploadService.UploadImage(ImageFile, "plans");
+            else
+                value.ImageUrl = plan.ImageUrl;
             context.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -44,8 +49,10 @@ namespace Medinova.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CreatePlan(Plan plan)
+        public ActionResult CreatePlan(Plan plan, HttpPostedFileBase ImageFile)
         {
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                plan.ImageUrl = imageUploadService.UploadImage(ImageFile, "plans");
             context.Plans.Add(plan);
             context.SaveChanges();
             return RedirectToAction("Index");

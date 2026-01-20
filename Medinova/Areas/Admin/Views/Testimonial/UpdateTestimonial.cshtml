@@ -27,7 +27,7 @@
                 <!-- Sol Sütun - Kişisel Bilgiler -->
                 <div class="space-y-6">
                     <!-- Tam Ad -->
-                    <div>
+                    <div data-image-upload>
                         <label for="FullName" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Tam Ad <span class="text-red-500">*</span>
                         </label>
@@ -92,66 +92,66 @@
                     }
 
                     <!-- Görsel Değiştir -->
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                            Görsel Değiştir <span class="text-slate-400 text-xs">(Opsiyonel)</span>
-                        </label>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Görsel Değiştir <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                    </label>
 
-                        <!-- Yeni Görsel Önizleme -->
-                        <div id="imagePreview" class="mb-4 hidden">
-                            <div class="relative inline-block">
-                                <div class="size-32 rounded-full bg-cover bg-center border-4 border-white dark:border-slate-800 shadow-lg"
-                                     id="previewImage"></div>
-                                <button type="button" onclick="removeNewImage()"
-                                        class="absolute -top-2 -right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
-                                    <span class="material-symbols-outlined !text-lg">close</span>
-                                </button>
-                                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
-                                    Yeni Görsel
-                                </div>
+                    <!-- Yeni Görsel Önizleme -->
+                    <div id="imagePreview" class="mb-4 hidden" data-image-upload-preview>
+                        <div class="relative inline-block">
+                            <div class="size-32 rounded-full bg-cover bg-center border-4 border-white dark:border-slate-800 shadow-lg"
+                                 id="previewImage" data-image-upload-preview-image></div>
+                            <button type="button" data-image-upload-remove
+                                    class="absolute -top-2 -right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                                <span class="material-symbols-outlined !text-lg">close</span>
+                            </button>
+                            <div class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-3 py-1 rounded-full whitespace-nowrap">
+                                Yeni Görsel
                             </div>
-                        </div>
-
-                        <!-- Varsayılan Avatar Seçenekleri -->
-                        <div id="avatarOptions" class="mb-4">
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Varsayılan avatar seçin:</p>
-                            <div class="flex items-center gap-3">
-                                <button type="button" onclick="selectDefaultAvatar('erkek')"
-                                        class="size-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 !text-2xl">person</span>
-                                </button>
-                                <button type="button" onclick="selectDefaultAvatar('kadın')"
-                                        class="size-16 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-pink-600 dark:text-pink-400 !text-2xl">person</span>
-                                </button>
-                                <button type="button" onclick="selectDefaultAvatar('nötr')"
-                                        class="size-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center hover:scale-105 transition-transform">
-                                    <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 !text-2xl">person</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Dosya Yükleme -->
-                        <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                             onclick="document.getElementById('fileInput').click()"
-                             id="uploadArea">
-                            <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
-                            <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                                <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yeni Görsel Yükle</span>
-                            </p>
-                            <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 400x400px (JPG, PNG, WebP)</p>
-                            <input type="file" id="fileInput" name="ImageFile" accept="image/*"
-                                   class="hidden" onchange="previewImage(event)">
-                        </div>
-
-                        <!-- Görsel URL Girişi -->
-                        <div class="mt-4">
-                            <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya yeni görsel URL'si girin</p>
-                            <input type="url" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl"
-                                   class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                                   placeholder="https://ornek.com/profil.jpg">
                         </div>
                     </div>
+
+                    <!-- Varsayılan Avatar Seçenekleri -->
+                    <div id="avatarOptions" class="mb-4" data-image-upload-avatar-options>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-2">Varsayılan avatar seçin:</p>
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="selectDefaultAvatar('erkek')"
+                                    class="size-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-blue-600 dark:text-blue-400 !text-2xl">person</span>
+                            </button>
+                            <button type="button" onclick="selectDefaultAvatar('kadın')"
+                                    class="size-16 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-pink-600 dark:text-pink-400 !text-2xl">person</span>
+                            </button>
+                            <button type="button" onclick="selectDefaultAvatar('nötr')"
+                                    class="size-16 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center hover:scale-105 transition-transform">
+                                <span class="material-symbols-outlined text-slate-600 dark:text-slate-400 !text-2xl">person</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dosya Yükleme -->
+                    <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                         id="uploadArea" data-image-upload-area>
+                        <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                            <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yeni Görsel Yükle</span>
+                        </p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 400x400px (JPG, PNG, WebP)</p>
+                        <input type="file" id="fileInput" name="ImageFile" accept="image/*"
+                               class="hidden" data-image-upload-input>
+                    </div>
+
+                    <!-- Görsel URL Girişi -->
+                    <div class="mt-4">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya yeni görsel URL'si girin</p>
+                        <input type="url" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="https://ornek.com/profil.jpg"
+                               data-image-upload-url>
+                    </div>
+                </div>
 
                     <!-- Referans Bilgileri -->
                     <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -212,52 +212,26 @@
         document.getElementById('wordCount').textContent = text.split(/\s+/).filter(word => word.length > 0).length;
     });
 
-    // Görsel önizleme fonksiyonelliği
-    function previewImage(event) {
-        const file = event.target.files[0];
-        const preview = document.getElementById('previewImage');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadArea = document.getElementById('uploadArea');
-        const avatarOptions = document.getElementById('avatarOptions');
 
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const imageUrl = e.target.result;
-                preview.style.backgroundImage = `url('${imageUrl}')`;
-                imagePreview.classList.remove('hidden');
-                uploadArea.classList.add('hidden');
-                avatarOptions.classList.add('hidden');
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function removeNewImage() {
-        const fileInput = document.getElementById('fileInput');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadArea = document.getElementById('uploadArea');
-        const avatarOptions = document.getElementById('avatarOptions');
-
-        fileInput.value = '';
-        imagePreview.classList.add('hidden');
-        uploadArea.classList.remove('hidden');
-        avatarOptions.classList.remove('hidden');
-    }
 
     function selectDefaultAvatar(type) {
         const imagePreview = document.getElementById('imagePreview');
         const uploadArea = document.getElementById('uploadArea');
         const avatarOptions = document.getElementById('avatarOptions');
-
+        const fileInput = document.getElementById('fileInput');
+        const imageUrlInput = document.getElementById('ImageUrl');
         // Yükleme alanını gizle ve avatar seçeneklerini göster
         imagePreview.classList.add('hidden');
         uploadArea.classList.add('hidden');
         avatarOptions.classList.remove('hidden');
 
         // Varsayılan avatar seçildiğinde ImageUrl alanını temizle
-        document.getElementById('ImageUrl').value = '';
-    }
+        if (imageUrlInput) {
+            imageUrlInput.value = '';
+        }
+        if (fileInput) {
+            fileInput.value = '';
+        }    }
 
     // Sürükle bırak fonksiyonelliği
     const uploadArea = document.getElementById('uploadArea');

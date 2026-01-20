@@ -2,6 +2,7 @@
 
 using Medinova.Attributes;
 using Medinova.Models;
+using Medinova.Services;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -13,7 +14,9 @@ namespace Medinova.Areas.Admin.Controllers
     [CustomAuthorize("Admin")]
     public class AboutController : Controller
     {
-        MedinovaContext context= new MedinovaContext();
+      
+        private readonly MedinovaContext context = new MedinovaContext();
+        private readonly AwsImageUploadService imageUploadService = new AwsImageUploadService();
         public ActionResult Index()
         {
             var abouts=context.Abouts.ToList();
@@ -24,8 +27,10 @@ namespace Medinova.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CreateAbout(About about)
+        public ActionResult CreateAbout(About about, HttpPostedFileBase ImageFile)
         {
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                about.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
             context.Abouts.Add(about);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -37,12 +42,15 @@ namespace Medinova.Areas.Admin.Controllers
             return View(abouts);
         }
         [HttpPost]
-        public ActionResult UpdateAbout(About about)
+        public ActionResult UpdateAbout(About about, HttpPostedFileBase ImageFile)
         {
             var value = context.Abouts.Find(about.AboutId);
             value.Title= about.Title;
             value.Description=about.Description;
-            value.ImageUrl=about.ImageUrl;
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                value.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
+            else
+                value.ImageUrl = about.ImageUrl;
             context.SaveChanges();
             return RedirectToAction("Index");
 

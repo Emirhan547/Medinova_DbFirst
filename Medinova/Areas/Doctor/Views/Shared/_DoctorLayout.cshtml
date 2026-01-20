@@ -1,23 +1,128 @@
 ﻿<!DOCTYPE html>
-<html lang="tr">
+
+<html class="light" lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Medinova Doktor Paneli</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#12b8de",
+                        "navy-accent": "#354F8E",
+                        "background-light": "#f5f7f9",
+                        "background-dark": "#111827",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .soft-shadow {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-active {
+            background-color: rgba(18, 184, 222, 0.1);
+            border-right: 3px solid #12b8de;
+        }
+    </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen">
-    <header class="bg-white shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-            <div>
-                <h1 class="text-xl font-semibold">Doktor Paneli</h1>
-                <p class="text-sm text-slate-500">@Session["fullName"]</p>
-            </div>
-            <a class="text-sm font-medium text-blue-600 hover:text-blue-700" href="@Url.Action("Logout", "Account", new { area = "" })">Çıkış Yap</a>
-        </div>
-    </header>
-    <main class="max-w-6xl mx-auto px-6 py-8">
-        @RenderBody()
-    </main>
+
+                <body class="bg-background-light text-[#0d191b] font-display min-h-screen">
+                    <div class="flex flex-col h-screen">
+                        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-30">
+                            <div class="flex items-center gap-10">
+                                <div class="flex items-center gap-3">
+                                    <div class="size-9 bg-primary flex items-center justify-center rounded-lg text-white">
+                                        <span class="material-symbols-outlined text-2xl">medical_services</span>
+                                    </div>
+                                    <h2 class="text-navy-accent text-xl font-extrabold tracking-tight">Medinova</h2>
+                                </div>
+                                <div class="relative w-96 hidden md:block">
+                                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+                                    <input class="w-full bg-gray-100 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Hasta, rapor veya not ara..." type="text" />
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg relative">
+                                    <span class="material-symbols-outlined">notifications</span>
+                                    <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+                                </button>
+                                <div class="h-8 w-px bg-gray-200 mx-2"></div>
+                                <div class="flex items-center gap-3">
+                                    <div class="text-right hidden sm:block">
+                                        <p class="text-sm font-bold text-navy-accent leading-none">@Session["fullName"]</p>
+                                        <p class="text-xs text-primary font-medium mt-1">Doktor Paneli</p>
+                                    </div>
+                                    <div class="size-10 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary">person</span>
+                                    </div>
+                                </div>
+                                <a class="text-xs font-semibold text-gray-500 hover:text-navy-accent" href="@Url.Action("Logout", "Account", new { area = "" })">Çıkış Yap</a>
+                            </div>
+                        </header>
+                        <nav class="bg-white border-b border-gray-200 px-8">
+                            <div class="flex gap-8 overflow-x-auto no-scrollbar">
+                                <a class="py-4 border-b-2 border-primary text-primary font-bold text-sm" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">Dashboard</a>
+                                <a class="py-4 border-b-2 border-transparent text-gray-500 font-semibold text-sm hover:text-navy-accent" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">Randevular</a>
+                                <a class="py-4 border-b-2 border-transparent text-gray-500 font-semibold text-sm hover:text-navy-accent" href="#">Doktor Profili</a>
+                                <a class="py-4 border-b-2 border-transparent text-gray-500 font-semibold text-sm hover:text-navy-accent" href="#">Raporlar</a>
+                            </div>
+                        </nav>
+                        <div class="flex flex-1 overflow-hidden">
+                            <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col p-4">
+                                <div class="space-y-1">
+                                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-4">İşlemler</p>
+                                    <a class="flex items-center gap-3 px-3 py-3 text-gray-600 hover:bg-gray-50 rounded-lg group transition-all" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">
+                                        <span class="material-symbols-outlined text-gray-400 group-hover:text-primary">calendar_month</span>
+                                        <span class="text-sm font-semibold">Takvim</span>
+                                    </a>
+                                    <a class="flex items-center gap-3 px-3 py-3 text-gray-600 hover:bg-gray-50 rounded-lg group transition-all" href="#">
+                                        <span class="material-symbols-outlined text-gray-400 group-hover:text-primary">groups</span>
+                                        <span class="text-sm font-semibold">Hasta Listesi</span>
+                                    </a>
+                                    <a class="flex items-center gap-3 px-3 py-3 sidebar-active text-navy-accent rounded-lg transition-all" href="#">
+                                        <span class="material-symbols-outlined text-primary">person</span>
+                                        <span class="text-sm font-bold">Profil Ayarları</span>
+                                    </a>
+                                    <a class="flex items-center gap-3 px-3 py-3 text-gray-600 hover:bg-gray-50 rounded-lg group transition-all" href="#">
+                                        <span class="material-symbols-outlined text-gray-400 group-hover:text-primary">mail</span>
+                                        <span class="text-sm font-semibold">Mesajlar</span>
+                                    </a>
+                                </div>
+                                <div class="mt-auto p-4 bg-primary/5 rounded-xl border border-primary/10">
+                                    <p class="text-xs font-bold text-navy-accent mb-2">Profil Tamamlama</p>
+                                    <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mb-2">
+                                        <div class="bg-primary h-full" style="width: 80%"></div>
+                                    </div>
+                                    <p class="text-[10px] text-gray-500">%80 tamamlandı. Lisans belgesi ekleyin.</p>
+                                </div>
+                            </aside>
+                            <main class="flex-1 overflow-y-auto bg-background-light p-8">
+                                @RenderBody()
+                            </main>
+                        </div>
+    
+    </div>
 </body>
 </html>

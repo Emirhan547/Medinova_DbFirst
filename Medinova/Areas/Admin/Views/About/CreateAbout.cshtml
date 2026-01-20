@@ -23,7 +23,7 @@
 
             <div class="grid grid-cols-1 gap-6">
                 <!-- Başlık -->
-                <div>
+                <div data-image-upload>
                     <label for="Title" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                         Başlık <span class="text-red-500">*</span>
                     </label>
@@ -51,11 +51,11 @@
                     </label>
 
                     <!-- Resim Önizleme -->
-                    <div id="imagePreview" class="mb-4 hidden">
+                    <div id="imagePreview" class="mb-4 hidden" data-image-upload-preview>
                         <div class="relative inline-block">
                             <div class="size-40 rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600"
-                                 id="previewImage"></div>
-                            <button type="button" onclick="removeImage()"
+                                  id="previewImage" data-image-upload-preview-image></div>
+                            <button type="button" data-image-upload-remove
                                     class="absolute -top-2 -right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
                                 <span class="material-symbols-outlined !text-lg">close</span>
                             </button>
@@ -64,15 +64,14 @@
 
                     <!-- Dosya Yükleme -->
                     <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                         onclick="document.getElementById('fileInput').click()"
-                         id="uploadArea">
+                         id="uploadArea" data-image-upload-area>
                         <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
                         <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
                             <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yüklemek için tıklayın</span> veya sürükleyip bırakın
                         </p>
                         <p class="text-xs text-slate-500 dark:text-slate-500">PNG, JPG veya GIF (MAX. 5MB)</p>
                         <input type="file" id="fileInput" name="ImageFile" accept="image/*"
-                               class="hidden" onchange="previewImage(event)">
+                              class="hidden" data-image-upload-input>
                     </div>
 
                     <!-- Veya URL Girişi -->
@@ -80,7 +79,8 @@
                         <p class="text-sm text-slate-500 dark:text-slate-400 mb-2 text-center">Veya resim URL'si girin</p>
                         <input type="url" id="ImageUrl" name="ImageUrl"
                                class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                               placeholder="https://example.com/image.jpg">
+                                                              placeholder="https://example.com/image.jpg"
+                               data-image-upload-url>
                     </div>
                 </div>
             </div>
@@ -101,60 +101,3 @@
     </div>
 </div>
 
-<script>
-    function previewImage(event) {
-        const file = event.target.files[0];
-        const preview = document.getElementById('previewImage');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadArea = document.getElementById('uploadArea');
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.style.backgroundImage = `url('${e.target.result}')`;
-                imagePreview.classList.remove('hidden');
-                uploadArea.classList.add('hidden');
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function removeImage() {
-        const fileInput = document.getElementById('fileInput');
-        const imagePreview = document.getElementById('imagePreview');
-        const uploadArea = document.getElementById('uploadArea');
-
-        fileInput.value = '';
-        imagePreview.classList.add('hidden');
-        uploadArea.classList.remove('hidden');
-    }
-
-    // Sürükle bırak işlevselliği
-    const uploadArea = document.getElementById('uploadArea');
-
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('border-primary', 'bg-primary/5');
-    });
-
-    uploadArea.addEventListener('dragleave', () => {
-        uploadArea.classList.remove('border-primary', 'bg-primary/5');
-    });
-
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('border-primary', 'bg-primary/5');
-
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            const fileInput = document.getElementById('fileInput');
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            fileInput.files = dataTransfer.files;
-
-            // Önizlemeyi tetikle
-            const event = new Event('change');
-            fileInput.dispatchEvent(event);
-        }
-    });
-</script>

@@ -26,7 +26,8 @@ namespace Medinova.Areas.Admin.Controllers
 
                 // 🔹 Genel istatistikler
                 var totalDoctors = context.Doctors.Count();
-                var totalPatients = context.Users.Count();
+                var totalPatients = context.Users
+                                    .Count(u => u.UserRoles.Any(ur => ur.Role.RoleName == "Patient"));
                 var totalAppointments = context.Appointments.Count();
 
                 var todayAppointments = context.Appointments.Count(a =>

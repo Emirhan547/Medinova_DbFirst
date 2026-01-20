@@ -1,5 +1,6 @@
 ﻿using Medinova.Attributes;
 using Medinova.Models;
+using Medinova.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace Medinova.Areas.Admin.Controllers
     [CustomAuthorize("Admin")]
     public class TestimonialController : Controller
     {
-        MedinovaContext context=new MedinovaContext();
+        private readonly MedinovaContext context = new MedinovaContext();
+        private readonly AwsImageUploadService imageUploadService = new AwsImageUploadService();
         public ActionResult Index()
         {
             var testimonials=context.Testimonials.ToList();
@@ -33,8 +35,10 @@ namespace Medinova.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CreateTestimonial(Testimonial testimonial)
+        public ActionResult CreateTestimonial(Testimonial testimonial, HttpPostedFileBase ImageFile)
         {
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                testimonial.ImageUrl = imageUploadService.UploadImage(ImageFile, "testimonials");
             context.Testimonials.Add(testimonial);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -46,11 +50,14 @@ namespace Medinova.Areas.Admin.Controllers
             return View(testimonial);
         }
         [HttpPost]
-        public ActionResult UpdateTestimonial(Testimonial testimonial)
+        public ActionResult UpdateTestimonial(Testimonial testimonial, HttpPostedFileBase ImageFile)
         {
             var values=context.Testimonials.Find(testimonial.TestimonialId);
             values.Comment = testimonial.Comment;
-            values.ImageUrl = testimonial.ImageUrl;
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                values.ImageUrl = imageUploadService.UploadImage(ImageFile, "testimonials");
+            else
+                values.ImageUrl = testimonial.ImageUrl;
             values.FullName = testimonial.FullName;
             values.Profession = testimonial.Profession;
             context.SaveChanges();

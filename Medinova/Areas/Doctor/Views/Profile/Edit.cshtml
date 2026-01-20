@@ -1,0 +1,92 @@
+﻿@model Medinova.Dtos.Profiles.DoctorProfileDto
+@{
+    ViewBag.Title = "Profilimi Düzenle";
+    Layout = "~/Areas/Doctor/Views/Shared/_DoctorLayout.cshtml";
+}
+
+<div class="bg-white rounded-xl soft-shadow p-6 border border-gray-200">
+    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-extrabold text-navy-accent">Profilimi Düzenle</h1>
+            <p class="text-sm text-gray-500">Uzmanlık ve profil bilgilerinizin görünümünü yönetin.</p>
+        </div>
+        <span class="inline-flex items-center rounded-full border border-primary px-3 py-1 text-xs font-bold text-primary">Doktor</span>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            @TempData["Success"]
+        </div>
+    }
+
+    @Html.ValidationSummary(true, "", new { @class = "text-sm text-red-600 mb-4" })
+
+    @using (Html.BeginForm("Edit", "Profile", new { area = "Doctor" }, FormMethod.Post, new { @class = "grid gap-6" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="grid gap-4 md:grid-cols-2">
+            <div>
+                <label class="text-xs font-bold uppercase text-gray-400">Ad</label>
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" })
+                @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-xs text-red-600" })
+            </div>
+            <div>
+                <label class="text-xs font-bold uppercase text-gray-400">Soyad</label>
+                @Html.TextBoxFor(m => m.LastName, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" })
+                @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-xs text-red-600" })
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-xs font-bold uppercase text-gray-400">Kullanıcı Adı</label>
+                @Html.TextBoxFor(m => m.UserName, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" })
+                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-xs text-red-600" })
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-xs font-bold uppercase text-gray-400">Departman</label>
+                <input type="text" class="mt-1 w-full rounded-lg border-gray-200 text-sm bg-gray-50" value="@Model.DepartmentName" readonly />
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-xs font-bold uppercase text-gray-400">Profil Görseli URL</label>
+                @Html.TextBoxFor(m => m.ImageUrl, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary", placeholder = "https://..." })
+                @Html.ValidationMessageFor(m => m.ImageUrl, "", new { @class = "text-xs text-red-600" })
+            </div>
+            <div class="md:col-span-2">
+                <label class="text-xs font-bold uppercase text-gray-400">Kısa Biyografi</label>
+                @Html.TextAreaFor(m => m.Description, 5, 0, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary", placeholder = "Hastalarınıza kendinizi tanıtın." })
+                @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-xs text-red-600" })
+            </div>
+        </div>
+
+        <div class="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <h2 class="text-sm font-bold text-navy-accent">Şifre Güncelle</h2>
+            <p class="text-xs text-gray-500 mb-4">Şifrenizi değiştirmek için mevcut şifrenizi doğrulayın.</p>
+            <div class="grid gap-4 md:grid-cols-3">
+                <div>
+                    <label class="text-xs font-bold uppercase text-gray-400">Mevcut Şifre</label>
+                    @Html.PasswordFor(m => m.CurrentPassword, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" })
+                    @Html.ValidationMessageFor(m => m.CurrentPassword, "", new { @class = "text-xs text-red-600" })
+                </div>
+                <div>
+                    <label class="text-xs font-bold uppercase text-gray-400">Yeni Şifre</label>
+                    @Html.PasswordFor(m => m.NewPassword, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" })
+                    @Html.ValidationMessageFor(m => m.NewPassword, "", new { @class = "text-xs text-red-600" })
+                </div>
+                <div>
+                    <label class="text-xs font-bold uppercase text-gray-400">Yeni Şifre (Tekrar)</label>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "mt-1 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" })
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-xs text-red-600" })
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
+            <a class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"
+               href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">
+                Panele Dön
+            </a>
+            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90">
+                Bilgileri Kaydet
+            </button>
+        </div>
+    }
+</div>

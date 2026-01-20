@@ -1,5 +1,6 @@
 ﻿using Medinova.Attributes;
 using Medinova.Models;
+using Medinova.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,8 @@ namespace Medinova.Areas.Admin.Controllers
     [CustomAuthorize("Admin")]
     public class BannerController : Controller
     {
-       MedinovaContext context=new MedinovaContext();
+        private readonly MedinovaContext context = new MedinovaContext();
+        private readonly AwsImageUploadService imageUploadService = new AwsImageUploadService();
         public ActionResult Index()
         {
             var banners=context.Banners.ToList();
@@ -24,9 +26,10 @@ namespace Medinova.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public ActionResult CreateBanner(Banner banner)
+        public ActionResult CreateBanner(Banner banner, HttpPostedFileBase ImageFile)
         {
-            context.Banners.Add(banner);
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                banner.ImageUrl = imageUploadService.UploadImage(ImageFile, "banners"); context.Banners.Add(banner);
             context.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -37,12 +40,15 @@ namespace Medinova.Areas.Admin.Controllers
             return View(banners);
         }
         [HttpPost]
-        public ActionResult UpdateBanner(Banner banner)
+        public ActionResult UpdateBanner(Banner banner, HttpPostedFileBase ImageFile)
         {
             var values=context.Banners.Find(banner.BannerId);
             values.Description = banner.Description;
             values.Title = banner.Title;
-            values.ImageUrl = banner.ImageUrl;
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+                values.ImageUrl = imageUploadService.UploadImage(ImageFile, "banners");
+            else
+                values.ImageUrl = banner.ImageUrl;
             context.SaveChanges();
             return RedirectToAction("Index");
         }
