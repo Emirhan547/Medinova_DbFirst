@@ -25,7 +25,12 @@
                             <div class="bg-primary bg-opacity-10 p-3 rounded mt-2">
                                 <strong>AI:</strong> @conv.AIResponse
                             </div>
-                            <small class="text-muted">@conv.CreatedDate.ToString("dd MMM HH:mm")</small>
+                            <small class="text-muted">
+                                @(conv.CreatedDate.HasValue
+        ? conv.CreatedDate.Value.ToString("dd MMM HH:mm")
+        : "")
+                            </small>
+
                         </div>
                     }
                 }
@@ -55,24 +60,55 @@
     </div>
 </div>
 </div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="chatErrorToast" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-triangle-exclamation me-2 text-danger"></i>
+            <strong class="me-auto">Hata</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="chatErrorToastBody"></div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    function showErrorToast(message) {
+        const toastBody = $('#chatErrorToastBody');
+        toastBody.text(message);
+        const toastEl = document.getElementById('chatErrorToast');
+        if (window.bootstrap && toastEl) {
+            const toast = bootstrap.Toast.getOrCreateInstance(toastEl);
+            toast.show();
+        } else {
+            alert(message);
+        }
+    }
+
+    function formatResponseText(text) {
+        const escaped = $('<div>').text(text).html();
+        return escaped.replace(/\n/g, '<br>');
+    }
+
     function askQuestion() {
         const question = $('#questionInput').val().trim();
         if (!question) {
-            alert('Lütfen bir soru girin');
+          
+            showErrorToast('Lütfen bir soru girin.');
             return;
         }
 
         // Add user message to chat
+        $('#chatContainer .text-center').remove();
         $('#chatContainer').append(`
-            <div class="mb-3">
+          
+            <div class="mb-3 chat-message">
                 <div class="bg-light p-3 rounded">
                     <strong>Siz:</strong> ${question}
                 </div>
                 <div class="bg-primary bg-opacity-10 p-3 rounded mt-2">
-                    <strong>AI:</strong> <span class="spinner-border spinner-border-sm"></span> Düşünüyorum...
+                    
+                    <strong>AI:</strong> <span class="ai-response-text"><span class="spinner-border spinner-border-sm"></span> Düşünüyorum...</span>
                 </div>
             </div>
         `);
@@ -85,14 +121,22 @@
             type: 'POST',
             data: { question: question },
             success: function(result) {
+                const latestMessage = $('#chatContainer .chat-message').last().find('.ai-response-text');
                 if (result.success) {
-                    location.reload();
+               
+                    latestMessage.html(formatResponseText(result.response || 'Yanıt alınamadı.'));
                 } else {
-                    alert('Hata: ' + result.message);
+                 
+                    latestMessage.text('Yanıt alınamadı.');
+                    showErrorToast(result.message || 'AI yanıtı alınırken bir hata oluştu.');
                 }
+                $('#chatContainer').scrollTop($('#chatContainer')[0].scrollHeight);
             },
             error: function() {
-                alert('Bir hata oluştu');
+               
+                $('#chatContainer .chat-message').last().find('.ai-response-text').text('Yanıt alınamadı.');
+                showErrorToast('Sunucuya ulaşılamadı. Lütfen bağlantınızı kontrol edip tekrar deneyin.');
+                $('#chatContainer').scrollTop($('#chatContainer')[0].scrollHeight);
             }
         });
     }

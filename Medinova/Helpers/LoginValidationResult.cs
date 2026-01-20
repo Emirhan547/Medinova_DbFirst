@@ -58,26 +58,6 @@ namespace Medinova.Helpers
             return new LoginValidationResult(user, userRole);
         }
 
-        public static void EnsureDoctorLink(MedinovaContext context, User user)
-        {
-            if (context == null)
-                throw new ArgumentNullException(nameof(context));
-
-            if (user == null)
-                return;
-
-            var userId = user.UserId;
-            var existingDoctor = context.Doctors.FirstOrDefault(d => d.UserId == userId);
-            if (existingDoctor != null)
-                return;
-
-            var fullName = $"{user.FirstName} {user.LastName}".Trim();
-            var doctor = context.Doctors.FirstOrDefault(d => !d.UserId.HasValue && d.FullName == fullName);
-            if (doctor == null)
-                return;
-
-            doctor.UserId = userId;
-            context.SaveChanges();
-        }
+       
     }
 }

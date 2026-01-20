@@ -46,13 +46,13 @@ namespace Medinova.Attributes
                 var returnUrl = HttpUtility.UrlEncode(
                     filterContext.HttpContext.Request.RawUrl ?? "/"
                 );
-
+                var area = filterContext.RouteData.DataTokens["area"] as string ?? string.Empty;
                 filterContext.Result = new RedirectToRouteResult(
                     new System.Web.Routing.RouteValueDictionary(new
                     {
                         controller = "Account",
                         action = "Login",
-                        area = "",
+                        area = "area",
                         returnUrl = returnUrl
                     })
                 );

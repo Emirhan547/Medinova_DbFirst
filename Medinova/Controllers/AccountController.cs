@@ -4,6 +4,7 @@ using Medinova.Models;
 using Serilog;
 using System;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 
@@ -44,7 +45,28 @@ namespace Medinova.Controllers
             var user = loginResult.User;
             var userRole = loginResult.RoleName;
 
-            FormsAuthentication.SetAuthCookie(user.UserName, false);
+            // 🔐 ROLE BİLGİSİ AUTH COOKIE’YE YAZILIYOR
+            var ticket = new FormsAuthenticationTicket(
+                1,
+                user.UserName,
+                DateTime.Now,
+                DateTime.Now.AddHours(8),
+                false,
+                userRole // 👈 ROLE BURADA
+            );
+
+            string encryptedTicket = FormsAuthentication.Encrypt(ticket);
+
+            var authCookie = new HttpCookie(
+                FormsAuthentication.FormsCookieName,
+                encryptedTicket
+            )
+            {
+                HttpOnly = true
+            };
+
+            Response.Cookies.Add(authCookie);
+
             Session["userId"] = user.UserId;
             Session["userName"] = user.UserName;
             Session["fullName"] = user.FirstName + " " + user.LastName;

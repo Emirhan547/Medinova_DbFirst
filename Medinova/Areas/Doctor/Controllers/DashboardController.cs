@@ -20,24 +20,38 @@ namespace Medinova.Areas.Doctor.Controllers
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
-            // 🔥 EF burada biter
+            // 🩺 Doctor kaydını BUL ya da OLUŞTUR (EDMX FIX)
             var doctor = context.Doctors
                 .ToList()
                 .FirstOrDefault(d => d.UserId == userId.Value);
 
             if (doctor == null)
-                return RedirectToAction("Login", "Account", new { area = "" });
+            {
+                var user = context.Users.Find(userId.Value);
+                if (user == null)
+                    return RedirectToAction("Logout", "Account", new { area = "" });
 
-            var today = DateTime.Today;
+                doctor = new Models.Doctor
+                {
+                    UserId = user.UserId,
+                    FullName = (user.FirstName + " " + user.LastName).Trim()
+                };
 
-            // ⚠ EF DateTime karşılaştırma fix
+                context.Doctors.Add(doctor);
+                context.SaveChanges();
+            }
+
+            var startDate = DateTime.Today;
+            var endDate = startDate.AddDays(1);
+
             var todayAppointments = context.Appointments
                 .Where(a => a.DoctorId == doctor.DoctorId &&
-                            a.AppointmentDate >= today &&
-                            a.AppointmentDate < today.AddDays(1) &&
+                            a.AppointmentDate >= startDate &&
+                            a.AppointmentDate < endDate &&
                             a.Status == "Active")
                 .OrderBy(a => a.AppointmentTime)
                 .ToList();
+
 
             var overview = new DoctorAppointmentOverviewDto
             {
@@ -48,27 +62,8 @@ namespace Medinova.Areas.Doctor.Controllers
             ViewBag.TodayAppointments = todayAppointments;
             ViewBag.TotalToday = todayAppointments.Count;
 
-            var nextWeek = today.AddDays(7);
-
-            var upcomingCount = context.Appointments
-                .Count(a => a.DoctorId == doctor.DoctorId &&
-                            a.AppointmentDate > today &&
-                            a.AppointmentDate <= nextWeek &&
-                            a.Status == "Active");
-
-            ViewBag.UpcomingCount = upcomingCount;
-
-            var totalPatients = context.Appointments
-                .Where(a => a.DoctorId == doctor.DoctorId)
-                .Select(a => a.PatientId)
-                .Distinct()
-                .Count();
-
-            ViewBag.TotalPatients = totalPatients;
-
             return View(overview);
         }
-
 
         public ActionResult Appointments()
         {
@@ -76,12 +71,9 @@ namespace Medinova.Areas.Doctor.Controllers
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
-            var doctor = context.Doctors
-                .ToList()
-                .FirstOrDefault(d => d.UserId == userId.Value);
-
+            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId.Value);
             if (doctor == null)
-                return RedirectToAction("Login", "Account", new { area = "" });
+                return RedirectToAction("Index");
 
             var appointments = context.Appointments
                 .Where(a => a.DoctorId == doctor.DoctorId)
@@ -91,7 +83,6 @@ namespace Medinova.Areas.Doctor.Controllers
 
             return View(appointments);
         }
-
 
         [HttpPost]
         public async Task<ActionResult> CancelAppointment(int id, string reason)
@@ -125,7 +116,10 @@ namespace Medinova.Areas.Doctor.Controllers
             appointment.CancellationReason = reason;
             appointment.ModifiedDate = DateTime.Now;
             context.SaveChanges();
-            Trace.WriteLine($"Appointment {appointment.AppointmentId} cancelled via {source} at {appointment.ModifiedDate:O}.");
+
+            Trace.WriteLine(
+                $"Appointment {appointment.AppointmentId} cancelled via {source} at {appointment.ModifiedDate:O}."
+            );
         }
 
         private async Task SendCancellationEmail(Appointment appointment)
