@@ -7,14 +7,18 @@ using System.Web.Mvc;
 namespace Medinova.Areas.Doctor.Controllers
 {
     [CustomAuthorize("Doctor")]
-    public class PatientsController : Controller
+    public class UserController : Controller
     {
         private readonly MedinovaContext context = new MedinovaContext();
 
         public ActionResult Index()
         {
-            var userId = (int)Session["userId"];
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId);
+            int userId = (int)Session["userId"];
+
+            // 🔥 EF6 HATASINI KESİN BİTSATIRİREN 
+            var doctor = context.Doctors
+                .AsEnumerable()
+                .FirstOrDefault(d => d.UserId == userId);
 
             if (doctor == null)
                 return HttpNotFound();
@@ -41,8 +45,12 @@ namespace Medinova.Areas.Doctor.Controllers
 
         public ActionResult Details(int id)
         {
-            var userId = (int)Session["userId"];
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId);
+            int userId = (int)Session["userId"];
+
+            // 🔥 AYNI ŞEKİLDE BURADA DA
+            var doctor = context.Doctors
+                .AsEnumerable()
+                .FirstOrDefault(d => d.UserId == userId);
 
             if (doctor == null)
                 return HttpNotFound();

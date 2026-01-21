@@ -30,9 +30,7 @@ namespace Medinova.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-
             Logger.Information("{UserName} için giriş denemesi", model.UserName);
-
 
             var loginResult = AccountLoginService.ValidateCredentials(context, model);
             if (!loginResult.IsSuccess)
@@ -41,48 +39,58 @@ namespace Medinova.Controllers
                 ModelState.AddModelError("", loginResult.ErrorMessage);
                 return View(model);
             }
-           
+
             var user = loginResult.User;
             var userRole = loginResult.RoleName;
 
-            // 🔐 ROLE BİLGİSİ AUTH COOKIE’YE YAZILIYOR
+            // 🔐 AUTH COOKIE
             var ticket = new FormsAuthenticationTicket(
                 1,
                 user.UserName,
                 DateTime.Now,
                 DateTime.Now.AddHours(8),
                 false,
-                userRole // 👈 ROLE BURADA
+                userRole
             );
 
             string encryptedTicket = FormsAuthentication.Encrypt(ticket);
 
-            var authCookie = new HttpCookie(
+            Response.Cookies.Add(new HttpCookie(
                 FormsAuthentication.FormsCookieName,
                 encryptedTicket
             )
             {
                 HttpOnly = true
-            };
-
-            Response.Cookies.Add(authCookie);
+            });
 
             Session["userId"] = user.UserId;
             Session["userName"] = user.UserName;
             Session["fullName"] = user.FirstName + " " + user.LastName;
             Session["userRole"] = userRole;
+
+            // ✅ EF6 UYUMLU DÜZELTME
             if (string.Equals(userRole, "Doctor", StringComparison.OrdinalIgnoreCase))
             {
-                var doctor = context.Doctors.FirstOrDefault(d => d.UserId == user.UserId);
+                int userId = user.UserId;
+
+                var doctor = context.Doctors
+                    .AsEnumerable() // 🔥 LINQ to Entities HATASI BURADA BİTER
+                    .FirstOrDefault(d => d.UserId == userId);
+
                 Session["profileImageUrl"] = doctor?.ImageUrl;
             }
             else
             {
                 Session["profileImageUrl"] = user.ImageUrl;
             }
-            Logger.Information("Kullanıcı giriş yaptı {UserId} {UserName} rol {UserRole}", user.UserId, user.UserName, userRole);
 
-            // Log activity
+            Logger.Information(
+                "Kullanıcı giriş yaptı {UserId} {UserName} rol {UserRole}",
+                user.UserId,
+                user.UserName,
+                userRole
+            );
+
             LogActivity(user.UserId, "Kullanıcı Girişi", "Account", null);
 
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -94,7 +102,7 @@ namespace Medinova.Controllers
                     return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                 case "Doctor":
                     return RedirectToAction("Index", "Dashboard", new { area = "Doctor" });
-                case "Patient":
+                case "Patients":
                     return RedirectToAction("Index", "Dashboard", new { area = "Patient" });
                 default:
                     return RedirectToAction("Index", "Default");
@@ -118,7 +126,6 @@ namespace Medinova.Controllers
 
             if (context.Users.Any(u => u.UserName == model.UserName))
             {
-                Logger.Warning("Mevcut kullanıcı adı nedeniyle kayıt engellendi {UserName}", model.UserName);
                 ModelState.AddModelError("UserName", "Bu kullanıcı adı zaten kullanılıyor");
                 return View(model);
             }
@@ -126,7 +133,7 @@ namespace Medinova.Controllers
             var user = new User
             {
                 UserName = model.UserName,
-                Password = model.Password, // Gerçek projede hash'leyin!
+                Password = model.Password,
                 FirstName = model.FirstName,
                 LastName = model.LastName
             };
@@ -134,7 +141,6 @@ namespace Medinova.Controllers
             context.Users.Add(user);
             context.SaveChanges();
 
-            // Assign Patient role by default
             var patientRole = context.Roles.FirstOrDefault(r => r.RoleName == "Patient");
             if (patientRole != null)
             {
@@ -146,8 +152,6 @@ namespace Medinova.Controllers
                 context.SaveChanges();
             }
 
-            Logger.Information("Kullanıcı kaydı oluşturuldu {UserId} {UserName}", user.UserId, user.UserName);
-
             return RedirectToAction("Login");
         }
 
@@ -155,7 +159,6 @@ namespace Medinova.Controllers
         {
             if (Session["userId"] != null)
             {
-                Logger.Information("User logout {UserId} {UserName}", Session["userId"], Session["userName"]);
                 LogActivity((int)Session["userId"], "User Logout", "Account", null);
             }
 
@@ -184,7 +187,7 @@ namespace Medinova.Controllers
                 });
                 context.SaveChanges();
             }
-            catch { /* Silent fail for logging */ }
+            catch { }
         }
 
         protected override void Dispose(bool disposing)
@@ -193,6 +196,5 @@ namespace Medinova.Controllers
                 context.Dispose();
             base.Dispose(disposing);
         }
-        
     }
 }
