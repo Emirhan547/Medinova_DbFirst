@@ -2,6 +2,7 @@
 using Medinova.Dtos;
 using Medinova.Dtos.Profiles;
 using Medinova.Models;
+using Medinova.Services;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -24,7 +25,11 @@ namespace Medinova.Areas.Patient.Controllers
                 UserId = user.UserId,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                UserName = user.UserName
+                UserName = user.UserName,
+                ImageUrl = user.ImageUrl,
+                HeightCm = user.HeightCm,
+                WeightKg = user.WeightKg,
+                BloodType = user.BloodType
             };
 
             return View(model);
@@ -54,6 +59,22 @@ namespace Medinova.Areas.Patient.Controllers
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.UserName = model.UserName;
+            user.HeightCm = model.HeightCm;
+            user.WeightKg = model.WeightKg;
+            user.BloodType = model.BloodType;
+
+            if (model.ImageFile != null && model.ImageFile.ContentLength > 0)
+            {
+                var awsImageUploadService = new AwsImageUploadService();
+                var uploadedUrl = awsImageUploadService.UploadImage(model.ImageFile, "patients");
+                if (!string.IsNullOrWhiteSpace(uploadedUrl))
+                    user.ImageUrl = uploadedUrl;
+            }
+            else if (!string.IsNullOrWhiteSpace(model.ImageUrl))
+            {
+                user.ImageUrl = model.ImageUrl;
+            }
+
 
             if (!string.IsNullOrWhiteSpace(model.NewPassword))
                 user.Password = model.NewPassword;
@@ -62,7 +83,7 @@ namespace Medinova.Areas.Patient.Controllers
 
             Session["fullName"] = $"{user.FirstName} {user.LastName}";
             Session["userName"] = user.UserName;
-
+            Session["profileImageUrl"] = user.ImageUrl;
             TempData["Success"] = "Profil bilgileriniz güncellendi.";
             return RedirectToAction("Edit");
         }

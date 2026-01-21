@@ -17,7 +17,19 @@ namespace Medinova.Dtos
         [Required]
         [StringLength(100)]
         public string LastName { get; set; }
+        [Url]
+        public string ImageUrl { get; set; }
 
+        public HttpPostedFileBase ImageFile { get; set; }
+
+        [Range(30, 250, ErrorMessage = "Boy değeri 30-250 cm arasında olmalıdır.")]
+        public int? HeightCm { get; set; }
+
+        [Range(2, 500, ErrorMessage = "Kilo değeri 2-500 kg arasında olmalıdır.")]
+        public int? WeightKg { get; set; }
+
+        [StringLength(10)]
+        public string BloodType { get; set; }
         [Required]
         [StringLength(100)]
         public string UserName { get; set; }

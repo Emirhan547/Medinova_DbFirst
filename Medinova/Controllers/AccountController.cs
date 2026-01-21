@@ -71,7 +71,15 @@ namespace Medinova.Controllers
             Session["userName"] = user.UserName;
             Session["fullName"] = user.FirstName + " " + user.LastName;
             Session["userRole"] = userRole;
-
+            if (string.Equals(userRole, "Doctor", StringComparison.OrdinalIgnoreCase))
+            {
+                var doctor = context.Doctors.FirstOrDefault(d => d.UserId == user.UserId);
+                Session["profileImageUrl"] = doctor?.ImageUrl;
+            }
+            else
+            {
+                Session["profileImageUrl"] = user.ImageUrl;
+            }
             Logger.Information("Kullanıcı giriş yaptı {UserId} {UserName} rol {UserRole}", user.UserId, user.UserName, userRole);
 
             // Log activity

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web;
 
 namespace Medinova.Dtos.Profiles
 {
@@ -23,7 +24,7 @@ namespace Medinova.Dtos.Profiles
 
         [StringLength(500)]
         public string Description { get; set; }
-
+        public HttpPostedFileBase ImageFile { get; set; }
         [Url]
         public string ImageUrl { get; set; }
 

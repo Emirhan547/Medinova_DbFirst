@@ -4,6 +4,7 @@ using Medinova.Models;
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using System.Data.Entity;
 
 namespace Medinova.Areas.Patient.Controllers
 {
@@ -47,6 +48,7 @@ namespace Medinova.Areas.Patient.Controllers
             var userId = (int)Session["userId"];
 
             var appointments = context.Appointments
+                .Include(a => a.Doctor)
                 .Where(a => a.PatientId == userId)
                 .OrderByDescending(a => a.AppointmentDate)
                 .ThenByDescending(a => a.AppointmentTime)
@@ -54,6 +56,7 @@ namespace Medinova.Areas.Patient.Controllers
 
             return View(appointments);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

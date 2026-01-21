@@ -22,9 +22,36 @@
 
     @Html.ValidationSummary(true, "", new { @class = "text-sm text-red-600 mb-4" })
 
-    @using (Html.BeginForm("Edit", "Profile", new { area = "Patient" }, FormMethod.Post, new { @class = "grid gap-6" }))
+    @using (Html.BeginForm("Edit", "Profile", new { area = "Patient" }, FormMethod.Post, new { @class = "grid gap-6", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.ImageUrl)
+        <div class="flex flex-col gap-4 rounded-xl border border-[#e2e8f0] bg-background-light p-4 md:flex-row md:items-center">
+            <div class="flex items-center gap-4">
+                <div class="h-20 w-20 overflow-hidden rounded-full border border-primary/30 bg-white">
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="Profil görseli" class="h-full w-full object-cover" />
+                    }
+                    else
+                    {
+                        <div class="flex h-full w-full items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">person</span>
+                        </div>
+                    }
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-navy">Profil Görseli</p>
+                    <p class="text-xs text-navy/60">Güncel profil fotoğrafınızı yükleyin.</p>
+                </div>
+            </div>
+            <div class="flex-1">
+                <input type="file"
+                       name="ImageFile"
+                       accept="image/*"
+                       class="mt-2 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" />
+            </div>
+        </div>
         <div class="grid gap-4 md:grid-cols-2">
             <div>
                 <label class="text-xs font-bold uppercase text-navy/50">Ad</label>
@@ -42,7 +69,27 @@
                 @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-xs text-red-600" })
             </div>
         </div>
-
+        <div class="rounded-xl border border-[#e2e8f0] bg-background-light p-4">
+            <h2 class="text-sm font-bold text-navy">Sağlık Bilgileri</h2>
+            <p class="text-xs text-navy/60 mb-4">Doktorlarınızın görebileceği temel sağlık bilgilerinizi girin.</p>
+            <div class="grid gap-4 md:grid-cols-3">
+                <div>
+                    <label class="text-xs font-bold uppercase text-navy/50">Boy (cm)</label>
+                    @Html.TextBoxFor(m => m.HeightCm, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary", type = "number", min = "30", max = "250" })
+                    @Html.ValidationMessageFor(m => m.HeightCm, "", new { @class = "text-xs text-red-600" })
+                </div>
+                <div>
+                    <label class="text-xs font-bold uppercase text-navy/50">Kilo (kg)</label>
+                    @Html.TextBoxFor(m => m.WeightKg, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary", type = "number", min = "2", max = "500" })
+                    @Html.ValidationMessageFor(m => m.WeightKg, "", new { @class = "text-xs text-red-600" })
+                </div>
+                <div>
+                    <label class="text-xs font-bold uppercase text-navy/50">Kan Grubu</label>
+                    @Html.TextBoxFor(m => m.BloodType, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary", placeholder = "A+ / O- vb." })
+                    @Html.ValidationMessageFor(m => m.BloodType, "", new { @class = "text-xs text-red-600" })
+                </div>
+            </div>
+        </div>
         <div class="rounded-xl border border-[#e2e8f0] bg-background-light p-4">
             <h2 class="text-sm font-bold text-navy">Şifre Güncelle</h2>
             <p class="text-xs text-navy/60 mb-4">Şifrenizi değiştirmek istiyorsanız aşağıdaki alanları doldurun.</p>

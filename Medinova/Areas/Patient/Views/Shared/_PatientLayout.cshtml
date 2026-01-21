@@ -87,7 +87,9 @@
                 </button>
 
                 <div class="h-8 w-px bg-white/20"></div>
-
+                @{
+                    var profileImageUrl = Session["profileImageUrl"] as string;
+                }
                 <div class="flex items-center gap-3">
                     <div class="text-right">
                         <p class="text-sm font-semibold leading-none">
@@ -97,8 +99,15 @@
                             Hasta Paneli
                         </p>
                     </div>
-                    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-primary/50">
-                        <span class="material-symbols-outlined text-primary">person</span>
+                    <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white border-2 border-primary/50">
+                        @if (!string.IsNullOrWhiteSpace(profileImageUrl))
+                        {
+                            <img src="@profileImageUrl" alt="Profil görseli" class="h-full w-full object-cover" />
+                        }
+                        else
+                        {
+                            <span class="material-symbols-outlined text-primary">person</span>
+                        }
                     </div>
                 </div>
 

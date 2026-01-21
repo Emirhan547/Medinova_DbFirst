@@ -1,0 +1,64 @@
+﻿@model IList<Medinova.Models.Appointment>
+@using System.Linq
+
+@{
+    ViewBag.Title = "Randevularım";
+    Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
+}
+
+<div class="mb-8">
+    <h1 class="text-2xl font-extrabold text-navy">Randevularım</h1>
+    <p class="text-sm text-navy/60">Aldığınız tüm randevular ve durumları burada listelenir.</p>
+</div>
+
+<div class="rounded-xl bg-white p-6 shadow-sm border border-[#e2e8f0]">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-navy">Randevu Listesi</h2>
+        <a href="@Url.Action("Index", "Default", new { area = "" })#appointmentForm" class="text-xs font-bold text-primary hover:text-primary/80">Yeni Randevu Al</a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-[#e2e8f0] text-sm">
+                <thead class="bg-background-light text-navy/60">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Doktor</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Tarih</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Saat</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Durum</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#e2e8f0]">
+                    @foreach (var appointment in Model)
+                    {
+                        var statusLabel = appointment.Status ?? "Planlandı";
+                        var statusClass = statusLabel == "Cancelled" ? "text-red-600 bg-red-50" :
+                            statusLabel == "Completed" ? "text-emerald-600 bg-emerald-50" :
+                            "text-primary bg-primary/10";
+                        <tr>
+                            <td class="px-4 py-3 text-navy">
+                                @(appointment.Doctor != null ? appointment.Doctor.FullName : "-")
+                            </td>
+                            <td class="px-4 py-3 text-navy">
+                                @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : "-")
+                            </td>
+                            <td class="px-4 py-3 text-navy">
+                                @appointment.AppointmentTime
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold @statusClass">
+                                    @statusLabel
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-sm text-navy/60">Henüz randevunuz bulunmuyor.</p>
+    }
+</div>

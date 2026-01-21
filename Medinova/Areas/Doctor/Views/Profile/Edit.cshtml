@@ -22,9 +22,35 @@
 
     @Html.ValidationSummary(true, "", new { @class = "text-sm text-red-600 mb-4" })
 
-    @using (Html.BeginForm("Edit", "Profile", new { area = "Doctor" }, FormMethod.Post, new { @class = "grid gap-6" }))
+    @using (Html.BeginForm("Edit", "Profile", new { area = "Doctor" }, FormMethod.Post, new { @class = "grid gap-6", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
+        <div class="flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 md:flex-row md:items-center">
+            <div class="flex items-center gap-4">
+                <div class="size-20 overflow-hidden rounded-full border border-primary/30 bg-white">
+                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="Profil görseli" class="h-full w-full object-cover" />
+                    }
+                    else
+                    {
+                        <div class="flex h-full w-full items-center justify-center text-primary">
+                            <span class="material-symbols-outlined text-3xl">person</span>
+                        </div>
+                    }
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-navy-accent">Profil Görseli</p>
+                    <p class="text-xs text-gray-500">AWS üzerinden yeni bir fotoğraf yükleyin.</p>
+                </div>
+            </div>
+            <div class="flex-1">
+                <input type="file"
+                       name="ImageFile"
+                       accept="image/*"
+                       class="mt-2 w-full rounded-lg border-gray-200 text-sm focus:border-primary focus:ring-primary" />
+            </div>
+        </div>
         <div class="grid gap-4 md:grid-cols-2">
             <div>
                 <label class="text-xs font-bold uppercase text-gray-400">Ad</label>
