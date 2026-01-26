@@ -1,11 +1,11 @@
 ﻿using Amazon;
 using Amazon.S3;
 using Amazon.S3.Transfer;
+using Medinova.Helpers;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Configuration;
 
 namespace Medinova.Services
 {
@@ -18,10 +18,10 @@ namespace Medinova.Services
 
         public AwsImageUploadService()
         {
-            accessKey = WebConfigurationManager.AppSettings["AwsAccessKey"];
-            secretKey = WebConfigurationManager.AppSettings["AwsSecretKey"];
-            regionName = WebConfigurationManager.AppSettings["AwsRegion"];
-            bucketName = WebConfigurationManager.AppSettings["AwsBucketName"];
+            accessKey = Env.Get("MEDINOVA_AWS_ACCESS_KEY");
+            secretKey = Env.Get("MEDINOVA_AWS_SECRET_KEY");
+            regionName = Env.Get("MEDINOVA_AWS_REGION");
+            bucketName = Env.Get("MEDINOVA_AWS_BUCKET_NAME");
         }
 
         public string UploadImage(HttpPostedFileBase file, string folder)
@@ -33,12 +33,12 @@ namespace Medinova.Services
             var key = $"{folder}/{Guid.NewGuid():N}{extension}";
 
             using (var client = CreateClient())
+            using (var transferUtility = new TransferUtility(client))
             {
-                var transferUtility = new TransferUtility(client);
                 var request = new TransferUtilityUploadRequest
                 {
+                    BucketName = bucketName, // 🔥 ARTIK NULL DEĞİL
                     InputStream = file.InputStream,
-                    BucketName = bucketName,
                     Key = key,
                     ContentType = file.ContentType,
                     CannedACL = S3CannedACL.PublicRead

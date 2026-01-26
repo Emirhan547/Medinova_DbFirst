@@ -311,6 +311,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AccountAuthHelper.cs" />
+    <Compile Include="Helpers\Env.cs" />
     <Compile Include="Helpers\LoginValidationResult.cs" />
     <Compile Include="ML\AppointmentData.cs" />
     <Compile Include="Models\About.cs">
@@ -497,19 +498,33 @@
     <Content Include="Templates\Medinova-1.0.0\css\style.css" />
     <Content Include="Templates\Medinova-1.0.0\detail.html" />
     <Content Include="Templates\Medinova-1.0.0\hospital-website-template.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\about - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\about.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\blog-1 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\blog-1.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\blog-2 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\blog-2.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\blog-3 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\blog-3.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\hero - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\hero.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\price-1 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\price-1.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\price-2 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\price-2.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\price-3 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\price-3.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\price-4 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\price-4.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\team-1 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\team-1.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\team-2 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\team-2.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\team-3 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\team-3.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\testimonial-1 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\testimonial-1.jpg" />
+    <Content Include="Templates\Medinova-1.0.0\img\testimonial-2 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\testimonial-2.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\testimonial-3.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\user.jpg" />
