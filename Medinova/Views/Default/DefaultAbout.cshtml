@@ -5,7 +5,7 @@
 
         @if (Model?.About == null && (Model?.Items == null || !Model.Items.Any()))
         {
-            <p class="text-center">Henüz içerik yok</p>
+           <p class="text-center">Henüz içerik yok.</p>
         }
         else
         {
@@ -30,13 +30,12 @@
                     {
                         <div class="mb-4">
                             <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">
-                                About Us
+                                Hakkımızda
                             </h5>
                             <h1 class="display-4">@Model.About.Title</h1>
                         </div>
 
-                        <p>@Model.About.Description</p>
-                    }
+                        <p class="text-muted">@Model.About.Description</p>}
 
                     <div class="row g-3 pt-3">
                         @if (Model?.Items != null && Model.Items.Any())
@@ -44,7 +43,7 @@
                             foreach (var item in Model.Items)
                             {
                                 <div class="col-sm-3 col-6">
-                                    <div class="bg-light text-center rounded-circle py-4">
+                                    <div class="bg-light text-center rounded-circle py-4 shadow-sm">
                                         <i class="@item.Icon text-primary mb-3"></i>
                                         <h6 class="mb-0">@item.Name</h6>
                                     </div>
@@ -54,7 +53,7 @@
                         else
                         {
                             <div class="col-12">
-                                <p>Henüz içerik yok</p>
+                                <p>Henüz içerik yok.</p>
                             </div>
                         }
                     </div>

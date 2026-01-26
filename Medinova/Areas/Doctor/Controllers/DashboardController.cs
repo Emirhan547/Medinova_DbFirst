@@ -19,25 +19,38 @@ namespace Medinova.Areas.Doctor.Controllers
             var userId = Session["userId"] as int?;
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { area = "" });
+            var user = context.Users.Find(userId.Value);
+            if (user == null)
+                return RedirectToAction("Logout", "Account", new { area = "" });
 
+            var fullName = (user.FirstName + " " + user.LastName).Trim();
             // 🩺 Doctor kaydını BUL ya da OLUŞTUR (EDMX FIX)
             var doctor = context.Doctors
-                .ToList()
-                .FirstOrDefault(d => d.UserId == userId.Value);
+             .AsEnumerable()
+             .FirstOrDefault(d => d.UserId == userId.Value);
 
             if (doctor == null)
             {
-                var user = context.Users.Find(userId.Value);
-                if (user == null)
-                    return RedirectToAction("Logout", "Account", new { area = "" });
+                doctor = context.Doctors
+                    .AsEnumerable()
+                    .FirstOrDefault(d => string.Equals(d.FullName, fullName, StringComparison.OrdinalIgnoreCase));
 
-                doctor = new Models.Doctor
+                if (doctor == null)
                 {
-                    UserId = user.UserId,
-                    FullName = (user.FirstName + " " + user.LastName).Trim()
-                };
+                    doctor = new Models.Doctor
+                    {
+                        UserId = user.UserId,
+                        FullName = fullName
+                    };
+                    context.Doctors.Add(doctor);
+                }
+                else if (doctor.UserId != user.UserId)
+                {
+                    doctor.UserId = user.UserId;
+                }
+                
 
-                context.Doctors.Add(doctor);
+               
                 context.SaveChanges();
             }
 

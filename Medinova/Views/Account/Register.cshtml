@@ -4,38 +4,172 @@
 }
 
 <!DOCTYPE html>
-<html>
+
+<html class="light" lang="tr">
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>Kayıt Ol</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Medinova - Kayıt Ol</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1e5aa9",
+                        "accent-green": "#2BB673",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#121820",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
 </head>
-<body>
-    <div>
-        <div class="container">
-            <h4>Kayıt Ol</h4>
-            <form method="post">
-                @Html.AntiForgeryToken()
-                <label>Kullanıcı Adı</label>
-                @Html.TextBoxFor(x => x.UserName, new { @class = "form-control" })
-                <br />
-                <label>Ad</label>
-                @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control" })
-                <br />
-                <label>Soyad</label>
-                @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })
-                <br />
-                <label>Şifre</label>
-                @Html.PasswordFor(x => x.Password, new { @class = "form-control" })
-                <br />
-                <label>Şifre (Tekrar)</label>
-                @Html.PasswordFor(x => x.ConfirmPassword, new { @class = "form-control" })
-                <br />
-                <span class="text-danger">@Html.ValidationSummary()</span>
-                <button class="btn btn-primary">Kayıt Ol</button>
-                <a href="@Url.Action("Login", "Account")" class="btn btn-link">Giriş Yap</a>
-            </form>
-        </div>
-    </div>
-</body>
+
+                <body class="font-display bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 antialiased min-h-screen flex items-center justify-center p-0 md:p-4">
+                    <div class="w-full max-w-[1200px] h-screen md:h-[800px] bg-white dark:bg-slate-900 md:rounded-xl shadow-2xl overflow-hidden flex flex-col md:flex-row">
+                        <div class="hidden md:flex md:w-1/2 bg-primary relative overflow-hidden flex-col justify-between p-12">
+                            <div class="absolute inset-0 opacity-10 pointer-events-none">
+                                <svg height="100%" viewBox="0 0 400 400" width="100%" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="200" cy="200" fill="none" r="150" stroke="white" stroke-width="2"></circle>
+                                    <circle cx="200" cy="200" fill="none" r="100" stroke="white" stroke-width="1"></circle>
+                                    <line stroke="white" stroke-width="1" x1="0" x2="400" y1="200" y2="200"></line>
+                                    <line stroke="white" stroke-width="1" x1="200" x2="200" y1="0" y2="400"></line>
+                                </svg>
+                            </div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-2 mb-8">
+                                    <div class="bg-white p-2 rounded-lg">
+                                        <span class="material-icons-outlined text-primary text-3xl">medical_services</span>
+                                    </div>
+                                    <span class="text-white font-bold text-2xl tracking-tight">Medinova</span>
+                                </div>
+                                <h1 class="text-white text-4xl font-bold leading-tight mb-4">
+                                    Sağlıklı bir gelecek <br />sizinle başlar.
+                                </h1>
+                                <p class="text-blue-100 text-lg max-w-md">
+                                    Medinova ile randevularınızı yönetin, tahlil sonuçlarınıza anında ulaşın ve uzman doktorlarla iletişime geçin.
+                                </p>
+                            </div>
+                            <div class="relative z-10">
+                                <img alt="Healthcare Professional" class="rounded-xl shadow-lg border-4 border-white/10 w-full h-64 object-cover" data-alt="Modern medical professional using digital tablet" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQBGC8pOfwxk_w7PjROqDTb4rHRH6WQ1c1dbXZz0cgEm_K0KDq1deo17Swv-mTk7HWwhZ2H7oO1GMRnw_vhqJFDfuWTUbBeCjD26KnjqDf5KiqKGYUU5zRfQBsjfHyFvDjX4Vn9V1RL5DL-o127gh1mYaNhGK-vHPmm1NgmKHCfrx8G1N_amkSmSE8pVNw4uLSFw0B1nv5N5RDDq62bIoOrFc-OvIzYJbCmbu5sxK_SpGt0gsptIg6DAVXsnjVyZXp8lBeI_-7OUs" />
+                                <div class="mt-8 flex gap-4">
+                                    <div class="flex -space-x-3">
+                                        <div class="w-10 h-10 rounded-full border-2 border-primary bg-slate-200 overflow-hidden">
+                                            <img class="w-full h-full object-cover" data-alt="Doctor portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSB-QTQLittjCGXkHdyX2hqM2sMMbugqc7aN6MRCkJu-P6-fygs9CSP54Su136UF8nqj602Wydq7mvBaqvam9kXbaqrJ7xpspAfUZYHODr1B0A5UQpA2Eur8bC9Y1_Z75h3w0yirO1GrdixzSajyF-IOIfpOgJRalEyQPUPNEzhgAZKEmnHaY0EiC6ex-CZixelt4BrDo8kgqFHuA9wQoSvzMeuHRrxtkMDc4qNzQ8NdVaKsncFJT-esZ9JRTo0GgNOiRGnmEeQmw" />
+                                        </div>
+                                        <div class="w-10 h-10 rounded-full border-2 border-primary bg-slate-200 overflow-hidden">
+                                            <img class="w-full h-full object-cover" data-alt="Doctor portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4Sm6oxCgRwV2HJjSk0e-h1spJq0UcYylYVQ3KQU0akXPfsC4-RirSp1UErBoe_MZvxY_tTSXdC95sXT9f0ZGTif3XxajCPhxUkpR3qNH1oqjubvScPbF40SnGNOVjl6uYGHumlETEQL7aXjrQw_BIGneoRnqozOihp-zTqFNWTsMgfTyZrOAjSw8CMsWRxDlozybIxKiwhWeWjN4I1dNuHh3PQHm-194t_NNGVeZ4kGSXUUhjKZyy-ZRDW5WcZzAnkQdRvs-9_hk" />
+                                        </div>
+                                        <div class="w-10 h-10 rounded-full border-2 border-primary bg-slate-200 overflow-hidden">
+                                            <img class="w-full h-full object-cover" data-alt="Nurse portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXKJwGpHy1r4BKHLKe3taaoXK6X8czy_3BgRAMlmSDtiuQ3Vqf9r-e3DRK-76cN-W2IRizgHPDwAGH-TiJMe3_jqBSU4TAhp92MMzZ5c3bl6lnyFumSyrlboLWf0bAz0Q0OzdqiNmWrMDZYP0aA577bMid4k4h2q3FS4b8smPGL7b3YILv1O6CnFXsUvbJUmjSnzvLQNYLfaHkHhETwdmEl32B-6JkVfRm57ZKPMizW47ecliV2VJA-Hy9XuraHQYf3b7z267zM2w" />
+                                        </div>
+                                        <div class="w-10 h-10 rounded-full border-2 border-primary bg-slate-300 flex items-center justify-center text-xs font-bold text-slate-700">+100</div>
+                                    </div>
+                                    <div class="text-blue-50 text-sm py-2">
+                                        <strong>50,000+</strong> kullanıcı aramıza katıldı.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center bg-white dark:bg-slate-900 overflow-y-auto">
+                            <div class="mb-8">
+                                <div class="md:hidden flex items-center gap-2 mb-6">
+                                    <span class="material-icons-outlined text-primary text-3xl">medical_services</span>
+                                    <span class="text-primary font-bold text-2xl tracking-tight">Medinova</span>
+                                </div>
+                                <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Yeni Hesap Oluştur</h2>
+                                <p class="text-slate-500 dark:text-slate-400">Medinova ile sağlığınızı profesyonel ellerde yönetin.</p>
+                            </div>
+                            <form class="space-y-5" method="post">
+                                @Html.AntiForgeryToken()
+                               
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-1">
+                                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="first-name">Ad</label>
+                                        <div class="relative">
+                                            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+                                            @Html.TextBoxFor(x => x.FirstName, new { @class = "w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-900 dark:text-white", placeholder = "Örn: Ahmet", id = "first-name" })
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="last-name">Soyad</label>
+                                        <div class="relative">
+                                            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">badge</span>
+                                            @Html.TextBoxFor(x => x.LastName, new { @class = "w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-900 dark:text-white", placeholder = "Örn: Yılmaz", id = "last-name" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="email">E-posta</label>
+                                    <div class="relative">
+                                        <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+                                        @Html.TextBoxFor(x => x.UserName, new { @class = "w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-900 dark:text-white", placeholder = "ahmet@email.com", id = "email", type = "email" })
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div class="space-y-1">
+                                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="password">Şifre</label>
+                                        <div class="relative">
+                                            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+                                            @Html.PasswordFor(x => x.Password, new { @class = "w-full pl-11 pr-11 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-900 dark:text-white", placeholder = "••••••••", id = "password" })
+                                            <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" type="button">
+                                                <span class="material-icons-outlined text-xl">visibility</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="confirm-password">Şifre Tekrar</label>
+                                        <div class="relative">
+                                            <span class="material-icons-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock_clock</span>
+                                            @Html.PasswordFor(x => x.ConfirmPassword, new { @class = "w-full pl-11 pr-11 py-3 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all outline-none text-slate-900 dark:text-white", placeholder = "••••••••", id = "confirm-password" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-3 py-2">
+                                    <input class="mt-1 w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer" id="terms" type="checkbox" />
+                                    <label class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed" for="terms">
+                                        <a class="text-primary hover:underline font-medium" href="#">KVKK metnini</a> ve <a class="text-primary hover:underline font-medium" href="#">Gizlilik Politikasını</a> okudum, onaylıyorum.
+                                    </label>
+                                </div>
+                                @Html.ValidationSummary(false, "", new { @class = "text-sm text-red-500" })
+                                <button class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-lg shadow-lg shadow-primary/20 transition-all transform hover:-translate-y-0.5 active:translate-y-0" type="submit">
+                                    Hesap Oluştur
+                                </button>
+                            </form>
+                            <div class="mt-10 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+                                <p class="text-slate-600 dark:text-slate-400">
+                                    Zaten hesabın var mı?
+                                    <a class="text-primary font-bold hover:underline ml-1" href="@Url.Action("Login", "Account")">Giriş Yap</a>
+                                </p>
+                            </div>
+                            <div class="md:hidden mt-8 flex flex-col items-center">
+                                <div class="flex -space-x-2 mb-3">
+                                    <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-200"></div>
+                                    <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-300"></div>
+                                    <div class="w-8 h-8 rounded-full border-2 border-white bg-slate-400"></div>
+                                </div>
+                                <p class="text-xs text-slate-500 uppercase tracking-widest font-semibold">GÜVENİLİR SAĞLIK PLATFORMU</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="fixed bottom-6 right-6 w-12 h-12 bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:scale-110 transition-transform" onclick="document.documentElement.classList.toggle('dark')" type="button">
+                        <span class="material-icons-outlined">dark_mode</span>
+                    </button>
+                </body>
 </html>

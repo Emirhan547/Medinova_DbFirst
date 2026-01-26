@@ -84,25 +84,35 @@ namespace Medinova.Areas.Doctor.Controllers
         }
         private Models.Doctor EnsureDoctor(int userId)
         {
-            // 🔥 EF6 HATASINI KESİN BİTSATIRİREN
+            var user = context.Users.Find(userId);
+            if (user == null)
+                return null;
+
+            var fullName = (user.FirstName + " " + user.LastName).Trim();
             var doctor = context.Doctors
-                .ToList()
+                .AsEnumerable()
                 .FirstOrDefault(d => d.UserId == userId);
 
             if (doctor != null)
                 return doctor;
 
-            var user = context.Users.Find(userId);
-            if (user == null)
-                return null;
+            doctor = context.Doctors
+                .AsEnumerable()
+                .FirstOrDefault(d => string.Equals(d.FullName, fullName, System.StringComparison.OrdinalIgnoreCase));
 
-            doctor = new Models.Doctor
+            if (doctor == null)
             {
-                UserId = user.UserId,
-                FullName = (user.FirstName + " " + user.LastName).Trim()
-            };
-
-            context.Doctors.Add(doctor);
+                doctor = new Models.Doctor
+                {
+                    UserId = user.UserId,
+                    FullName = fullName
+                };
+                context.Doctors.Add(doctor);
+            }
+            else if (doctor.UserId != user.UserId)
+            {
+                doctor.UserId = user.UserId;
+            }
             context.SaveChanges();
 
             return doctor;

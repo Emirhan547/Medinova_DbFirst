@@ -5,9 +5,9 @@
 
         <div class="text-center mx-auto mb-5" style="max-width: 500px;">
             <h5 class="d-inline-block text-primary text-uppercase border-bottom border-5">
-                Medical Packages
+                Tıbbi Paketler
             </h5>
-            <h1 class="display-4">Awesome Medical Programs</h1>
+            <h1 class="display-4">Öne Çıkan Sağlık Programları</h1>
         </div>
 
         <div class="owl-carousel price-carousel position-relative"
@@ -15,15 +15,15 @@
 
             @if (Model?.Plans == null || !Model.Plans.Any())
             {
-                <div class="bg-light rounded text-center p-5">
-                    <p>Henüz içerik yok</p>
-                </div>
+               <div class="bg-light rounded text-center p-5 shadow-sm">
+                   <p>Henüz içerik yok.</p>
+               </div>
             }
             else
             {
                 foreach (var plan in Model.Plans)
                 {
-                    <div class="bg-light rounded text-center">
+                    <div class="bg-light rounded text-center shadow-sm">
 
                         <div class="position-relative">
                             @if (!string.IsNullOrWhiteSpace(plan.ImageUrl))

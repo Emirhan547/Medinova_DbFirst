@@ -1,4 +1,5 @@
 ﻿using Medinova.Attributes;
+using Medinova.Helpers;
 using Medinova.Models;
 using Medinova.Services;
 using System;
@@ -13,17 +14,23 @@ namespace Medinova.Areas.Patient.Controllers
     {
         private readonly MedinovaContext context = new MedinovaContext();
         private readonly AIService aiService;
+        private readonly string apiKey;
 
         public AIAssistantController()
         {
-            // API Key'i web.config'den alın
-            var apiKey = System.Configuration.ConfigurationManager.AppSettings["AnthropicApiKey"];
-            aiService = new AIService(apiKey);
+            // 🔥 ARTIK web.config YOK → Environment Variable VAR
+            apiKey = Env.Get("MEDINOVA_ANTHROPIC_API_KEY", required: false);
+
+            if (!string.IsNullOrWhiteSpace(apiKey))
+            {
+                aiService = new AIService(apiKey);
+            }
         }
 
         public ActionResult Index()
         {
             var userId = (int)Session["userId"];
+
             var conversations = context.AIConversations
                 .Where(c => c.UserId == userId)
                 .OrderByDescending(c => c.CreatedDate)
@@ -38,12 +45,28 @@ namespace Medinova.Areas.Patient.Controllers
         {
             try
             {
+                if (aiService == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "AI servisi yapılandırılamadı. Lütfen API anahtarını kontrol edin."
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(question))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Lütfen geçerli bir soru girin."
+                    });
+                }
+
                 var userId = (int)Session["userId"];
 
-                // Get AI response
                 var aiResponse = await aiService.GetHealthAdvice(question);
 
-                // Save to database
                 var conversation = new AIConversation
                 {
                     UserId = userId,
@@ -55,11 +78,19 @@ namespace Medinova.Areas.Patient.Controllers
                 context.AIConversations.Add(conversation);
                 context.SaveChanges();
 
-                return Json(new { success = true, response = aiResponse });
+                return Json(new
+                {
+                    success = true,
+                    response = aiResponse
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = "Bir hata oluştu: " + ex.Message
+                });
             }
         }
 
@@ -68,8 +99,29 @@ namespace Medinova.Areas.Patient.Controllers
         {
             try
             {
+                if (aiService == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "AI servisi yapılandırılamadı. Lütfen API anahtarını kontrol edin."
+                    });
+                }
+
+                if (string.IsNullOrWhiteSpace(symptoms))
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Lütfen şikayetinizi girin."
+                    });
+                }
+
                 var departmentNames = context.Departments
-                    .Select(department => department.Name)
+                    .Select(d => d.Name)
+                    .Where(name => name != null && name != "")
+                    .AsEnumerable()
+                    .Select(name => name.Trim())
                     .Where(name => !string.IsNullOrWhiteSpace(name))
                     .Distinct()
                     .ToList();
@@ -83,19 +135,32 @@ namespace Medinova.Areas.Patient.Controllers
                     });
                 }
 
-                var recommendation = await aiService.GetDepartmentRecommendation(symptoms, departmentNames);
-                return Json(new { success = true, recommendation });
+                var recommendation =
+                    await aiService.GetDepartmentRecommendation(symptoms, departmentNames);
+
+                return Json(new
+                {
+                    success = true,
+                    recommendation
+                });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new
+                {
+                    success = false,
+                    message = ex.Message
+                });
             }
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 context.Dispose();
+            }
+
             base.Dispose(disposing);
         }
     }
