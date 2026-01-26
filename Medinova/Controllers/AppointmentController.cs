@@ -55,33 +55,46 @@ namespace Medinova.Controllers
         [HttpPost]
         [CustomAuthorize("Patient")]
         [ValidateAntiForgeryToken]
-        public ActionResult MakeAppointment(Appointment appointment)
+        public ActionResult MakeAppointment(AppointmentCreateDto appointmentDto)
         {
             if (Session["userId"] == null)
             {
                 Logger.Warning("Oturum bilgisi olmadığından randevu denemesi reddedildi");
                 return Json(new { success = false, message = "Lütfen giriş yapın" });
             }
-
+            if (!ModelState.IsValid)
+            {
+                Logger.Warning("Randevu doğrulaması başarısız {UserId}", Session["userId"]);
+                TempData["AppointmentError"] = "Lütfen gerekli alanları doldurun";
+                return RedirectToAction("Index");
+            }
             var userId = (int)Session["userId"];
-            Logger.Information("Randevu isteği alındı {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
+            Logger.Information("Randevu isteği alındı {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointmentDto.DoctorId, appointmentDto.AppointmentDate, appointmentDto.AppointmentTime);
             // Check if time slot is available
             var existingAppointment = context.Appointments.FirstOrDefault(a =>
-                a.DoctorId == appointment.DoctorId &&
-                a.AppointmentDate == appointment.AppointmentDate &&
-                a.AppointmentTime == appointment.AppointmentTime &&
+                a.DoctorId == appointmentDto.DoctorId &&
+                a.AppointmentDate == appointmentDto.AppointmentDate &&
+                a.AppointmentTime == appointmentDto.AppointmentTime &&
                 a.Status == "Active");
 
             if (existingAppointment != null)
             {
-                Logger.Warning("Randevu saat çakışması {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointment.DoctorId, appointment.AppointmentDate, appointment.AppointmentTime);
-                return Json(new { success = false, message = "Bu saat dolu!" });
+                Logger.Warning("Randevu saat çakışması {UserId} {DoctorId} {AppointmentDate} {AppointmentTime}", userId, appointmentDto.DoctorId, appointmentDto.AppointmentDate, appointmentDto.AppointmentTime); return Json(new { success = false, message = "Bu saat dolu!" });
             }
 
-            appointment.PatientId = userId;
-            appointment.IsActive = true;
-            appointment.Status = "Active";
-            appointment.CreatedDate = DateTime.Now;
+            var appointment = new Appointment
+            {
+                DoctorId = appointmentDto.DoctorId,
+                AppointmentDate = appointmentDto.AppointmentDate,
+                AppointmentTime = appointmentDto.AppointmentTime,
+                FullName = appointmentDto.FullName,
+                PhoneNumber = appointmentDto.PhoneNumber,
+                Email = appointmentDto.Email,
+                PatientId = userId,
+                IsActive = true,
+                Status = "Active",
+                CreatedDate = DateTime.Now
+            };
 
             context.Appointments.Add(appointment);
             context.SaveChanges();

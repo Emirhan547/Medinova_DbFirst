@@ -102,7 +102,7 @@ namespace Medinova.Controllers
                     return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                 case "Doctor":
                     return RedirectToAction("Index", "Dashboard", new { area = "Doctor" });
-                case "Patients":
+                case "Patient":
                     return RedirectToAction("Index", "Dashboard", new { area = "Patient" });
                 default:
                     return RedirectToAction("Index", "Default");

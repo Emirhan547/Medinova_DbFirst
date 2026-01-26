@@ -13,47 +13,50 @@ namespace Medinova.Areas.Doctor.Controllers
 
         public ActionResult Index()
         {
-            int userId = (int)Session["userId"];
+            var userId = Session["userId"] as int?;
+            if (!userId.HasValue)
+                return RedirectToAction("Login", "Account", new { area = "" });
 
-            // 🔥 EF6 HATASINI KESİN BİTSATIRİREN 
-            var doctor = context.Doctors
-                .AsEnumerable()
-                .FirstOrDefault(d => d.UserId == userId);
+            var doctor = EnsureDoctor(userId.Value);
 
             if (doctor == null)
-                return HttpNotFound();
+                return RedirectToAction("Logout", "Account", new { area = "" });
 
             var patients = context.Appointments
-                .Where(a => a.DoctorId == doctor.DoctorId && a.PatientId.HasValue)
-                .GroupBy(a => a.PatientId)
-                .Select(g => new DoctorPatientSummaryDto
-                {
-                    PatientId = g.Key.Value,
-                    FullName = g.Select(a => a.User.FirstName + " " + a.User.LastName).FirstOrDefault(),
-                    ImageUrl = g.Select(a => a.User.ImageUrl).FirstOrDefault(),
-                    BloodType = g.Select(a => a.User.BloodType).FirstOrDefault(),
-                    HeightCm = g.Select(a => a.User.HeightCm).FirstOrDefault(),
-                    WeightKg = g.Select(a => a.User.WeightKg).FirstOrDefault(),
-                    LastAppointmentDate = g.Max(a => a.AppointmentDate),
-                    AppointmentCount = g.Count()
-                })
-                .OrderByDescending(p => p.LastAppointmentDate)
-                .ToList();
+     .Where(a => a.DoctorId == doctor.DoctorId && a.PatientId.HasValue)
+     .AsEnumerable() // 🔥 EF → LINQ to Objects
+     .GroupBy(a => a.PatientId)
+     .Select(g =>
+     {
+         var first = g.First();
+
+         return new DoctorPatientSummaryDto
+         {
+             PatientId = g.Key.Value,
+             FullName = (first.User.FirstName + " " + first.User.LastName).Trim(),
+             ImageUrl = first.User.ImageUrl,
+             BloodType = first.User.BloodType,
+             HeightCm = first.User.HeightCm,
+             WeightKg = first.User.WeightKg,
+             LastAppointmentDate = g.Max(a => a.AppointmentDate),
+             AppointmentCount = g.Count()
+         };
+     })
+     .OrderByDescending(p => p.LastAppointmentDate)
+     .ToList();
+
 
             return View(patients);
         }
 
         public ActionResult Details(int id)
         {
-            int userId = (int)Session["userId"];
-
-            // 🔥 AYNI ŞEKİLDE BURADA DA
-            var doctor = context.Doctors
-                .AsEnumerable()
-                .FirstOrDefault(d => d.UserId == userId);
-
+            var userId = Session["userId"] as int?;
+            if (!userId.HasValue)
+                return RedirectToAction("Login", "Account", new { area = "" });
+            var doctor = EnsureDoctor(userId.Value);
             if (doctor == null)
-                return HttpNotFound();
+                return RedirectToAction("Logout", "Account", new { area = "" });
 
             var patient = context.Users.FirstOrDefault(u => u.UserId == id);
             if (patient == null)
@@ -79,7 +82,31 @@ namespace Medinova.Areas.Doctor.Controllers
 
             return View(model);
         }
+        private Models.Doctor EnsureDoctor(int userId)
+        {
+            // 🔥 EF6 HATASINI KESİN BİTSATIRİREN
+            var doctor = context.Doctors
+                .ToList()
+                .FirstOrDefault(d => d.UserId == userId);
 
+            if (doctor != null)
+                return doctor;
+
+            var user = context.Users.Find(userId);
+            if (user == null)
+                return null;
+
+            doctor = new Models.Doctor
+            {
+                UserId = user.UserId,
+                FullName = (user.FirstName + " " + user.LastName).Trim()
+            };
+
+            context.Doctors.Add(doctor);
+            context.SaveChanges();
+
+            return doctor;
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

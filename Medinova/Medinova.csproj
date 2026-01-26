@@ -291,6 +291,7 @@
     <Compile Include="Controllers\DefaultController.cs" />
     <Compile Include="Controllers\UILayoutController.cs" />
     <Compile Include="Dtos\AppointmentAvailabilityDto.cs" />
+    <Compile Include="Dtos\AppointmentCreateDto.cs" />
     <Compile Include="Dtos\Defaults\DefaultAboutDto.cs" />
     <Compile Include="Dtos\Defaults\DefaultHeroDto.cs" />
     <Compile Include="Dtos\Defaults\DefaultPlanDto.cs" />

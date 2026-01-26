@@ -17,7 +17,10 @@ namespace Medinova.Areas.Doctor.Controllers
         {
             var userId = (int)Session["userId"];
             var user = context.Users.FirstOrDefault(u => u.UserId == userId);
-            var doctor = context.Doctors.Include(d => d.Department).FirstOrDefault(d => d.UserId == userId);
+            var doctor = context.Doctors
+                 .Include(d => d.Department)
+                 .AsEnumerable()
+                 .FirstOrDefault(d => d.UserId == userId);
 
             if (user == null || doctor == null)
                 return HttpNotFound();
@@ -43,7 +46,9 @@ namespace Medinova.Areas.Doctor.Controllers
         {
             var userId = (int)Session["userId"];
             var user = context.Users.FirstOrDefault(u => u.UserId == userId);
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId);
+            var doctor = context.Doctors
+               .AsEnumerable()
+               .FirstOrDefault(d => d.UserId == userId);
 
             if (user == null || doctor == null)
                 return HttpNotFound();

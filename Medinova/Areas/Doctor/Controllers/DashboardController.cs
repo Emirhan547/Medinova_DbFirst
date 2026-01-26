@@ -71,7 +71,9 @@ namespace Medinova.Areas.Doctor.Controllers
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { area = "" });
 
-            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId.Value);
+            var doctor = context.Doctors
+                 .AsEnumerable()
+                 .FirstOrDefault(d => d.UserId == userId.Value);
             if (doctor == null)
                 return RedirectToAction("Index");
 

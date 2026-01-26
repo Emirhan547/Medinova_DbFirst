@@ -52,7 +52,7 @@ namespace Medinova.Attributes
                     {
                         controller = "Account",
                         action = "Login",
-                        area = "area",
+                        area = area,
                         returnUrl = returnUrl
                     })
                 );
