@@ -6,98 +6,221 @@
     Layout = "~/Areas/Doctor/Views/Shared/_DoctorLayout.cshtml";
 }
 
-<div class="mb-8">
-    <h1 class="text-2xl font-extrabold text-navy-accent">Hastalarım</h1>
-    <p class="text-sm text-gray-500">
-        Size randevu alan hastaların temel bilgilerini ve son randevu tarihlerini görüntüleyin.
-    </p>
-</div>
-
-<div class="bg-white rounded-xl soft-shadow p-6 border border-gray-200">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-navy-accent">Hasta Listesi</h2>
-        <span class="text-xs font-semibold text-gray-400">
-            @((Model != null) ? Model.Count() : 0) kayıt
-        </span>
+<div class="max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Hastalarım</h1>
+                <p class="text-gray-600 mt-1">Size randevu alan hastaların listesi</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="relative w-64">
+                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 material-symbols-outlined text-gray-400">search</span>
+                    <input type="text"
+                           placeholder="Hasta ara..."
+                           class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
+                </div>
+                <button class="px-4 py-2.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">filter_list</span>
+                    Filtrele
+                </button>
+            </div>
+        </div>
     </div>
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50 text-gray-500">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Hasta</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Kan Grubu</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Boy / Kilo</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Son Randevu</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Toplam</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">İşlem</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    @foreach (var patient in Model)
-                    {
+    <!-- Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Toplam Hasta</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">@(Model?.Count() ?? 0)</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">groups</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Aktif Hasta</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">18</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">check_circle</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Bu Ay</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">5</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">trending_up</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Ort. Randevu</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">3.2</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">event</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patients Table -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h2 class="text-lg font-semibold text-gray-900">Hasta Listesi</h2>
+                <span class="text-sm text-gray-500">
+                    @(Model?.Count() ?? 0) kayıt
+                </span>
+            </div>
+        </div>
+
+        @if (Model != null && Model.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="size-10 rounded-full overflow-hidden border border-primary/20 bg-white flex items-center justify-center">
-                                        @if (!string.IsNullOrWhiteSpace(patient.ImageUrl))
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Hasta
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Kan Grubu
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Boy / Kilo
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Son Randevu
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Toplam
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                İşlemler
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var patient in Model)
+                        {
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full border border-gray-200 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
+                                            @if (!string.IsNullOrWhiteSpace(patient.ImageUrl))
+                                            {
+                                                <img src="@patient.ImageUrl"
+                                                     alt="@patient.FullName"
+                                                     class="w-full h-full object-cover" />
+                                            }
+                                            else
+                                            {
+                                                <div class="flex w-full h-full items-center justify-center">
+                                                    <span class="material-symbols-outlined text-gray-600">person</span>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">@patient.FullName</p>
+                                            <p class="text-xs text-gray-500">#@patient.PatientId</p>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @GetBloodTypeClass(patient.BloodType)">
+                                        @(string.IsNullOrWhiteSpace(patient.BloodType) ? "-" : patient.BloodType)
+                                    </span>
+                                </td>
+
+                                <td class="px-6 py-4 text-sm text-gray-900">
+                                    <div class="flex items-center gap-2">
+                                        @if (patient.HeightCm.HasValue)
                                         {
-                                            <img src="@patient.ImageUrl"
-                                                 alt="@patient.FullName"
-                                                 class="h-full w-full object-cover" />
+                                            <span>@patient.HeightCm cm</span>
                                         }
                                         else
                                         {
-                                            <span class="material-symbols-outlined text-primary">person</span>
+                                            <span class="text-gray-400">-</span>
+                                        }
+                                        <span class="text-gray-300">/</span>
+                                        @if (patient.WeightKg.HasValue)
+                                        {
+                                            <span>@patient.WeightKg kg</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-gray-400">-</span>
                                         }
                                     </div>
-                                    <div>
-                                        <p class="text-sm font-semibold text-navy-accent">
-                                            @patient.FullName
-                                        </p>
-                                        <p class="text-xs text-gray-400">
-                                            #@patient.PatientId
-                                        </p>
-                                    </div>
-                                </div>
-                            </td>
+                                </td>
 
-                            <td class="px-4 py-3 text-gray-600">
-                                @(string.IsNullOrWhiteSpace(patient.BloodType) ? "-" : patient.BloodType)
-                            </td>
+                                <td class="px-6 py-4 text-sm text-gray-900">
+                                    @if (patient.LastAppointmentDate.HasValue)
+                                    {
+                                        @patient.LastAppointmentDate.Value.ToString("dd.MM.yyyy")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-gray-400">-</span>
+                                    }
+                                </td>
 
-                            <td class="px-4 py-3 text-gray-600">
-                                @(patient.HeightCm.HasValue ? patient.HeightCm + " cm" : "-")
-                                /
-                                @(patient.WeightKg.HasValue ? patient.WeightKg + " kg" : "-")
-                            </td>
+                                <td class="px-6 py-4">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        @patient.AppointmentCount randevu
+                                    </span>
+                                </td>
 
-                            <td class="px-4 py-3 text-gray-600">
-                                @(patient.LastAppointmentDate.HasValue
-                                    ? patient.LastAppointmentDate.Value.ToString("dd.MM.yyyy")
-                                    : "-")
-                            </td>
-
-                            <td class="px-4 py-3 text-gray-600">
-                                @patient.AppointmentCount
-                            </td>
-
-                            <td class="px-4 py-3">
-                                <a href="@Url.Action("Details", "Patients", new { area = "Doctor", id = patient.PatientId })"
-                                   class="text-xs font-semibold text-primary hover:text-primary/80">
-                                    Detay
-                                </a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-    else
-    {
-        <p class="text-sm text-gray-500">Henüz hasta kaydı bulunmuyor.</p>
-    }
+                                <td class="px-6 py-4">
+                                    <a href="@Url.Action("Details", "Patients", new { area = "Doctor", id = patient.PatientId })"
+                                       class="text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-colors">
+                                        Detay
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="px-6 py-12 text-center">
+                <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-gray-400 text-2xl">groups</span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Henüz hasta kaydınız bulunmuyor</h3>
+                <p class="text-gray-500 mb-6">Randevu aldıktan sonra hastalarınız burada listelenecektir.</p>
+            </div>
+        }
+    </div>
 </div>
+
+@functions {
+    string GetBloodTypeClass(string bloodType)
+    {
+        if (string.IsNullOrWhiteSpace(bloodType)) return "bg-gray-100 text-gray-800";
+
+        return bloodType.Contains("+") ? "bg-red-100 text-red-800" :
+               bloodType.Contains("-") ? "bg-blue-100 text-blue-800" :
+               "bg-gray-100 text-gray-800";
+    }
+}

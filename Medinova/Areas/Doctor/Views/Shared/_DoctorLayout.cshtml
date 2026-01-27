@@ -1,152 +1,230 @@
 ﻿<!DOCTYPE html>
-
 <html class="light" lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Medinova Doktor Paneli</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>@ViewBag.Title - Medinova Doktor Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#12b8de",
-                        "navy-accent": "#354F8E",
-                        "background-light": "#f5f7f9",
-                        "background-dark": "#111827",
-                    },
-                    fontFamily: {
-                        "display": ["Manrope", "sans-serif"]
-                    },
-                    borderRadius: {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                },
-            },
-        }
-    </script>
     <style>
-        body {
-            font-family: 'Manrope', sans-serif;
+        * {
+            font-family: 'Inter', sans-serif;
         }
 
-        .soft-shadow {
-            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        .nav-active {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3B82F6;
+            border-right: 3px solid #3B82F6;
         }
 
-        .sidebar-active {
-            background-color: rgba(18, 184, 222, 0.1);
-            border-right: 3px solid #12b8de;
+        .card-hover {
+            transition: all 0.2s ease;
         }
+
+            .card-hover:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+            .no-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
     </style>
 </head>
 
-<body class="bg-background-light text-[#0d191b] font-display min-h-screen">
+<body class="bg-gray-50 text-gray-800 min-h-screen">
     @{
         var currentController = (ViewContext.RouteData.Values["controller"] ?? string.Empty).ToString();
         Func<string, string> navClass = target =>
             string.Equals(currentController, target, StringComparison.OrdinalIgnoreCase)
-                ? "py-4 border-b-2 border-primary text-primary font-bold text-sm"
-                : "py-4 border-b-2 border-transparent text-gray-500 font-semibold text-sm hover:text-navy-accent";
+                ? "py-3 border-b-2 border-blue-600 text-blue-600 font-semibold text-sm transition-colors"
+                : "py-3 border-b-2 border-transparent text-gray-500 font-medium text-sm hover:text-blue-600 hover:border-blue-200 transition-colors";
+
         Func<string, string> sideClass = target =>
             string.Equals(currentController, target, StringComparison.OrdinalIgnoreCase)
-                ? "flex items-center gap-3 px-3 py-3 sidebar-active text-navy-accent rounded-lg transition-all"
-                : "flex items-center gap-3 px-3 py-3 text-gray-600 hover:bg-gray-50 rounded-lg group transition-all";
+                ? "flex items-center gap-3 px-3 py-2.5 nav-active text-blue-700 rounded-lg transition-all"
+                : "flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:bg-gray-50 rounded-lg hover:text-blue-600 transition-all";
+
+        var profileImageUrl = Session["profileImageUrl"] as string;
+        var fullName = Session["fullName"] as string ?? "Doktor";
     }
+
     <div class="flex flex-col h-screen">
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-30">
-            <div class="flex items-center gap-10">
-                <div class="flex items-center gap-3">
-                    <div class="size-9 bg-primary flex items-center justify-center rounded-lg text-white">
-                        <span class="material-symbols-outlined text-2xl">medical_services</span>
-                    </div>
-                    <h2 class="text-navy-accent text-xl font-extrabold tracking-tight">Medinova</h2>
-                </div>
-                <div class="relative w-96 hidden md:block">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">search</span>
-                    <input class="w-full bg-gray-100 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-primary/50 transition-all" placeholder="Hasta, rapor veya not ara..." type="text" />
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg relative">
-                    <span class="material-symbols-outlined">notifications</span>
-                    <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
-                </button>
-                <div class="h-8 w-px bg-gray-200 mx-2"></div>
-                @{
-                    var profileImageUrl = Session["profileImageUrl"] as string;
-                }
-                <div class="flex items-center gap-3">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-bold text-navy-accent leading-none">@Session["fullName"]</p>
-                        <p class="text-xs text-primary font-medium mt-1">Doktor Paneli</p>
-                    </div>
-                    
-                        <div class="size-10 rounded-full bg-white border-2 border-primary/20 flex items-center justify-center overflow-hidden">
-                            @if (!string.IsNullOrWhiteSpace(profileImageUrl))
-                            {
-                                <img src="@profileImageUrl" alt="Profil görseli" class="h-full w-full object-cover" />
-                            }
-                            else
-                            {
-                                <span class="material-symbols-outlined text-primary">person</span>
-                            }
+        <!-- Top Header -->
+        <header class="glass border-b border-gray-200 sticky top-0 z-30">
+            <div class="px-6 py-3">
+                <div class="flex items-center justify-between">
+                    <!-- Logo & Search -->
+                    <div class="flex items-center gap-6 flex-1">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 bg-gradient-to-r from-blue-600 to-blue-500 flex items-center justify-center rounded-lg text-white shadow-sm">
+                                <span class="material-symbols-outlined text-xl">medical_services</span>
+                            </div>
+                            <div>
+                                <h1 class="text-lg font-bold text-gray-900">Medinova</h1>
+                                <p class="text-xs text-blue-600 font-medium">Doktor Paneli</p>
+                            </div>
+                        </div>
+
+                        <!-- Search Bar -->
+                        <div class="hidden lg:block flex-1 max-w-xl">
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">search</span>
+                                <input type="text"
+                                       placeholder="Hasta, rapor veya not ara..."
+                                       class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all" />
+                            </div>
                         </div>
                     </div>
-                    <a class="text-xs font-semibold text-gray-500 hover:text-navy-accent" href="@Url.Action("Logout", "Account", new { area = "" })">Çıkış Yap</a>
+
+                    <!-- User Actions -->
+                    <div class="flex items-center gap-4">
+                        <!-- Notifications -->
+                        <button class="relative p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                            <span class="material-symbols-outlined">notifications</span>
+                            <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                        </button>
+
+                        <!-- User Profile -->
+                        <div class="flex items-center gap-3">
+                            <div class="hidden md:block text-right">
+                                <p class="text-sm font-semibold text-gray-900">@fullName</p>
+                                <p class="text-xs text-blue-600 font-medium">Doktor</p>
+                            </div>
+
+                            <div class="relative group">
+                                <div class="w-9 h-9 rounded-full border-2 border-blue-100 overflow-hidden bg-gradient-to-br from-blue-50 to-gray-50 flex items-center justify-center">
+                                    @if (!string.IsNullOrWhiteSpace(profileImageUrl))
+                                    {
+                                        <img src="@profileImageUrl" alt="Profil" class="w-full h-full object-cover" />
+                                    }
+                                    else
+                                    {
+                                        <span class="material-symbols-outlined text-blue-600">person</span>
+                                    }
+                                </div>
+
+                                <!-- Dropdown Menu -->
+                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 hidden group-hover:block">
+                                    <a href="@Url.Action("Edit", "Profile", new { area = "Doctor" })"
+                                       class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                                        <span class="material-symbols-outlined text-base">person</span>
+                                        Profilim
+                                    </a>
+                                    <a href="@Url.Action("Settings", "Dashboard", new { area = "Doctor" })"
+                                       class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600">
+                                        <span class="material-symbols-outlined text-base">settings</span>
+                                        Ayarlar
+                                    </a>
+                                    <div class="border-t border-gray-100 my-1"></div>
+                                    <a href="@Url.Action("Logout", "Account", new { area = "" })"
+                                       class="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                        <span class="material-symbols-outlined text-base">logout</span>
+                                        Çıkış Yap
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+            </div>
         </header>
-        <nav class="bg-white border-b border-gray-200 px-8">
-            <div class="flex gap-8 overflow-x-auto no-scrollbar">
-                
-                <a class="@navClass("Dashboard")" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">Ana Sayfa</a>
+
+        <!-- Main Navigation -->
+        <nav class="bg-white border-b border-gray-200 px-6">
+            <div class="flex gap-6 overflow-x-auto no-scrollbar py-1">
+                <a class="@navClass("Dashboard")" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">Dashboard</a>
                 <a class="@navClass("Dashboard")" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">Randevular</a>
-                <a class="@navClass("User")" href="@Url.Action("Index", "User", new { area = "Doctor" })">Hastalarım</a>
-                <a class="@navClass("Profile")" href="@Url.Action("Edit", "Profile", new { area = "Doctor" })">Doktor Profili</a>
-                <a class="py-4 border-b-2 border-transparent text-gray-500 font-semibold text-sm hover:text-navy-accent" href="#">Raporlar</a>
+                <a class="@navClass("Patient")" href="@Url.Action("Index", "User", new { area = "Doctor" })">Hastalarım</a>
+                <a class="@navClass("Profile")" href="@Url.Action("Edit", "Profile", new { area = "Doctor" })">Profil</a>
+
             </div>
         </nav>
+
         <div class="flex flex-1 overflow-hidden">
-            <aside class="w-64 bg-white border-r border-gray-200 hidden lg:flex flex-col p-4">
-                <div class="space-y-1">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-widest px-3 mb-4">İşlemler</p>
+            <!-- Sidebar -->
+            <aside class="hidden lg:flex w-64 bg-white border-r border-gray-200 flex-col py-4">
+                <div class="px-4 mb-6">
+                    <div class="space-y-1">
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-3">İşlemler</h3>
+
                         <a class="@sideClass("Dashboard")" href="@Url.Action("Index", "Dashboard", new { area = "Doctor" })">
-                            <span class="material-symbols-outlined text-gray-400 group-hover:text-primary">calendar_month</span>
-                            <span class="text-sm font-semibold">Takvim</span>
+                            <span class="material-symbols-outlined text-lg">dashboard</span>
+                            <span class="text-sm">Dashboard</span>
                         </a>
-                            <a class="@sideClass("User")" href="@Url.Action("Index", "User", new { area = "Doctor" })">
-                                <span class="material-symbols-outlined text-gray-400 group-hover:text-primary">groups</span>
-                                <span class="text-sm font-semibold">Hasta Listesi</span>
-                            </a>
-                                <a class="@sideClass("Profile")" href="@Url.Action("Edit", "Profile", new { area = "Doctor" })">
-                                    <span class="material-symbols-outlined text-primary">person</span>
-                                    <span class="text-sm font-bold">Profil Ayarları</span>
-                                </a>
-                                <a class="flex items-center gap-3 px-3 py-3 text-gray-600 hover:bg-gray-50 rounded-lg group transition-all" href="#">
-                                    <span class="material-symbols-outlined text-gray-400 group-hover:text-primary">mail</span>
-                                    <span class="text-sm font-semibold">Mesajlar</span>
-                                </a>
-                </div>
-                <div class="mt-auto p-4 bg-primary/5 rounded-xl border border-primary/10">
-                    <p class="text-xs font-bold text-navy-accent mb-2">Profil Tamamlama</p>
-                    <div class="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden mb-2">
-                        <div class="bg-primary h-full" style="width: 80%"></div>
+
+
+                        <a class="@sideClass("User")" href="@Url.Action("Index", "User", new { area = "Doctor" })">
+                            <span class="material-symbols-outlined text-lg">groups</span>
+                            <span class="text-sm">Hasta Listesi</span>
+                            <span class="ml-auto bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full"></span>
+                        </a>
+
+                        <a class="@sideClass("Dashboard")" href="@Url.Action("Appointments", "Dashboard", new { area = "Doctor" })">
+                            <span class="material-symbols-outlined text-lg">event_available</span>
+                            <span class="text-sm">Randevular</span>
+                            <span class="ml-auto bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full"></span>
+                        </a>
+
+
+                        <a class="@sideClass("Profile")" href="@Url.Action("Edit", "Profile", new { area = "Doctor" })">
+                            <span class="material-symbols-outlined text-lg">person</span>
+                            <span class="text-sm">Profil Ayarları</span>
+                        </a>
+
+                       
                     </div>
-                    <p class="text-[10px] text-gray-500">%80 tamamlandı. Lisans belgesi ekleyin.</p>
+                </div>
+
+                <!-- Profile Completion -->
+                <div class="mt-auto px-4">
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="material-symbols-outlined text-blue-600 text-sm">verified</span>
+                            <p class="text-xs font-semibold text-blue-800">Profil Tamamlama</p>
+                        </div>
+                        <div class="w-full bg-blue-200 h-1.5 rounded-full overflow-hidden mb-1">
+                            <div class="bg-blue-600 h-full" style="width: 80%"></div>
+                        </div>
+                        <p class="text-[10px] text-blue-600/70">%80 tamamlandı. Lisans belgesi ekleyin.</p>
+                    </div>
                 </div>
             </aside>
-            <main class="flex-1 overflow-y-auto bg-background-light p-8">
+
+            <!-- Main Content -->
+            <main class="flex-1 overflow-y-auto p-6">
                 @RenderBody()
             </main>
         </div>
-
     </div>
+
+    <script>
+        // Simple hover effects for dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const profileBtn = document.querySelector('.group');
+            if (profileBtn) {
+                profileBtn.addEventListener('mouseenter', function () {
+                    this.querySelector('.hidden').classList.remove('hidden');
+                });
+
+                profileBtn.addEventListener('mouseleave', function () {
+                    this.querySelector('.group-hover\\:block').classList.add('hidden');
+                });
+            }
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
 </body>
 </html>

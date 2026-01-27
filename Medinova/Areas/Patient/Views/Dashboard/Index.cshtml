@@ -2,194 +2,342 @@
 @using System.Linq
 
 @{
-    ViewBag.Title = "Randevularım";
+    ViewBag.Title = "Hasta Paneli";
     Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
 }
 
-<!-- HEADER -->
-<div class="mb-8">
-    <h1 class="text-2xl font-extrabold text-navy">
-        Hoş geldiniz, @Session["fullName"]
-    </h1>
-    <p class="text-sm text-navy/60">
-        Randevu durumlarınızı ve yaklaşan planlarınızı buradan takip edebilirsiniz.
-    </p>
-</div>
+<!-- CLEAN DASHBOARD -->
+<div class="min-h-screen bg-gradient-to-b from-background to-white">
 
-<!-- STATS -->
-<div class="grid gap-4 md:grid-cols-3 mb-8">
-    <div class="rounded-xl bg-white p-4 shadow-sm border border-[#e2e8f0]">
-        <p class="text-xs font-bold uppercase text-navy/50">Aktif Randevu</p>
-        <div class="mt-2 text-2xl font-extrabold text-navy">
-            @(Model != null && Model.ActiveAppointments != null ? Model.ActiveAppointments.Count() : 0)
+    <!-- TOP BAR -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="mx-auto px-6 py-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl lg:text-3xl font-black text-navyDark">
+                        Hoş geldiniz, <span class="text-primary">@Session["fullName"]</span>
+                    </h1>
+                    <p class="text-navy/70 mt-2 max-w-2xl">
+                        Sağlık yolculuğunuzda yanınızdayız. Tüm sağlık süreçlerinizi tek bir panelden yönetin.
+                    </p>
+                </div>
+
+                <a href="/Appointment/MakeAppointment"
+                   class="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3
+                          text-sm font-bold text-white hover:bg-primaryDark transition-all shadow-md hover:shadow-lg">
+                    <span class="material-symbols-outlined text-base">add_circle</span>
+                    Yeni Randevu
+                </a>
+            </div>
+
+            <!-- SIMPLE STATS -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/20">
+                    <p class="text-sm font-bold text-navy/70 uppercase tracking-wide mb-2">Aktif Randevular</p>
+                    <div class="text-4xl font-black text-primary mb-1">
+                        @(Model?.ActiveAppointments?.Count() ?? 0)
+                    </div>
+                    <p class="text-sm text-navy/60">Devam eden randevularınız</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-xl p-6 border border-emerald-500/20">
+                    <p class="text-sm font-bold text-navy/70 uppercase tracking-wide mb-2">Geçmiş Randevular</p>
+                    <div class="text-4xl font-black text-emerald-600 mb-1">
+                        @(Model?.PastAppointments?.Count() ?? 0)
+                    </div>
+                    <p class="text-sm text-navy/60">Tamamlanan görüşmeler</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-red-500/10 to-red-500/5 rounded-xl p-6 border border-red-500/20">
+                    <p class="text-sm font-bold text-navy/70 uppercase tracking-wide mb-2">İptal Edilenler</p>
+                    <div class="text-4xl font-black text-red-600 mb-1">
+                        @(Model?.PassiveAppointments?.Count() ?? 0)
+                    </div>
+                    <p class="text-sm text-navy/60">Pasife alınan randevular</p>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="rounded-xl bg-white p-4 shadow-sm border border-[#e2e8f0]">
-        <p class="text-xs font-bold uppercase text-navy/50">Geçmiş Randevu</p>
-        <div class="mt-2 text-2xl font-extrabold text-navy">
-            @(Model != null && Model.PastAppointments != null ? Model.PastAppointments.Count() : 0)
+    <!-- MAIN CONTENT -->
+    <div class="mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- LEFT: UPCOMING APPOINTMENTS -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-black text-navyDark">Yaklaşan Randevular</h2>
+                            <p class="text-sm text-navy/60 mt-1">En yakın aktif randevularınız</p>
+                        </div>
+                        <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
+                           class="text-sm font-bold text-primary hover:text-primaryDark">
+                            Tümünü Gör →
+                        </a>
+                    </div>
+
+                    @if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
+                    {
+                        <div class="space-y-4">
+                            @foreach (var a in Model.ActiveAppointments.Take(3))
+                            {
+                                <div class="flex items-center justify-between p-4 rounded-lg border border-gray-200 hover:border-primary/40 transition-colors">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                            <span class="material-symbols-outlined text-xl">medical_services</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-navyDark">Dr. @(a.Doctor?.FullName)</p>
+                                            <div class="flex items-center gap-4 mt-1">
+                                                <span class="text-sm text-navy/70">
+                                                    <span class="material-symbols-outlined align-middle text-base">calendar_month</span>
+                                                    @(a.AppointmentDate?.ToString("dd MMM yyyy"))
+                                                </span>
+                                                <span class="text-sm text-navy/70">
+                                                    <span class="material-symbols-outlined align-middle text-base">schedule</span>
+                                                    @a.AppointmentTime
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex gap-2">
+                                        @using (Html.BeginForm(
+                                            "CancelMyAppointment",
+                                            "Dashboard",
+                                            new { area = "Patient", id = a.AppointmentId },
+                                            FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="text-sm font-bold text-red-600 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-50 transition-colors">
+                                                İptal Et
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        if (Model.ActiveAppointments.Count() > 3)
+                        {
+                            <div class="mt-6 text-center">
+                                <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
+                                   class="text-primary font-bold hover:text-primaryDark text-sm">
+                                    +@(Model.ActiveAppointments.Count() - 3) daha fazla randevu görüntüle
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-8">
+                            <span class="material-symbols-outlined text-4xl text-gray-400 mb-3">calendar_month</span>
+                            <p class="text-navy/70 font-medium">Aktif randevunuz bulunmuyor</p>
+                            <p class="text-sm text-navy/60 mt-1">Yeni bir randevu oluşturmak için yukarıdaki butonu kullanabilirsiniz.</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- HISTORY & CANCELLED TABLES -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    <!-- HISTORY -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-navyDark mb-4">Geçmiş Randevular</h3>
+
+                        @if (Model.PastAppointments != null && Model.PastAppointments.Any())
+                        {
+                            <div class="space-y-3">
+                                @foreach (var a in Model.PastAppointments.Take(4))
+                                {
+                                    <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                                        <div>
+                                            <p class="font-medium text-navy">@(a.Doctor?.FullName)</p>
+                                            <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd.MM.yyyy"))</p>
+                                        </div>
+                                        <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Tamamlandı</span>
+                                    </div>
+                                }
+                            </div>
+
+                            if (Model.PastAppointments.Count() > 4)
+                            {
+                                <div class="mt-4 text-center">
+                                    <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
+                                       class="text-sm text-primary font-bold hover:text-primaryDark">
+                                        +@(Model.PastAppointments.Count() - 4) daha
+                                    </a>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-sm text-navy/60 text-center py-4">Geçmiş randevunuz yok.</p>
+                        }
+                    </div>
+
+                    <!-- CANCELLED -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <h3 class="text-lg font-bold text-navyDark mb-4">İptal Edilenler</h3>
+
+                        @if (Model.PassiveAppointments != null && Model.PassiveAppointments.Any())
+                        {
+                            <div class="space-y-3">
+                                @foreach (var a in Model.PassiveAppointments.Take(4))
+                                {
+                                    <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
+                                        <div>
+                                            <p class="font-medium text-navy">@(a.Doctor?.FullName)</p>
+                                            <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd.MM.yyyy"))</p>
+                                        </div>
+                                        <span class="text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded">İptal Edildi</span>
+                                    </div>
+                                }
+                            </div>
+
+                            if (Model.PassiveAppointments.Count() > 4)
+                            {
+                                <div class="mt-4 text-center">
+                                    <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
+                                       class="text-sm text-red-600 font-bold hover:text-red-700">
+                                        +@(Model.PassiveAppointments.Count() - 4) daha
+                                    </a>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-sm text-navy/60 text-center py-4">İptal edilen randevunuz yok.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: QUICK ACTIONS & STATS -->
+            <div class="space-y-6">
+                <!-- QUICK STATS -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-navyDark mb-4">İstatistikler</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-navy">Tamamlanan</p>
+                                    <p class="text-xs text-navy/60">Geçmiş randevular</p>
+                                </div>
+                            </div>
+                            <span class="text-xl font-black text-emerald-600">@(Model?.PastAppointments?.Count() ?? 0)</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg bg-red-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-red-600">close</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-navy">İptal Edilen</p>
+                                    <p class="text-xs text-navy/60">Pasife alınanlar</p>
+                                </div>
+                            </div>
+                            <span class="text-xl font-black text-red-600">@(Model?.PassiveAppointments?.Count() ?? 0)</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                                    <span class="material-symbols-outlined text-primary">summarize</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-navy">Toplam</p>
+                                    <p class="text-xs text-navy/60">Tüm randevular</p>
+                                </div>
+                            </div>
+                            <span class="text-xl font-black text-primary">
+                                @((Model?.ActiveAppointments?.Count() ?? 0) + (Model?.PastAppointments?.Count() ?? 0) + (Model?.PassiveAppointments?.Count() ?? 0))
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-navyDark mb-4">Hızlı İşlemler</h3>
+                    <div class="space-y-3">
+                        <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
+                           class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                            <span class="material-symbols-outlined text-primary">calendar_month</span>
+                            <span class="font-medium flex-1">Tüm Randevularım</span>
+                            <span class="material-symbols-outlined text-sm text-navy/40 group-hover:text-primary">arrow_forward</span>
+                        </a>
+
+                        <a href="@Url.Action("Index", "AIAssistant", new { area = "Patient" })"
+                           class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                            <span class="material-symbols-outlined text-purple-600">smart_toy</span>
+                            <span class="font-medium flex-1">AI Asistan</span>
+                            <span class="material-symbols-outlined text-sm text-navy/40 group-hover:text-purple-600">arrow_forward</span>
+                        </a>
+
+                        <a href="@Url.Action("Edit", "Profile", new { area = "Patient" })"
+                           class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                            <span class="material-symbols-outlined text-emerald-600">settings</span>
+                            <span class="font-medium flex-1">Profil Ayarları</span>
+                            <span class="material-symbols-outlined text-sm text-navy/40 group-hover:text-emerald-600">arrow_forward</span>
+                        </a>
+
+                        <a href="#"
+                           class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group">
+                            <span class="material-symbols-outlined text-amber-600">description</span>
+                            <span class="font-medium flex-1">Sağlık Raporlarım</span>
+                            <span class="material-symbols-outlined text-sm text-navy/40 group-hover:text-amber-600">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- RECENT ACTIVITY -->
+                <div class="bg-white rounded-xl border border-gray-200 p-6">
+                    <h3 class="text-lg font-bold text-navyDark mb-4">Son Aktivite</h3>
+                    <div class="space-y-3">
+                        @if (Model.PastAppointments != null && Model.PastAppointments.Any())
+                        {
+                            foreach (var a in Model.PastAppointments.Take(2))
+                            {
+                                <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div class="h-8 w-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-emerald-600 text-sm">check</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-navy truncate">@(a.Doctor?.FullName)</p>
+                                        <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd MMM"))</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
+                        {
+                            foreach (var a in Model.ActiveAppointments.Take(2))
+                            {
+                                <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary text-sm">event</span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-navy truncate">@(a.Doctor?.FullName)</p>
+                                        <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd MMM"))</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-sm text-navy/60 text-center py-2">Henüz aktivite yok</p>
+                        }
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="rounded-xl bg-white p-4 shadow-sm border border-[#e2e8f0]">
-        <p class="text-xs font-bold uppercase text-navy/50">İptal Edilen</p>
-        <div class="mt-2 text-2xl font-extrabold text-navy">
-            @(Model != null && Model.PassiveAppointments != null ? Model.PassiveAppointments.Count() : 0)
-        </div>
-    </div>
-</div>
-
-<div class="grid gap-6">
-
-    <!-- AKTİF RANDEVULAR -->
-    <div class="rounded-xl bg-white p-6 shadow-sm border border-[#e2e8f0]">
-        <h2 class="text-lg font-bold text-navy">Aktif Randevular</h2>
-        <p class="text-sm text-navy/60 mb-4">
-            Yaklaşan randevularınızı buradan takip edebilirsiniz.
-        </p>
-
-        @if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
-        {
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-[#e2e8f0] text-sm">
-                    <thead class="bg-background-light text-navy/60">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Doktor</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Tarih</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Saat</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[#e2e8f0]">
-                        @foreach (var appointment in Model.ActiveAppointments)
-                        {
-                            <tr>
-                                <td class="px-4 py-3 text-navy">
-                                    @(appointment.Doctor != null ? appointment.Doctor.FullName : string.Empty)
-                                </td>
-                                <td class="px-4 py-3 text-navy">
-                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)
-                                </td>
-                                <td class="px-4 py-3 text-navy">
-                                    @appointment.AppointmentTime
-                                </td>
-                                <td class="px-4 py-3">
-                                    @using (Html.BeginForm(
-                                        "CancelMyAppointment",
-                                        "Dashboard",
-                                        new { area = "Patient", id = appointment.AppointmentId },
-                                        FormMethod.Post))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit"
-                                                class="text-xs font-bold text-red-600 hover:text-red-700">
-                                            Pasife Al
-                                        </button>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <p class="text-sm text-navy/60">
-                Aktif randevunuz bulunmuyor.
-            </p>
-        }
-    </div>
-
-    <!-- GEÇMİŞ RANDEVULAR -->
-    <div class="rounded-xl bg-white p-6 shadow-sm border border-[#e2e8f0]">
-        <h2 class="text-lg font-bold text-navy">Geçmiş Randevular</h2>
-        <p class="text-sm text-navy/60 mb-4">
-            Tamamlanan randevularınız listelenir.
-        </p>
-
-        @if (Model.PastAppointments != null && Model.PastAppointments.Any())
-        {
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-[#e2e8f0] text-sm">
-                    <thead class="bg-background-light text-navy/60">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Doktor</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Tarih</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Saat</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[#e2e8f0]">
-                        @foreach (var appointment in Model.PastAppointments)
-                        {
-                            <tr>
-                                <td class="px-4 py-3 text-navy">
-                                    @(appointment.Doctor != null ? appointment.Doctor.FullName : string.Empty)
-                                </td>
-                                <td class="px-4 py-3 text-navy">
-                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)
-                                </td>
-                                <td class="px-4 py-3 text-navy">
-                                    @appointment.AppointmentTime
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <p class="text-sm text-navy/60">
-                Geçmiş randevunuz bulunmuyor.
-            </p>
-        }
-    </div>
-
-    <!-- PASİF RANDEVULAR -->
-    <div class="rounded-xl bg-white p-6 shadow-sm border border-[#e2e8f0]">
-        <h2 class="text-lg font-bold text-navy">Pasife Alınan Randevular</h2>
-        <p class="text-sm text-navy/60 mb-4">
-            İptal ettiğiniz randevular burada görünür.
-        </p>
-
-        @if (Model.PassiveAppointments != null && Model.PassiveAppointments.Any())
-        {
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-[#e2e8f0] text-sm">
-                    <thead class="bg-background-light text-navy/60">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Doktor</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Tarih</th>
-                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Saat</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-[#e2e8f0]">
-                        @foreach (var appointment in Model.PassiveAppointments)
-                        {
-                            <tr>
-                                <td class="px-4 py-3 text-navy">
-                                    @(appointment.Doctor != null ? appointment.Doctor.FullName : string.Empty)
-                                </td>
-                                <td class="px-4 py-3 text-navy">
-                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)
-                                </td>
-                                <td class="px-4 py-3 text-navy">
-                                    @appointment.AppointmentTime
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        }
-        else
-        {
-            <p class="text-sm text-navy/60">
-                Pasife alınmış randevunuz bulunmuyor.
-            </p>
-        }
-    </div>
-
 </div>

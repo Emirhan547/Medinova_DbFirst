@@ -6,59 +6,275 @@
     Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
 }
 
-<div class="mb-8">
-    <h1 class="text-2xl font-extrabold text-navy">Randevularım</h1>
-    <p class="text-sm text-navy/60">Aldığınız tüm randevular ve durumları burada listelenir.</p>
+<!-- PAGE HEADER -->
+<div class="mb-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl font-black text-navyDark">Randevularım</h1>
+            <p class="text-navy/70 mt-1 text-sm">
+                Aldığınız tüm randevular ve durumları burada listelenir. Geçmiş ve gelecek randevularınızı görüntüleyin.
+            </p>
+        </div>
+        <a href="@Url.Action("Index", "Default", new { area = "" })#appointmentForm"
+           class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-primaryDark transition-all shadow hover:shadow-md">
+            <span class="material-symbols-outlined text-sm">add_circle</span>
+            Yeni Randevu Al
+        </a>
+    </div>
+
+    <!-- QUICK FILTERS -->
+    <div class="flex items-center gap-3 mt-4">
+        <span class="text-sm font-medium text-navy/70">Filtrele:</span>
+        <div class="flex flex-wrap gap-2">
+            <button onclick="filterAppointments('all')" class="filter-btn active px-3 py-1.5 rounded-md bg-primary text-white text-xs font-bold">
+                Tümü
+            </button>
+            <button onclick="filterAppointments('aktif')" class="filter-btn px-3 py-1.5 rounded-md bg-gray-100 text-navy hover:bg-gray-200 text-xs font-medium">
+                Aktif
+            </button>
+            <button onclick="filterAppointments('geçmiş')" class="filter-btn px-3 py-1.5 rounded-md bg-gray-100 text-navy hover:bg-gray-200 text-xs font-medium">
+                Geçmiş
+            </button>
+            <button onclick="filterAppointments('iptal')" class="filter-btn px-3 py-1.5 rounded-md bg-gray-100 text-navy hover:bg-gray-200 text-xs font-medium">
+                İptal Edilen
+            </button>
+        </div>
+    </div>
 </div>
 
-<div class="rounded-xl bg-white p-6 shadow-sm border border-[#e2e8f0]">
-    <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-navy">Randevu Listesi</h2>
-        <a href="@Url.Action("Index", "Default", new { area = "" })#appointmentForm" class="text-xs font-bold text-primary hover:text-primary/80">Yeni Randevu Al</a>
+<!-- APPOINTMENTS TABLE -->
+<div class="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+    <div class="px-5 py-3 border-b border-gray-200">
+        <h2 class="text-lg font-bold text-navyDark">Randevu Listesi</h2>
     </div>
 
     @if (Model != null && Model.Any())
     {
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-[#e2e8f0] text-sm">
-                <thead class="bg-background-light text-navy/60">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Doktor</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Tarih</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Saat</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Durum</th>
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="px-5 py-3 text-left text-xs font-bold text-navy/70 uppercase tracking-wider">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">medical_services</span>
+                                Doktor
+                            </div>
+                        </th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-navy/70 uppercase tracking-wider">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">calendar_month</span>
+                                Tarih
+                            </div>
+                        </th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-navy/70 uppercase tracking-wider">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">schedule</span>
+                                Saat
+                            </div>
+                        </th>
+                      <th class="px-5 py-3 text-left text-xs font-bold text-navy/70 uppercase tracking-wider">
+                          <div class="flex items-center gap-2">
+                              <span class="material-symbols-outlined text-sm">check_circle</span>
+                              Durum
+                          </div>
+                      </th>
+                        <th class="px-5 py-3 text-left text-xs font-bold text-navy/70 uppercase tracking-wider">
+                            <div class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">more_vert</span>
+                                İşlemler
+                            </div>
+                        </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-[#e2e8f0]">
-                    @foreach (var appointment in Model)
+                <tbody class="divide-y divide-gray-100">
+                    @foreach (var appointment in Model.OrderByDescending(a => a.AppointmentDate))
                     {
+                        // Durumları Türkçeleştir
                         var statusLabel = appointment.Status ?? "Planlandı";
-                        var statusClass = statusLabel == "Cancelled" ? "text-red-600 bg-red-50" :
-                            statusLabel == "Completed" ? "text-emerald-600 bg-emerald-50" :
-                            "text-primary bg-primary/10";
-                        <tr>
-                            <td class="px-4 py-3 text-navy">
-                                @(appointment.Doctor != null ? appointment.Doctor.FullName : "-")
+                        var turkishStatus = "";
+                        var statusClass = "";
+
+                        if (statusLabel == "Cancelled" || statusLabel == "İptal Edildi")
+                        {
+                            turkishStatus = "İptal Edildi";
+                            statusClass = "bg-red-50 text-red-700 border-red-200";
+                        }
+                        else if (statusLabel == "Completed" || statusLabel == "Tamamlandı")
+                        {
+                            turkishStatus = "Tamamlandı";
+                            statusClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                        }
+                        else if (statusLabel == "Active" || statusLabel == "Aktif")
+                        {
+                            turkishStatus = "Aktif";
+                            statusClass = "bg-blue-50 text-primary border-blue-200";
+                        }
+                        else
+                        {
+                            turkishStatus = "Planlandı";
+                            statusClass = "bg-blue-50 text-primary border-blue-200";
+                        }
+
+                        // Günü Türkçeleştir
+                        var turkishDays = new Dictionary<DayOfWeek, string>
+                            {
+                            { DayOfWeek.Monday, "Pazartesi" },
+                            { DayOfWeek.Tuesday, "Salı" },
+                            { DayOfWeek.Wednesday, "Çarşamba" },
+                            { DayOfWeek.Thursday, "Perşembe" },
+                            { DayOfWeek.Friday, "Cuma" },
+                            { DayOfWeek.Saturday, "Cumartesi" },
+                            { DayOfWeek.Sunday, "Pazar" }
+                        };
+
+                        var dayName = appointment.AppointmentDate?.DayOfWeek;
+                        var turkishDay = dayName.HasValue ? turkishDays[dayName.Value] : "";
+
+                        <tr class="appointment-row hover:bg-gray-50/50 transition-colors"
+                            data-status="@turkishStatus.ToLower()">
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <span class="material-symbols-outlined text-primary text-sm">person</span>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-navyDark text-sm">@(appointment.Doctor?.FullName ?? "-")</p>
+                                        <p class="text-xs text-navy/60">Randevu</p>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-4 py-3 text-navy">
-                                @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : "-")
+                            <td class="px-5 py-3">
+                                <div class="font-medium text-navy text-sm">
+                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd MMMM yyyy") : "-")
+                                </div>
+                                <div class="text-xs text-navy/60">
+                                    @turkishDay
+                                </div>
                             </td>
-                            <td class="px-4 py-3 text-navy">
-                                @appointment.AppointmentTime
+                            <td class="px-5 py-3">
+                                <div class="inline-flex items-center gap-1.5 bg-gray-100 px-2.5 py-1 rounded-md">
+                                    <span class="material-symbols-outlined text-sm text-navy/70">schedule</span>
+                                    <span class="font-bold text-navy text-sm">@appointment.AppointmentTime</span>
+                                </div>
                             </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold @statusClass">
-                                    @statusLabel
+                            <td class="px-5 py-3">
+                                <span class="inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-bold @statusClass">
+                                    @if (turkishStatus == "İptal Edildi")
+                                    {
+                                        <span class="material-symbols-outlined text-xs">close</span>
+                                    }
+                                    else if (turkishStatus == "Tamamlandı")
+                                    {
+                                        <span class="material-symbols-outlined text-xs">check</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="material-symbols-outlined text-xs">schedule</span>
+                                    }
+                                    @turkishStatus
                                 </span>
+                            </td>
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-1.5">
+                                    @if (turkishStatus != "İptal Edildi" && turkishStatus != "Tamamlandı")
+                                    {
+                                        using (Html.BeginForm(
+                                            "CancelMyAppointment",
+                                            "Dashboard",
+                                            new { area = "Patient", id = appointment.AppointmentId },
+                                            FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="inline-flex items-center gap-1 rounded-md bg-red-50 px-2.5 py-1 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors">
+                                                <span class="material-symbols-outlined text-xs">close</span>
+                                                İptal Et
+                                            </button>
+                                        }
+                                    }
+                                    <button onclick="showDetails(@appointment.AppointmentId)"
+                                            class="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2.5 py-1 text-xs font-bold text-navy hover:bg-gray-200 transition-colors">
+                                        <span class="material-symbols-outlined text-xs">visibility</span>
+                                        Detay
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
+
+        <!-- SUMMARY -->
+        <div class="px-5 py-3 border-t border-gray-200 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <div class="text-xs text-navy/60">
+                    Toplam <span class="font-bold text-navy">@Model.Count</span> randevu bulundu
+                </div>
+                <div class="flex items-center gap-3 text-xs">
+                    <div class="flex items-center gap-1.5">
+                        <div class="h-2.5 w-2.5 rounded-full bg-primary"></div>
+                        <span class="text-navy/70">Aktif</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="h-2.5 w-2.5 rounded-full bg-emerald-500"></div>
+                        <span class="text-navy/70">Tamamlanan</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <div class="h-2.5 w-2.5 rounded-full bg-red-500"></div>
+                        <span class="text-navy/70">İptal Edilen</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
     else
     {
-        <p class="text-sm text-navy/60">Henüz randevunuz bulunmuyor.</p>
+        <div class="py-10 text-center">
+            <div class="mb-3">
+                <span class="material-symbols-outlined text-4xl text-gray-400">calendar_month</span>
+            </div>
+            <h3 class="text-base font-bold text-navy/70 mb-1.5">Henüz randevunuz bulunmuyor</h3>
+            <p class="text-navy/60 max-w-md mx-auto mb-4 text-sm">
+                Sağlık hizmetlerimizden yararlanmak için yeni bir randevu oluşturabilirsiniz.
+            </p>
+            <a href="@Url.Action("Index", "Default", new { area = "" })#appointmentForm"
+               class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-primaryDark transition-colors">
+                <span class="material-symbols-outlined text-sm">add_circle</span>
+                İlk Randevunuzu Oluşturun
+            </a>
+        </div>
     }
 </div>
+
+<script>
+    function filterAppointments(status) {
+        // Active button
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-primary', 'text-white');
+            btn.classList.add('bg-gray-100', 'text-navy');
+        });
+        event.target.classList.add('active', 'bg-primary', 'text-white');
+        event.target.classList.remove('bg-gray-100', 'text-navy');
+
+        // Filter rows
+        const rows = document.querySelectorAll('.appointment-row');
+        rows.forEach(row => {
+            if (status === 'all') {
+                row.style.display = '';
+            } else {
+                const rowStatus = row.getAttribute('data-status');
+                if (rowStatus.includes(status)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    function showDetails(appointmentId) {
+        // Burada randevu detaylarını gösterecek modal açılabilir
+        alert('Randevu detayları görüntüleniyor (ID: ' + appointmentId + ')');
+    }
+</script>

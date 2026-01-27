@@ -4,122 +4,386 @@
     Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
 }
 
-<div class="rounded-xl bg-white p-6 shadow-sm border border-[#e2e8f0]">
-    <div class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-6">
-        <div>
-            <h1 class="text-2xl font-extrabold text-navy">Profilimi Düzenle</h1>
-            <p class="text-sm text-navy/60">Kişisel bilgilerinizi ve şifre ayarlarınızı güncelleyin.</p>
+<div class="max-w-4xl mx-auto">
+    <!-- PAGE HEADER -->
+    <div class="mb-10">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-black text-navyDark">Profilimi Düzenle</h1>
+                <p class="text-navy/70 mt-2 max-w-2xl">
+                    Kişisel bilgilerinizi, sağlık verilerinizi ve şifre ayarlarınızı güncelleyin.
+                </p>
+            </div>
+            <span class="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
+                <span class="material-symbols-outlined text-base">person</span>
+                Hasta Profili
+            </span>
         </div>
-        <span class="inline-flex items-center rounded-full border border-primary px-3 py-1 text-xs font-bold text-primary">Hasta</span>
     </div>
 
+    <!-- SUCCESS MESSAGE -->
     @if (TempData["Success"] != null)
     {
-        <div class="mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-            @TempData["Success"]
+        <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                <div>
+                    <p class="font-bold text-emerald-800">@TempData["Success"]</p>
+                </div>
+            </div>
         </div>
     }
 
-    @Html.ValidationSummary(true, "", new { @class = "text-sm text-red-600 mb-4" })
+    <!-- VALIDATION SUMMARY -->
+    @Html.ValidationSummary(true, "", new { @class = "mb-6 rounded-xl border border-red-200 bg-red-50/50 p-4 text-red-700" })
 
-    @using (Html.BeginForm("Edit", "Profile", new { area = "Patient" }, FormMethod.Post, new { @class = "grid gap-6", enctype = "multipart/form-data" }))
+    @using (Html.BeginForm("Edit", "Profile", new { area = "Patient" }, FormMethod.Post, new { @class = "space-y-8", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
         @Html.HiddenFor(m => m.ImageUrl)
-        <div class="flex flex-col gap-4 rounded-xl border border-[#e2e8f0] bg-background-light p-4 md:flex-row md:items-center">
-            <div class="flex items-center gap-4">
-                <div class="h-20 w-20 overflow-hidden rounded-full border border-primary/30 bg-white">
-                    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
-                    {
-                        <img src="@Model.ImageUrl" alt="Profil görseli" class="h-full w-full object-cover" />
-                    }
-                    else
-                    {
-                        <div class="flex h-full w-full items-center justify-center text-primary">
-                            <span class="material-symbols-outlined text-3xl">person</span>
+
+        <!-- PROFILE IMAGE CARD -->
+        <div class="bg-white rounded-2xl shadow-card border border-gray-200 p-6">
+            <div class="flex flex-col md:flex-row md:items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div class="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white shadow-lg">
+                        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                        {
+                            <img id="profileImagePreview" src="@Model.ImageUrl" alt="Profil görseli" class="h-full w-full object-cover" />
+                        }
+                        else
+                        {
+                            <div id="profileImagePlaceholder" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10">
+                                <span class="material-symbols-outlined text-3xl text-primary">person</span>
+                            </div>
+                        }
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-navyDark">Profil Görseli</h3>
+                        <p class="text-sm text-navy/60 mt-1">JPG, PNG formatında, max 5MB</p>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <div class="space-y-3">
+                        <!-- GÖRSEL SEÇME BUTONU -->
+                        <div class="relative">
+                            <input type="file"
+                                   id="imageInput"
+                                   name="ImageFile"
+                                   accept="image/*"
+                                   class="hidden" />
+                            <label for="imageInput"
+                                   class="flex items-center gap-3 rounded-xl border-2 border-dashed border-gray-300 p-4 hover:border-primary/50 transition-colors cursor-pointer hover:bg-gray-50">
+                                <span class="material-symbols-outlined text-primary">upload</span>
+                                <div>
+                                    <p class="font-medium text-navy">Dosya Seç</p>
+                                    <p class="text-sm text-navy/60">Görsel yüklemek için tıklayın</p>
+                                </div>
+                            </label>
                         </div>
-                    }
-                </div>
-                <div>
-                    <p class="text-sm font-semibold text-navy">Profil Görseli</p>
-                    <p class="text-xs text-navy/60">Güncel profil fotoğrafınızı yükleyin.</p>
-                </div>
-            </div>
-            <div class="flex-1">
-                <input type="file"
-                       name="ImageFile"
-                       accept="image/*"
-                       class="mt-2 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" />
-            </div>
-        </div>
-        <div class="grid gap-4 md:grid-cols-2">
-            <div>
-                <label class="text-xs font-bold uppercase text-navy/50">Ad</label>
-                @Html.TextBoxFor(m => m.FirstName, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" })
-                @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-xs text-red-600" })
-            </div>
-            <div>
-                <label class="text-xs font-bold uppercase text-navy/50">Soyad</label>
-                @Html.TextBoxFor(m => m.LastName, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" })
-                @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-xs text-red-600" })
-            </div>
-            <div class="md:col-span-2">
-                <label class="text-xs font-bold uppercase text-navy/50">Kullanıcı Adı</label>
-                @Html.TextBoxFor(m => m.UserName, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" })
-                @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-xs text-red-600" })
-            </div>
-        </div>
-        <div class="rounded-xl border border-[#e2e8f0] bg-background-light p-4">
-            <h2 class="text-sm font-bold text-navy">Sağlık Bilgileri</h2>
-            <p class="text-xs text-navy/60 mb-4">Doktorlarınızın görebileceği temel sağlık bilgilerinizi girin.</p>
-            <div class="grid gap-4 md:grid-cols-3">
-                <div>
-                    <label class="text-xs font-bold uppercase text-navy/50">Boy (cm)</label>
-                    @Html.TextBoxFor(m => m.HeightCm, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary", type = "number", min = "30", max = "250" })
-                    @Html.ValidationMessageFor(m => m.HeightCm, "", new { @class = "text-xs text-red-600" })
-                </div>
-                <div>
-                    <label class="text-xs font-bold uppercase text-navy/50">Kilo (kg)</label>
-                    @Html.TextBoxFor(m => m.WeightKg, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary", type = "number", min = "2", max = "500" })
-                    @Html.ValidationMessageFor(m => m.WeightKg, "", new { @class = "text-xs text-red-600" })
-                </div>
-                <div>
-                    <label class="text-xs font-bold uppercase text-navy/50">Kan Grubu</label>
-                    @Html.TextBoxFor(m => m.BloodType, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary", placeholder = "A+ / O- vb." })
-                    @Html.ValidationMessageFor(m => m.BloodType, "", new { @class = "text-xs text-red-600" })
-                </div>
-            </div>
-        </div>
-        <div class="rounded-xl border border-[#e2e8f0] bg-background-light p-4">
-            <h2 class="text-sm font-bold text-navy">Şifre Güncelle</h2>
-            <p class="text-xs text-navy/60 mb-4">Şifrenizi değiştirmek istiyorsanız aşağıdaki alanları doldurun.</p>
-            <div class="grid gap-4 md:grid-cols-3">
-                <div>
-                    <label class="text-xs font-bold uppercase text-navy/50">Mevcut Şifre</label>
-                    @Html.PasswordFor(m => m.CurrentPassword, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" })
-                    @Html.ValidationMessageFor(m => m.CurrentPassword, "", new { @class = "text-xs text-red-600" })
-                </div>
-                <div>
-                    <label class="text-xs font-bold uppercase text-navy/50">Yeni Şifre</label>
-                    @Html.PasswordFor(m => m.NewPassword, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" })
-                    @Html.ValidationMessageFor(m => m.NewPassword, "", new { @class = "text-xs text-red-600" })
-                </div>
-                <div>
-                    <label class="text-xs font-bold uppercase text-navy/50">Yeni Şifre (Tekrar)</label>
-                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "mt-1 w-full rounded-lg border-[#e2e8f0] text-sm focus:border-primary focus:ring-primary" })
-                    @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-xs text-red-600" })
+
+                        <!-- DOSYA BİLGİSİ -->
+                        <div id="fileInfo" class="hidden">
+                            <div class="flex items-center justify-between rounded-lg bg-gray-50 p-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                                    <div>
+                                        <p id="fileName" class="text-sm font-medium text-navy"></p>
+                                        <p id="fileSize" class="text-xs text-navy/60"></p>
+                                    </div>
+                                </div>
+                                <button type="button" onclick="removeFile()" class="text-red-500 hover:text-red-700">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- NOTLAR -->
+                        <div class="flex items-start gap-2 text-xs text-navy/60">
+                            <span class="material-symbols-outlined text-sm">info</span>
+                            <p>Önerilen boyut: 400x400px. Otomatik olarak kırpılacaktır.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="flex flex-col gap-3 sm:flex-row sm:justify-end">
-            <a class="inline-flex items-center justify-center rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-50"
-               href="@Url.Action("Index", "Dashboard", new { area = "Patient" })">
+        <!-- PERSONAL INFO CARD -->
+        <div class="bg-white rounded-2xl shadow-card border border-gray-200 p-6">
+            <div class="mb-6">
+                <h3 class="text-xl font-black text-navyDark flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary">person</span>
+                    Kişisel Bilgiler
+                </h3>
+                <p class="text-sm text-navy/60 mt-1">Temel kimlik bilgileriniz</p>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">badge</span>
+                            Ad
+                        </span>
+                    </label>
+                    @Html.TextBoxFor(m => m.FirstName, new
+                    {
+                        @class = "w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                        placeholder = "Adınızı girin"
+                    })
+                    @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">badge</span>
+                            Soyad
+                        </span>
+                    </label>
+                    @Html.TextBoxFor(m => m.LastName, new
+                    {
+                        @class = "w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                        placeholder = "Soyadınızı girin"
+                    })
+                    @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">alternate_email</span>
+                            Kullanıcı Adı
+                        </span>
+                    </label>
+                    @Html.TextBoxFor(m => m.UserName, new
+                    {
+                        @class = "w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                        placeholder = "Kullanıcı adınızı girin"
+                    })
+                    @Html.ValidationMessageFor(m => m.UserName, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+            </div>
+        </div>
+
+        <!-- HEALTH INFO CARD -->
+        <div class="bg-white rounded-2xl shadow-card border border-gray-200 p-6">
+            <div class="mb-6">
+                <h3 class="text-xl font-black text-navyDark flex items-center gap-3">
+                    <span class="material-symbols-outlined text-emerald-600">monitor_heart</span>
+                    Sağlık Bilgileri
+                </h3>
+                <p class="text-sm text-navy/60 mt-1">Doktorlarınızın görebileceği temel sağlık bilgileriniz</p>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3">
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">straighten</span>
+                            Boy (cm)
+                        </span>
+                    </label>
+                    <div class="relative">
+                        @Html.TextBoxFor(m => m.HeightCm, new
+                        {
+                            @class = "w-full rounded-xl border border-gray-300 px-4 py-3 pl-12 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                            type = "number",
+                            min = "30",
+                            max = "250",
+                            placeholder = "Örn: 175"
+                        })
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy/60">cm</span>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.HeightCm, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">weight</span>
+                            Kilo (kg)
+                        </span>
+                    </label>
+                    <div class="relative">
+                        @Html.TextBoxFor(m => m.WeightKg, new
+                        {
+                            @class = "w-full rounded-xl border border-gray-300 px-4 py-3 pl-12 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                            type = "number",
+                            min = "2",
+                            max = "500",
+                            placeholder = "Örn: 70"
+                        })
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-navy/60">kg</span>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.WeightKg, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">bloodtype</span>
+                            Kan Grubu
+                        </span>
+                    </label>
+                    <div class="relative">
+                        @Html.TextBoxFor(m => m.BloodType, new
+                        {
+                            @class = "w-full rounded-xl border border-gray-300 px-4 py-3 pl-12 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                            placeholder = "A+ / O- / B+ vb."
+                        })
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-navy/60">bloodtype</span>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.BloodType, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+            </div>
+        </div>
+
+        <!-- PASSWORD CARD -->
+        <div class="bg-white rounded-2xl shadow-card border border-gray-200 p-6">
+            <div class="mb-6">
+                <h3 class="text-xl font-black text-navyDark flex items-center gap-3">
+                    <span class="material-symbols-outlined text-amber-600">lock</span>
+                    Şifre Güncelle
+                </h3>
+                <p class="text-sm text-navy/60 mt-1">Şifrenizi değiştirmek istiyorsanız aşağıdaki alanları doldurun</p>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3">
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">lock</span>
+                            Mevcut Şifre
+                        </span>
+                    </label>
+                    @Html.PasswordFor(m => m.CurrentPassword, new
+                    {
+                        @class = "w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                        placeholder = "••••••••"
+                    })
+                    @Html.ValidationMessageFor(m => m.CurrentPassword, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">lock_reset</span>
+                            Yeni Şifre
+                        </span>
+                    </label>
+                    @Html.PasswordFor(m => m.NewPassword, new
+                    {
+                        @class = "w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                        placeholder = "••••••••"
+                    })
+                    @Html.ValidationMessageFor(m => m.NewPassword, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-navy/70 mb-2">
+                        <span class="flex items-center gap-1">
+                            <span class="material-symbols-outlined text-base">lock_reset</span>
+                            Yeni Şifre (Tekrar)
+                        </span>
+                    </label>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new
+                    {
+                        @class = "w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-primary focus:ring-2 focus:ring-primary/30 transition-all",
+                        placeholder = "••••••••"
+                    })
+                    @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-xs text-red-600 mt-1" })
+                </div>
+            </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="flex flex-col sm:flex-row gap-4 justify-end">
+            <a href="@Url.Action("Index", "Dashboard", new { area = "Patient" })"
+               class="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-300 px-6 py-3 text-sm font-bold text-navy hover:bg-gray-50 transition-colors">
+                <span class="material-symbols-outlined text-base">arrow_back</span>
                 Panele Dön
             </a>
-            <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2 text-sm font-bold text-white hover:bg-primary/90">
+            <button type="submit"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 text-sm font-bold text-white hover:bg-primaryDark transition-all shadow-md hover:shadow-lg">
+                <span class="material-symbols-outlined text-base">save</span>
                 Bilgileri Kaydet
             </button>
         </div>
     }
 </div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const profileImagePreview = document.getElementById('profileImagePreview');
+    const profileImagePlaceholder = document.getElementById('profileImagePlaceholder');
+
+    imageInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+
+            // Dosya boyutu kontrolü (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Dosya boyutu 5MB\'dan büyük olamaz!');
+                this.value = '';
+                return;
+            }
+
+            // Dosya bilgilerini göster
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileInfo.classList.remove('hidden');
+
+            // Önizleme
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (profileImagePreview) {
+                    profileImagePreview.src = e.target.result;
+                } else {
+                    // Yeni görsel oluştur
+                    const img = document.createElement('img');
+                    img.id = 'profileImagePreview';
+                    img.src = e.target.result;
+                    img.alt = 'Profil görseli';
+                    img.className = 'h-full w-full object-cover';
+
+                    if (profileImagePlaceholder) {
+                        profileImagePlaceholder.parentNode.replaceChild(img, profileImagePlaceholder);
+                    }
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function removeFile() {
+        imageInput.value = '';
+        fileInfo.classList.add('hidden');
+
+        // Önizlemeyi sıfırla
+        if (profileImagePreview && '@(!string.IsNullOrWhiteSpace(Model.ImageUrl))' === 'True') {
+            // Orijinal görsele geri dön
+            profileImagePreview.src = '@Model.ImageUrl';
+        } else if (profileImagePreview) {
+            // Yer tutucuya geri dön
+            const placeholder = document.createElement('div');
+            placeholder.id = 'profileImagePlaceholder';
+            placeholder.className = 'flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/20 to-primary/10';
+            placeholder.innerHTML = '<span class="material-symbols-outlined text-3xl text-primary">person</span>';
+
+            profileImagePreview.parentNode.replaceChild(placeholder, profileImagePreview);
+        }
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+</script>

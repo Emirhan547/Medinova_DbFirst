@@ -1,72 +1,187 @@
 ﻿@model Medinova.Dtos.DoctorAppointmentOverviewDto
 @using System
 @using System.Linq
+
 @{
     Layout = "~/Areas/Doctor/Views/Shared/_DoctorLayout.cshtml";
 }
 
+<div class="max-w-7xl mx-auto">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Randevular</h1>
+                <p class="text-gray-600 mt-1">@Model.DoctorName için aktif randevu özeti</p>
+            </div>
 
-        <div class="mb-8">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div class="flex items-center gap-3">
+              
+                <button class="px-4 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">filter_list</span>
+                    Filtrele
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
                 <div>
-
-                    <h1 class="text-2xl font-extrabold text-navy-accent">Randevular</h1>
-                    <p class="text-sm text-gray-500">@Model.DoctorName için aktif randevular</p>
+                    <p class="text-sm text-gray-500">Toplam Aktif</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">@(Model?.ActiveAppointments?.Count() ?? 0)</p>
                 </div>
-                <div class="flex flex-wrap gap-3">
-                    <div class="rounded-lg bg-white px-4 py-3 shadow-sm border border-gray-200">
-                        <p class="text-xs font-bold uppercase text-gray-400">Aktif</p>
-                        <p class="text-lg font-extrabold text-navy-accent">@(Model != null && Model.ActiveAppointments != null ? Model.ActiveAppointments.Count() : 0)</p>
-                    </div>
-                    <div class="rounded-lg bg-white px-4 py-3 shadow-sm border border-gray-200">
-                        <p class="text-xs font-bold uppercase text-gray-400">Bugün</p>
-                        <p class="text-lg font-extrabold text-navy-accent">@(Model != null && Model.ActiveAppointments != null ? Model.ActiveAppointments.Count(a => a.AppointmentDate.HasValue && a.AppointmentDate.Value.Date == DateTime.Today) : 0)</p>
-                    </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">event_available</span>
                 </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
-            @if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
-            {
-                <div class="overflow-x-auto">
- 
-                            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                                <thead class="bg-gray-50 text-gray-500">
-                                    <tr>
- 
-                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Hasta</th>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Tarih</th>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Saat</th>
-                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">İşlem</th>
-                                    </tr>
-                                </thead>
-                          
-                                <tbody class="divide-y divide-gray-200">
-                                    @foreach (var appointment in Model.ActiveAppointments)
-                                    {
-                                        <tr>
-                                            
-                                            <td class="px-4 py-3 text-gray-700">@appointment.FullName</td>
-                                            <td class="px-4 py-3 text-gray-700">@(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)</td>
-                                            <td class="px-4 py-3 text-gray-700">@appointment.AppointmentTime</td>
-                                            <td class="px-4 py-3 text-gray-700">
-                                                @using (Html.BeginForm("Deactivate", "Dashboard", new { area = "Doctor", id = appointment.AppointmentId }, FormMethod.Post))
-                                                {
-                                                    
-                                                    <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-700">Pasife Al</button>
-                                                }
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Bugün</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        @(Model?.ActiveAppointments?.Count(a =>
+                            a.AppointmentDate.HasValue &&
+                            a.AppointmentDate.Value.Date == DateTime.Today) ?? 0)
+                    </p>
                 </div>
-            }
-            else
-            {
-                
-                <p class="text-sm text-gray-500">Aktif randevu bulunmuyor.</p>
-            }
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">today</span>
+                </div>
+            </div>
         </div>
-    
+
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Bu Hafta</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">
+                        @(Model?.ActiveAppointments?.Count(a =>
+                            a.AppointmentDate.HasValue &&
+                            a.AppointmentDate.Value >= DateTime.Today &&
+                            a.AppointmentDate.Value <= DateTime.Today.AddDays(7)) ?? 0)
+                    </p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">calendar_month</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Beklemede</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">3</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">schedule</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Appointments Table -->
+    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-semibold text-gray-900">Aktif Randevular</h2>
+                    <p class="text-sm text-gray-500 mt-1">Henüz tamamlanmamış randevular</p>
+                </div>
+                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                    @(Model?.ActiveAppointments?.Count() ?? 0) randevu
+                </span>
+            </div>
+        </div>
+
+        @if (Model.ActiveAppointments != null && Model.ActiveAppointments.Any())
+        {
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Hasta
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tarih
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Saat
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                İşlem
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var appointment in Model.ActiveAppointments)
+                        {
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                                            <span class="material-symbols-outlined text-blue-600 text-sm">person</span>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-900">@appointment.FullName</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-gray-900">
+                                        @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : "")
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-sm text-gray-900">@appointment.AppointmentTime</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="showDetails(@appointment.AppointmentId)"
+                                                class="text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-3 py-1 rounded-lg transition-colors">
+                                            Detay
+                                        </button>
+                                        @using (Html.BeginForm(
+                                            "Deactivate",
+                                            "Dashboard",
+                                            new { area = "Doctor", id = appointment.AppointmentId },
+                                            FormMethod.Post))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit"
+                                                    class="text-sm text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-lg transition-colors">
+                                                İptal Et
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="px-6 py-12 text-center">
+                <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-gray-400 text-2xl">event_available</span>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Aktif randevu bulunmuyor</h3>
+                <p class="text-gray-500 mb-6">Bugün için aktif bir randevu kaydınız bulunmamaktadır.</p>
+
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function showDetails(appointmentId) {
+        // Burada randevu detaylarını gösterecek modal açılabilir
+        alert('Randevu detayları görüntüleniyor (ID: ' + appointmentId + ')');
+    }
+</script>
