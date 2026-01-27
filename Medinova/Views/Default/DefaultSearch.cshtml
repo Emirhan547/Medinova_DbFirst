@@ -1,23 +1,176 @@
-﻿﻿﻿﻿<div class="container-fluid bg-primary bg-gradient my-5 py-5" id="arama">
+﻿<div class="container-fluid bg-primary bg-gradient my-5 py-5" id="arama">
     <div class="container py-5">
         <div class="text-center mx-auto mb-5" style="max-width: 500px;">
-            <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">Doktorunu Bul</h5>
+            <h5 class="d-inline-block text-white text-uppercase border-bottom border-5">
+                Doktorunu Bul
+            </h5>
             <h1 class="display-4 mb-4">Uzman Sağlık Profesyonelleri</h1>
             <p class="text-white-50 fw-normal">
                 Bölüm ve anahtar kelime ile arama yaparak size en uygun uzmanları kolayca bulun.
             </p>
         </div>
+
         <div class="mx-auto" style="width: 100%; max-width: 600px;">
             <div class="input-group shadow-lg rounded-4 overflow-hidden">
-                <select class="form-select border-primary w-25" style="height: 60px;">
-                    <option selected>Bölüm</option>
+                <select class="form-select border-primary w-25"
+                        style="height: 60px;"
+                        id="default-search-department">
+                    <option value="" selected>Bölüm</option>
                     <option value="1">Kardiyoloji</option>
                     <option value="2">Dahiliye</option>
                     <option value="3">Ortopedi</option>
                 </select>
-                <input type="text" class="form-control border-primary w-50" placeholder="Anahtar kelime">
-                <button class="btn btn-dark border-0 w-25">Ara</button>
+
+                <input type="text"
+                       class="form-control border-primary w-50"
+                       placeholder="Anahtar kelime"
+                       id="default-search-keyword">
+
+                <button class="btn btn-dark border-0 w-25"
+                        type="button"
+                        id="default-search-button">
+                    Ara
+                </button>
+            </div>
+
+            <div class="mt-4 text-start text-white"
+                 id="popular-search-results"
+                 aria-live="polite"></div>
+        </div>
+    </div>
+</div>
+
+<!-- SEARCH RESULT MODAL (Bootstrap 4) -->
+<div class="modal fade" id="searchResultModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title">Arama Sonuçları</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group" id="search-modal-results"></ul>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(function () {
+
+        var searchButton = $("#default-search-button");
+        var searchInput = $("#default-search-keyword");
+        var departmentSelect = $("#default-search-department");
+        var resultsContainer = $("#popular-search-results");
+        var modalResults = $("#search-modal-results");
+
+        var popularSearchUrl = '@Url.Action("Popular", "Search")';
+        var searchUrl = '@Url.Action("Search", "Search")';
+
+        function renderSection(title, items) {
+            if (!items || items.length === 0) return "";
+
+            var html = "";
+            for (var i = 0; i < items.length; i++) {
+                var item = items[i];
+
+                if (item.DepartmentName) {
+                    html += "<li class='mb-2'><strong>" +
+                        item.FullName +
+                        "</strong> <span class='text-white-50'>(" +
+                        item.DepartmentName +
+                        ")</span></li>";
+                } else {
+                    html += "<li class='mb-2'><strong>" +
+                        item.Title +
+                        "</strong></li>";
+                }
+            }
+
+            return "<div class='mb-4'>" +
+                "<h4 class='text-white mb-3'>" + title + "</h4>" +
+                "<ul class='list-unstyled mb-0'>" + html + "</ul>" +
+                "</div>";
+        }
+
+        function renderPopularResults(data) {
+            var doctorsSection = renderSection("Popüler Uzmanlar", data.doctors);
+            var servicesSection = renderSection("Sık Aranan Bölümler", data.services);
+
+            resultsContainer.html(
+                doctorsSection + servicesSection ||
+                "<p class='text-white-50 mb-0'>Henüz popüler sonuç bulunamadı.</p>"
+            );
+        }
+
+        function loadPopular() {
+            searchButton.prop("disabled", true).text("Yükleniyor...");
+
+            $.getJSON(popularSearchUrl)
+                .done(function (data) {
+                    renderPopularResults(data || {});
+                })
+                .fail(function () {
+                    resultsContainer.html(
+                        "<p class='text-white-50 mb-0'>Popüler sonuçlar alınamadı.</p>"
+                    );
+                })
+                .always(function () {
+                    searchButton.prop("disabled", false).text("Ara");
+                });
+        }
+
+        searchButton.on("click", function () {
+
+            var keyword = $.trim(searchInput.val());
+            var departmentValue = departmentSelect.val();
+
+            if (keyword.length === 0 && !departmentValue) {
+                loadPopular();
+                return;
+            }
+
+            searchButton.prop("disabled", true).text("Aranıyor...");
+            modalResults.html("");
+
+            $.getJSON(searchUrl, {
+                keyword: keyword,
+                departmentId: departmentValue
+            })
+                .done(function (data) {
+
+                    if (!data.doctors || data.doctors.length === 0) {
+                        modalResults.html(
+                            "<li class='list-group-item text-muted'>Sonuç bulunamadı.</li>"
+                        );
+                    } else {
+                        $.each(data.doctors, function (_, doc) {
+                            modalResults.append(
+                                "<li class='list-group-item'>" +
+                                "<strong>" + doc.FullName + "</strong><br/>" +
+                                "<small class='text-muted'>" + doc.DepartmentName + "</small>" +
+                                "</li>"
+                            );
+                        });
+                    }
+
+                    $("#searchResultModal").modal("show");
+                })
+                .always(function () {
+                    searchButton.prop("disabled", false).text("Ara");
+                });
+        });
+
+        searchInput.on("keypress", function (e) {
+            if (e.which === 13) {
+                searchButton.click();
+            }
+        });
+
+        // Sayfa açılışında popülerler
+        loadPopular();
+
+    });
+</script>

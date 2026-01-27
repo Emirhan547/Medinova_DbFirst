@@ -22,18 +22,31 @@
             {
                 foreach (var service in Model.Services)
                 {
+                    // 🔥 FA5 / FA4 → FA6 normalize
+                    var iconClass = (service.Icon ?? "")
+                        .Replace("fa fa-", "fa-solid fa-")
+                        .Replace("fas fa-", "fa-solid fa-")
+                        .Replace("far fa-", "fa-regular fa-")
+                        .Replace("fal fa-", "fa-light fa-");
+
+                    if (string.IsNullOrWhiteSpace(iconClass))
+                    {
+                        iconClass = "fa-solid fa-stethoscope";
+                    }
+
                     <div class="col-lg-4 col-md-6">
                         <div class="service-item bg-light rounded d-flex flex-column
-align-items-center justify-content-center text-center shadow-sm">
+                                     align-items-center justify-content-center text-center shadow-sm">
+
                             <div class="service-icon mb-4">
-                                <i class="@service.Icon text-white"></i>
+                                <i class="@iconClass text-white fa-2x"></i>
                             </div>
 
                             <h4 class="mb-3">@service.Title</h4>
                             <p class="m-0 text-muted">@service.Description</p>
 
                             <a class="btn btn-lg btn-primary rounded-pill" href="#!">
-                                <i class="bi bi-arrow-right"></i>
+                                <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
                     </div>

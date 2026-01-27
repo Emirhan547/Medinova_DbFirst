@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Service Management";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count=0;
 }
 
 <div class="space-y-6">
@@ -24,6 +25,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach (var service in Model)
             {
+                count++;
                 <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg transition-shadow">
 
                     <!-- Card Header -->
@@ -98,7 +100,7 @@
                     <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
                         <span class="inline-flex items-center gap-1">
                             <span class="material-symbols-outlined !text-sm">tag</span>
-                            ID: @service.SeviceId
+                            # @count
                         </span>
 
                         <span class="h-1 w-1 bg-slate-300 rounded-full"></span>

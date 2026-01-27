@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
 }
 
 <div class="space-y-6">
@@ -33,6 +34,7 @@
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                         @foreach (var item in Model)
                         {
+                            count++;
                             <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
                                 <td class="py-4 px-6">
                                     @if (!string.IsNullOrEmpty(item.ImageUrl))
@@ -52,7 +54,7 @@
                                         @(item.Title?.Length > 50 ? item.Title.Substring(0, 50) + "..." : item.Title)
                                     </div>
                                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                        ID: @item.BannerId
+                                        #@count
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 text-sm text-slate-600 dark:text-slate-400">

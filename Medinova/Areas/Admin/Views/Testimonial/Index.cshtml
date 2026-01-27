@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Referans Yönetimi";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    int count = 0;
 }
 
 <div class="space-y-6">
@@ -22,6 +23,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach (var testimonial in Model)
             {
+                count++;
                 <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-shadow">
                     <!-- Referans Başlığı -->
                     <div class="p-6">
@@ -74,7 +76,7 @@
                         <!-- Referans Alt Bilgi -->
                         <div class="pt-4 border-t border-slate-200 dark:border-slate-700">
                             <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                                <span>ID: @testimonial.TestimonialId</span>
+                                <span># @count</span>
                                 <span class="flex items-center gap-1">
                                     <span class="material-symbols-outlined !text-sm">star</span>
                                     <span class="material-symbols-outlined !text-sm">star</span>
