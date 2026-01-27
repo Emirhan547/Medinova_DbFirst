@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Medinova.Helpers;
 using Medinova.Models;
 using MimeKit;
 using System;
@@ -14,34 +15,50 @@ namespace Medinova.Services
         private readonly int _smtpPort;
         private readonly string _username;
         private readonly string _password;
+
         private readonly MedinovaContext _context;
         private bool _disposed = false;
 
         public EmailService()
         {
-            _smtpServer = ConfigurationManager.AppSettings["SmtpServer"];
-            _smtpPort = int.Parse(ConfigurationManager.AppSettings["SmtpPort"]);
-            _username = ConfigurationManager.AppSettings["SmtpUsername"];
-            _password = ConfigurationManager.AppSettings["SmtpPassword"];
+
+
+            _smtpServer = GetSetting("MEDINOVA_SMTP_SERVER", "SmtpServer");
+            _username = GetSetting("MEDINOVA_SMTP_USERNAME", "SmtpUsername");
+            _password = GetSetting("MEDINOVA_SMTP_PASSWORD", "SmtpPassword");
+
+            // Port
+            var envPort = Environment.GetEnvironmentVariable("MEDINOVA_SMTP_PORT");
+            if (!int.TryParse(envPort, out _smtpPort))
+            {
+                var cfgPort = (ConfigurationManager.AppSettings["SmtpPort"] ?? "").Trim();
+                if (!int.TryParse(cfgPort, out _smtpPort))
+                    _smtpPort = 587; // default
+            }
 
             _context = new MedinovaContext();
         }
 
-        // ---------------------------
-        // RANDEVU ONAY MAİLİ
-        // ---------------------------
+        private static string GetSetting(string envKey, string configKey)
+        {
+            var envVal = Environment.GetEnvironmentVariable(envKey);
+            if (!string.IsNullOrWhiteSpace(envVal))
+                return envVal.Trim();
+
+            return (ConfigurationManager.AppSettings[configKey] ?? "").Trim();
+        }
+
         public async Task SendAppointmentConfirmation(Appointment appointment)
         {
-            var patient = _context.Users.Find(appointment.PatientId);
-            var doctor = _context.Doctors.Find(appointment.DoctorId);
+            if (appointment == null) return;
+            if (string.IsNullOrWhiteSpace(appointment.Email)) return;
 
-            if (patient == null || string.IsNullOrEmpty(patient.UserName))
-                return;
+            var doctor = _context.Doctors.Find(appointment.DoctorId);
 
             var subject = "Randevu Onayı - Medinova";
 
             var body = $@"
-<h2>Sayın {patient.FirstName} {patient.LastName},</h2>
+<h2>Sayın {appointment.FullName},</h2>
 <p>Randevunuz başarıyla oluşturulmuştur.</p>
 
 <h3>Randevu Detayları</h3>
@@ -55,23 +72,18 @@ namespace Medinova.Services
 <p>Lütfen randevu saatinizden 15 dakika önce hastanede olunuz.</p>
 <p>Medinova Ekibi</p>";
 
-            await SendEmail(patient.UserName, subject, body);
+            await SendEmail(appointment.Email, subject, body);
         }
 
-        // ---------------------------
-        // RANDEVU İPTAL MAİLİ
-        // ---------------------------
         public async Task SendAppointmentCancellation(Appointment appointment)
         {
-            var patient = _context.Users.Find(appointment.PatientId);
-
-            if (patient == null || string.IsNullOrEmpty(patient.UserName))
-                return;
+            if (appointment == null) return;
+            if (string.IsNullOrWhiteSpace(appointment.Email)) return;
 
             var subject = "Randevu İptali - Medinova";
 
             var body = $@"
-<h2>Sayın {patient.FirstName} {patient.LastName},</h2>
+<h2>Sayın {appointment.FullName},</h2>
 <p>Randevunuz iptal edilmiştir.</p>
 
 <h3>İptal Edilen Randevu</h3>
@@ -88,12 +100,10 @@ namespace Medinova.Services
 <p>Yeni randevu oluşturmak için sistemimizi kullanabilirsiniz.</p>
 <p>Medinova Ekibi</p>";
 
-            await SendEmail(patient.UserName, subject, body);
+            await SendEmail(appointment.Email, subject, body);
         }
 
-        // ---------------------------
-        // MAİL GÖNDERME + LOG
-        // ---------------------------
+
         private async Task SendEmail(string toEmail, string subject, string htmlBody)
         {
             var emailLog = new EmailLog
@@ -101,46 +111,59 @@ namespace Medinova.Services
                 RecipientEmail = toEmail,
                 Subject = subject,
                 Body = htmlBody,
-                SentDate = DateTime.Now
+                SentDate = DateTime.Now,
+                IsSent = false
             };
 
             try
             {
+                // Config kontrolü (boşsa direkt logla)
+                if (string.IsNullOrWhiteSpace(_smtpServer) ||
+                    string.IsNullOrWhiteSpace(_username) ||
+                    string.IsNullOrWhiteSpace(_password) ||
+                    _smtpPort <= 0)
+                {
+                    emailLog.ErrorMessage =
+                        $"SMTP ayarları eksik. Server='{_smtpServer}', Port='{_smtpPort}', User='{_username}'";
+                    return;
+                }
+
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("Medinova", _username));
                 message.To.Add(MailboxAddress.Parse(toEmail));
                 message.Subject = subject;
-
-                message.Body = new BodyBuilder
-                {
-                    HtmlBody = htmlBody
-                }.ToMessageBody();
+                message.Body = new BodyBuilder { HtmlBody = htmlBody }.ToMessageBody();
 
                 using (var smtp = new SmtpClient())
                 {
-                    await smtp.ConnectAsync(_smtpServer, _smtpPort, SecureSocketOptions.StartTls);
+                    smtp.Timeout = 20000;
+                    await smtp.ConnectAsync(_smtpServer, _smtpPort, SecureSocketOptions.Auto);
                     await smtp.AuthenticateAsync(_username, _password);
                     await smtp.SendAsync(message);
                     await smtp.DisconnectAsync(true);
                 }
 
                 emailLog.IsSent = true;
+                emailLog.ErrorMessage = null;
             }
             catch (Exception ex)
             {
                 emailLog.IsSent = false;
-                emailLog.ErrorMessage = ex.Message;
+                emailLog.ErrorMessage = ex.ToString();
             }
             finally
             {
-                _context.EmailLogs.Add(emailLog);
-                _context.SaveChanges();
+                try
+                {
+                    _context.EmailLogs.Add(emailLog);
+                    _context.SaveChanges();
+                }
+                catch
+                {
+                }
             }
         }
 
-        // ---------------------------
-        // DISPOSE
-        // ---------------------------
         public void Dispose()
         {
             if (!_disposed)

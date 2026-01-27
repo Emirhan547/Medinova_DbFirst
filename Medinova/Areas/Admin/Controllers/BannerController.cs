@@ -29,7 +29,19 @@ namespace Medinova.Areas.Admin.Controllers
         public ActionResult CreateBanner(Banner banner, HttpPostedFileBase ImageFile)
         {
             if (ImageFile != null && ImageFile.ContentLength > 0)
-                banner.ImageUrl = imageUploadService.UploadImage(ImageFile, "banners"); context.Banners.Add(banner);
+            {
+                try
+                {
+                    banner.ImageUrl = imageUploadService.UploadImage(ImageFile, "banners");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(banner);
+                }
+            }
+
+            context.Banners.Add(banner);
             context.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -46,7 +58,17 @@ namespace Medinova.Areas.Admin.Controllers
             values.Description = banner.Description;
             values.Title = banner.Title;
             if (ImageFile != null && ImageFile.ContentLength > 0)
-                values.ImageUrl = imageUploadService.UploadImage(ImageFile, "banners");
+            {
+                try
+                {
+                    values.ImageUrl = imageUploadService.UploadImage(ImageFile, "banners");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(banner);
+                }
+            }
             else
                 values.ImageUrl = banner.ImageUrl;
             context.SaveChanges();

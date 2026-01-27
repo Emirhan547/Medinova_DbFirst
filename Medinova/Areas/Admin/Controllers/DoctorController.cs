@@ -1,7 +1,9 @@
 ﻿using Medinova.Attributes;
 using Medinova.Models;
+using Medinova.Services;
 using System.Data.Entity;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 
 namespace Medinova.Areas.Admin.Controllers
@@ -11,7 +13,7 @@ namespace Medinova.Areas.Admin.Controllers
     public class DoctorController : Controller
     {
         private readonly MedinovaContext context = new MedinovaContext();
-
+        private readonly AwsImageUploadService imageUploadService = new AwsImageUploadService();
         public ActionResult Index()
         {
             var doctors = context.Doctors.Include(d => d.Department).ToList();
@@ -26,8 +28,12 @@ namespace Medinova.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(Medinova.Models.Doctor doctor)
+        public ActionResult Create(Medinova.Models.Doctor doctor, HttpPostedFileBase ImageFile)
         {
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+            {
+                doctor.ImageUrl = imageUploadService.UploadImage(ImageFile, "doctors");
+            }
             context.Doctors.Add(doctor);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -47,7 +53,7 @@ namespace Medinova.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Update(Medinova.Models.Doctor doctor)
+        public ActionResult Update(Medinova.Models.Doctor doctor, HttpPostedFileBase ImageFile)
         {
             var values = context.Doctors.Find(doctor.DoctorId);
             if (values == null)
@@ -59,6 +65,10 @@ namespace Medinova.Areas.Admin.Controllers
             values.ImageUrl = doctor.ImageUrl;
             values.DepartmentId = doctor.DepartmentId;
             values.Description = doctor.Description;
+            if (ImageFile != null && ImageFile.ContentLength > 0)
+            {
+                values.ImageUrl = imageUploadService.UploadImage(ImageFile, "doctors");
+            }
             context.SaveChanges();
             return RedirectToAction("Index");
         }

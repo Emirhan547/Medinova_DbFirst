@@ -18,7 +18,7 @@
     </div>
 
     <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-        <form method="post" action="@Url.Action("Create", "Doctor", new { area = "Admin" })" class="space-y-6">
+        <form method="post" action="@Url.Action("Create", "Doctor", new { area = "Admin" })" enctype="multipart/form-data" class="space-y-6">
             @Html.AntiForgeryToken()
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -39,13 +39,40 @@
                     })
                 </div>
 
-                <div class="lg:col-span-2">
-                    <label for="ImageUrl" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Görsel URL</label>
-                    @Html.TextBoxFor(model => model.ImageUrl, new
-                    {
-                        @class = "w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all",
-                        placeholder = "https://"
-                    })
+                <div class="lg:col-span-2" data-image-upload>
+                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                        Doktor Fotoğrafı <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                    </label>
+
+                    <div id="imagePreview" class="mb-4 hidden" data-image-upload-preview>
+                        <div class="relative inline-block">
+                            <div class="size-40 rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600"
+                                 id="previewImage" data-image-upload-preview-image></div>
+                            <button type="button" data-image-upload-remove
+                                    class="absolute -top-2 -right-2 size-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors">
+                                <span class="material-symbols-outlined !text-lg">close</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                         id="uploadArea" data-image-upload-area>
+                        <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                            <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yüklemek için tıklayın</span> veya sürükleyip bırakın
+                        </p>
+                        <p class="text-xs text-slate-500 dark:text-slate-500">PNG, JPG veya GIF (MAX. 5MB)</p>
+                        <input type="file" id="fileInput" name="ImageFile" accept="image/*"
+                               class="hidden" data-image-upload-input>
+                    </div>
+
+                    <div class="mt-4">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-2 text-center">Veya resim URL'si girin</p>
+                        <input type="url" id="ImageUrl" name="ImageUrl"
+                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                               placeholder="https://example.com/doctor.jpg"
+                               data-image-upload-url>
+                    </div>
                 </div>
 
                 <div class="lg:col-span-2">

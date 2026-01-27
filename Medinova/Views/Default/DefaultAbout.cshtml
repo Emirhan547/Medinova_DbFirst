@@ -1,11 +1,11 @@
 ﻿@model Medinova.Dtos.Defaults.DefaultAboutDto
 
-<div class="container-fluid py-5">
+<div class="container-fluid py-5" id="hakkimizda">
     <div class="container">
 
         @if (Model?.About == null && (Model?.Items == null || !Model.Items.Any()))
         {
-           <p class="text-center">Henüz içerik yok.</p>
+            <p class="text-center">Henüz içerik yok.</p>
         }
         else
         {

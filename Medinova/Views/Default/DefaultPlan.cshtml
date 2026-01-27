@@ -1,6 +1,6 @@
 ﻿@model Medinova.Dtos.Defaults.DefaultPlanDto
 
-<div class="container-fluid py-5">
+<div class="container-fluid py-5" id="paketler">
     <div class="container">
 
         <div class="text-center mx-auto mb-5" style="max-width: 500px;">
@@ -15,9 +15,9 @@
 
             @if (Model?.Plans == null || !Model.Plans.Any())
             {
-               <div class="bg-light rounded text-center p-5 shadow-sm">
-                   <p>Henüz içerik yok.</p>
-               </div>
+                <div class="bg-light rounded text-center p-5 shadow-sm">
+                    <p>Henüz içerik yok.</p>
+                </div>
             }
             else
             {
@@ -42,7 +42,33 @@
                                 </h1>
                             </div>
                         </div>
+                        <div class="text-start p-4">
+                            @{
+                                var features = new[] { plan.Feature1, plan.Feature2, plan.Feature3, plan.Feature4 }
+                                    .Where(feature => !string.IsNullOrWhiteSpace(feature))
+                                    .ToList();
+                            }
 
+                            @if (features.Any())
+                            {
+                                <ul class="list-unstyled mb-4">
+                                    @foreach (var feature in features)
+                                    {
+                                        <li class="d-flex align-items-start mb-2">
+                                            <i class="fa fa-check text-primary me-2 mt-1"></i>
+                                            <span>@feature</span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+
+                            @if (!string.IsNullOrWhiteSpace(plan.ButtonText))
+                            {
+                                <a class="btn btn-primary w-100" href="#">
+                                    @plan.ButtonText
+                                </a>
+                            }
+                        </div>
                     </div>
                 }
             }

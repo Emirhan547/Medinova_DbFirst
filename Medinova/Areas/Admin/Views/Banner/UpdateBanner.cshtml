@@ -65,48 +65,48 @@
                 }
 
                 <!-- Yeni Resim Yükleme -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                        Resmi Değiştir <span class="text-slate-400 text-xs">(Opsiyonel)</span>
-                    </label>
+            <div data-image-upload>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Resmi Değiştir <span class="text-slate-400 text-xs">(Opsiyonel)</span>
+                </label>
 
-                    <!-- Yeni Resim Önizleme -->
-                    <                    <div id="imagePreview" class="mb-4 hidden" data-image-upload-preview>
-                        id="imagePreview" class="mb-4 hidden">
-                        <div class="relative">
-                            <div class="rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600 h-48"
-                                 id="previewImage" data-image-upload-preview-image></div>
-                            <button type="button" data-image-upload-remove
-                                    class="absolute top-3 right-3 size-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
-                                <span class="material-symbols-outlined !text-lg">delete</span>
-                            </button>
-                            <div class="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
-                                <span id="fileInfo" data-image-upload-info data-default-text="Yeni Resim">Yeni Resim</span>
-                            </div>
+                <!-- Yeni Resim Önizleme -->
+                <                    <div id="imagePreview" class="mb-4 hidden" data-image-upload-preview>
+                    id="imagePreview" class="mb-4 hidden">
+                    <div class="relative">
+                        <div class="rounded-lg bg-cover bg-center border-2 border-slate-200 dark:border-slate-600 h-48"
+                             id="previewImage" data-image-upload-preview-image></div>
+                        <button type="button" data-image-upload-remove
+                                class="absolute top-3 right-3 size-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg">
+                            <span class="material-symbols-outlined !text-lg">delete</span>
+                        </button>
+                        <div class="absolute bottom-3 left-3 bg-black/70 text-white text-xs px-3 py-1 rounded-full">
+                            <span id="fileInfo" data-image-upload-info data-default-text="Yeni Resim">Yeni Resim</span>
                         </div>
                     </div>
-
-                    <!-- Dosya Yükleme -->
-                    <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
-                         id="uploadArea" data-image-upload-area>
-                        <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
-                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                            <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yüklemek için tıklayın</span> veya sürükleyip bırakın
-                        </p>
-                        <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 1920x600px (JPG, PNG, WebP - Maks. 10MB)</p>
-                        <input type="file" id="fileInput" name="ImageFile" accept="image/*"
-                               class="hidden" data-image-upload-input>
-                    </div>
-
-                    <!-- Resim URL Girişi -->
-                    <div class="mt-4">
-                        <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya yeni resim URL'si girin</p>
-                        <input type="url" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl"
-                               class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                               placeholder="https://example.com/banner-image.jpg"
-                               data-image-upload-url>
-                    </div>
                 </div>
+
+                <!-- Dosya Yükleme -->
+                <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                     id="uploadArea" data-image-upload-area>
+                    <span class="material-symbols-outlined !text-4xl text-slate-400 dark:text-slate-500 mb-2">cloud_upload</span>
+                    <p class="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                        <span class="font-medium text-primary hover:text-primary/80 cursor-pointer">Yüklemek için tıklayın</span> veya sürükleyip bırakın
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-500">Önerilen: 1920x600px (JPG, PNG, WebP - Maks. 10MB)</p>
+                    <input type="file" id="fileInput" name="ImageFile" accept="image/*"
+                           class="hidden" data-image-upload-input>
+                </div>
+
+                <!-- Resim URL Girişi -->
+                <div class="mt-4">
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Veya yeni resim URL'si girin</p>
+                    <input type="url" id="ImageUrl" name="ImageUrl" value="@Model.ImageUrl"
+                           class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                           placeholder="https://example.com/banner-image.jpg"
+                           data-image-upload-url>
+                </div>
+            </div>
             </div>
 
             <!-- Form İşlemleri -->

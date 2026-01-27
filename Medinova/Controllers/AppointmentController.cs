@@ -55,7 +55,7 @@ namespace Medinova.Controllers
         [HttpPost]
         [CustomAuthorize("Patient")]
         [ValidateAntiForgeryToken]
-        public ActionResult MakeAppointment(AppointmentCreateDto appointmentDto)
+        public async Task<ActionResult> MakeAppointment(AppointmentCreateDto appointmentDto)
         {
             if (Session["userId"] == null)
             {
@@ -99,8 +99,14 @@ namespace Medinova.Controllers
             context.Appointments.Add(appointment);
             context.SaveChanges();
 
-            // Send confirmation email
-            SendAppointmentConfirmationEmail(appointment);
+            try
+            {
+                await SendAppointmentConfirmationEmail(appointment);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Randevu onay e-postası gönderilemedi {AppointmentId}", appointment.AppointmentId);
+            }
 
             // Log activity
             LogActivity(userId, "Randevu Oluşturuldu", "Appointment", null);

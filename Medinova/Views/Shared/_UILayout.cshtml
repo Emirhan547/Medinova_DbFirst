@@ -1,4 +1,4 @@
-﻿!DOCTYPE html>
+﻿
 <html lang="en">
 
 @Html.Action("UILayoutHead", "UILayout")
@@ -11,11 +11,10 @@
     @Html.Action("UILayoutNavbar", "UILayout")
     @RenderBody()
     <!-- Navbar End -->
-
     <!-- Footer Start -->
     @Html.Action("UILayoutFooter", "UILayout")
     <!-- Back to Top -->
-
+    @Html.Action("UILayoutScript", "UILayout")
 </body>
 
 </html>

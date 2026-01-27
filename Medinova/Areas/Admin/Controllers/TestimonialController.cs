@@ -38,7 +38,17 @@ namespace Medinova.Areas.Admin.Controllers
         public ActionResult CreateTestimonial(Testimonial testimonial, HttpPostedFileBase ImageFile)
         {
             if (ImageFile != null && ImageFile.ContentLength > 0)
-                testimonial.ImageUrl = imageUploadService.UploadImage(ImageFile, "testimonials");
+            {
+                try
+                {
+                    testimonial.ImageUrl = imageUploadService.UploadImage(ImageFile, "testimonials");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(testimonial);
+                }
+            }
             context.Testimonials.Add(testimonial);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -55,7 +65,17 @@ namespace Medinova.Areas.Admin.Controllers
             var values=context.Testimonials.Find(testimonial.TestimonialId);
             values.Comment = testimonial.Comment;
             if (ImageFile != null && ImageFile.ContentLength > 0)
-                values.ImageUrl = imageUploadService.UploadImage(ImageFile, "testimonials");
+            {
+                try
+                {
+                    values.ImageUrl = imageUploadService.UploadImage(ImageFile, "testimonials");
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(testimonial);
+                }
+            }
             else
                 values.ImageUrl = testimonial.ImageUrl;
             values.FullName = testimonial.FullName;

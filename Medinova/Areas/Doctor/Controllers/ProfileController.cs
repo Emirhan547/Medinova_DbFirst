@@ -74,9 +74,17 @@ namespace Medinova.Areas.Doctor.Controllers
             if (model.ImageFile != null && model.ImageFile.ContentLength > 0)
             {
                 var awsImageUploadService = new AwsImageUploadService();
-                var uploadedUrl = awsImageUploadService.UploadImage(model.ImageFile, "doctors");
-                if (!string.IsNullOrWhiteSpace(uploadedUrl))
-                    doctor.ImageUrl = uploadedUrl;
+                try
+                {
+                    var uploadedUrl = awsImageUploadService.UploadImage(model.ImageFile, "doctors");
+                    if (!string.IsNullOrWhiteSpace(uploadedUrl))
+                        doctor.ImageUrl = uploadedUrl;
+                }
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(model);
+                }
             }
             else if (!string.IsNullOrWhiteSpace(model.ImageUrl))
             {

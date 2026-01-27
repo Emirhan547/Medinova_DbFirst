@@ -9,23 +9,21 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav ms-auto py-0">
-                    <a href="index.html" class="nav-item nav-link active">Home</a>
-                    <a href="about.html" class="nav-item nav-link">About</a>
-                    <a href="service.html" class="nav-item nav-link">Service</a>
-                    <a href="price.html" class="nav-item nav-link">Pricing</a>
+                    <a href="@Url.Action("Index", "Default")" class="nav-item nav-link active">Anasayfa</a>
+                    <a href="@Url.Action("Index", "Default")#hakkimizda" class="nav-item nav-link">Hakkımızda</a>
+                    <a href="@Url.Action("Index", "Default")#hizmetler" class="nav-item nav-link">Hizmetler</a>
+                    <a href="@Url.Action("Index", "Default")#paketler" class="nav-item nav-link">Paketler</a>
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Sayfalar</a>
                         <div class="dropdown-menu m-0">
-                            <a href="blog.html" class="dropdown-item">Blog Grid</a>
-                            <a href="detail.html" class="dropdown-item">Blog Detail</a>
-                            <a href="team.html" class="dropdown-item">The Team</a>
-                            <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                            <a href="appointment.html" class="dropdown-item">Appointment</a>
-                            <a href="search.html" class="dropdown-item">Search</a>
+                            <a href="@Url.Action("Index", "Default")#ekip" class="dropdown-item">Doktorlarımız</a>
+                            <a href="@Url.Action("Index", "Default")#randevu" class="dropdown-item">Randevu</a>
+                            <a href="@Url.Action("Index", "Default")#arama" class="dropdown-item">Doktor Ara</a>
+                            <a href="@Url.Action("Index", "Default")#yorumlar" class="dropdown-item">Hasta Yorumları</a>
                         </div>
                     </div>
-                    <a href="/Account/Login" class="nav-item nav-link">Giriş Yap</a>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                    <a href="@Url.Action("Login", "Account")" class="nav-item nav-link">Giriş Yap</a>
+                    <a href="@Url.Action("Index", "Default")#iletisim" class="nav-item nav-link">İletişim</a>
                 </div>
             </div>
         </nav>

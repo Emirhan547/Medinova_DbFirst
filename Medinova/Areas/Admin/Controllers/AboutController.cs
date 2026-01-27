@@ -30,7 +30,17 @@ namespace Medinova.Areas.Admin.Controllers
         public ActionResult CreateAbout(About about, HttpPostedFileBase ImageFile)
         {
             if (ImageFile != null && ImageFile.ContentLength > 0)
-                about.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
+            {
+                try
+                {
+                    about.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
+                }
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(about);
+                }
+            }
             context.Abouts.Add(about);
             context.SaveChanges();
             return RedirectToAction("Index");
@@ -48,7 +58,17 @@ namespace Medinova.Areas.Admin.Controllers
             value.Title= about.Title;
             value.Description=about.Description;
             if (ImageFile != null && ImageFile.ContentLength > 0)
-                value.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
+            {
+                try
+                {
+                    value.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
+                }
+                catch (System.Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
+                    return View(about);
+                }
+            }
             else
                 value.ImageUrl = about.ImageUrl;
             context.SaveChanges();

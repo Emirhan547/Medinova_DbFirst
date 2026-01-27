@@ -1,6 +1,6 @@
 ﻿@model Medinova.Dtos.Defaults.DefaultTeamDto
 
-<div class="container-fluid py-5">
+<div class="container-fluid py-5" id="ekip">
     <div class="container">
 
         <div class="text-center mx-auto mb-5" style="max-width: 500px;">
@@ -15,9 +15,9 @@
             @if (Model?.Doctors == null || !Model.Doctors.Any())
             {
                 <div class="team-item">
-                   <div class="bg-light rounded text-center p-5 shadow-sm">
-                       <p>Henüz içerik yok.</p>
-                   </div>
+                    <div class="bg-light rounded text-center p-5 shadow-sm">
+                        <p>Henüz içerik yok.</p>
+                    </div>
                 </div>
             }
             else
