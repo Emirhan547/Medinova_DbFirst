@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using Medinova.Models;
 using System.Data.Entity;
+using Medinova.Services;
 
 namespace Medinova.Controllers
 {
@@ -9,7 +10,7 @@ namespace Medinova.Controllers
     public class SearchController : Controller
     {
         private readonly MedinovaContext context = new MedinovaContext();
-
+        private readonly DoctorSearchService doctorSearchService = new DoctorSearchService();
         [HttpGet]
         public JsonResult Popular()
         {
@@ -73,6 +74,23 @@ namespace Medinova.Controllers
         {
             keyword = (keyword ?? "").Trim();
 
+            var elasticResults = doctorSearchService.SearchDoctors(keyword, departmentId, 10);
+            if (elasticResults != null)
+            {
+                var elasticDoctors = elasticResults
+                    .Select(d => new
+                    {
+                        d.DoctorId,
+                        d.FullName,
+                        DepartmentName = string.IsNullOrWhiteSpace(d.DepartmentName)
+                            ? "Bölüm belirtilmemiş"
+                            : d.DepartmentName
+                    })
+                    .ToList();
+
+                return Json(new { doctors = elasticDoctors }, JsonRequestBehavior.AllowGet);
+            }
+
             var query = context.Doctors
                 .Include(d => d.Department)
                 .AsQueryable();
@@ -89,7 +107,7 @@ namespace Medinova.Controllers
                 query = query.Where(d => d.DepartmentId == departmentId.Value);
             }
 
-            var doctors = query
+            var dbDoctors = query
                 .OrderBy(d => d.FullName)
                 .Take(10)
                 .Select(d => new
@@ -102,11 +120,9 @@ namespace Medinova.Controllers
                 })
                 .ToList();
 
-            return Json(new
-            {
-                doctors = doctors
-            }, JsonRequestBehavior.AllowGet);
+            return Json(new { doctors = dbDoctors }, JsonRequestBehavior.AllowGet);
         }
+
 
     }
 }

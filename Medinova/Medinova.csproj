@@ -303,6 +303,8 @@
     <Compile Include="Dtos\DoctorPatientDetailDto.cs" />
     <Compile Include="Dtos\DoctorPatientSummaryDto.cs" />
     <Compile Include="Dtos\DoctorProfileDto.cs" />
+    <Compile Include="Dtos\DoctorSearchDocument.cs" />
+    <Compile Include="Dtos\DoctorSearchResult.cs" />
     <Compile Include="Dtos\LoginDto.cs" />
     <Compile Include="Dtos\PatientAppointmentOverviewDto.cs" />
     <Compile Include="Dtos\PatientProfileDto.cs" />
@@ -387,6 +389,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AIService.cs" />
     <Compile Include="Services\AwsImageUploadService.cs" />
+    <Compile Include="Services\DoctorSearchService.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\OpenAiSearchClient.cs" />
     <Compile Include="Services\PredictionService.cs" />

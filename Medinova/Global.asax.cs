@@ -22,6 +22,14 @@ namespace Medinova
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            var doctorSearchService = new Services.DoctorSearchService();
+            if (doctorSearchService.IsEnabled)
+            {
+                using (var context = new Models.MedinovaContext())
+                {
+                    doctorSearchService.EnsureSeeded(context);
+                }
+            }
         }
 
         protected void Application_AuthenticateRequest(object sender, EventArgs e)

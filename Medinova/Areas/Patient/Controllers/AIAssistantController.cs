@@ -104,7 +104,7 @@ namespace Medinova.Areas.Patient.Controllers
                 });
             }
         }
-
+        [AllowAnonymous]
         [HttpPost]
         public async Task<JsonResult> GetDepartmentSuggestion(string symptoms)
         {

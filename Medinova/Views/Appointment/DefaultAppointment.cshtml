@@ -178,8 +178,9 @@
                 success: function (result) {
                     if (result.success) {
                         var recommendation = result.recommendation || "";
-                        suggestionResult.text("Önerilen bölüm: " + recommendation);
-                        preselectDepartment(recommendation);
+                        var cleanedRecommendation = recommendation.replace(/\*/g, "");
+                        suggestionResult.text("Önerilen bölüm: " + cleanedRecommendation);
+                        preselectDepartment(cleanedRecommendation);
                     } else {
                         suggestionResult.text("Öneri alınamadı: " + result.message);
                     }
