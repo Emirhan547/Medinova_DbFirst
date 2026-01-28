@@ -20,8 +20,9 @@ namespace Medinova.Areas.Admin.Controllers
             var testimonials=context.Testimonials.ToList();
             return View(testimonials);
         }
-        [HttpGet]
-        public ActionResult DeleteTestimonials(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteTestimonial(int id)
         {
             var testimonials = context.Testimonials.Find(id);
             context.Testimonials.Remove(testimonials);
@@ -83,5 +84,6 @@ namespace Medinova.Areas.Admin.Controllers
             context.SaveChanges();
             return RedirectToAction("Index");
         }
+       
     }
 }

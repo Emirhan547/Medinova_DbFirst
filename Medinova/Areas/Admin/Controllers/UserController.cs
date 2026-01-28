@@ -91,10 +91,55 @@ namespace Medinova.Areas.Admin.Controllers
                 RoleId = role.RoleId,
                 AssignedDate = DateTime.Now
             });
-
+            if (string.Equals(role.RoleName, "Doctor", StringComparison.OrdinalIgnoreCase))
+            {
+                EnsureDoctorForUser(user);
+            }
             context.SaveChanges();
             return RedirectToAction("Index");
         }
+        private void EnsureDoctorForUser(User user)
+        {
+            if (user == null)
+                return;
+
+            int userId = user.UserId; // 👈 KRİTİK SATIR
+
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
+            if (string.IsNullOrWhiteSpace(fullName))
+                fullName = user.UserName;
+
+            // ✅ ARTIK EF6 SORUN ÇIKARMAZ
+            var doctor = context.Doctors.FirstOrDefault(d => d.UserId == userId);
+
+            if (doctor != null)
+            {
+                if (!string.Equals(doctor.FullName, fullName, StringComparison.OrdinalIgnoreCase))
+                    doctor.FullName = fullName;
+
+                return;
+            }
+
+            // burada DB -> memory geçiyoruz (bilerek)
+            var doctorByName = context.Doctors
+                .AsEnumerable()
+                .FirstOrDefault(d =>
+                    string.Equals(d.FullName, fullName, StringComparison.OrdinalIgnoreCase));
+
+            if (doctorByName == null)
+            {
+                context.Doctors.Add(new Medinova.Models.Doctor
+                {
+                    UserId = userId,
+                    FullName = fullName
+                });
+            }
+            else
+            {
+                doctorByName.UserId = userId;
+            }
+        }
+
 
         protected override void Dispose(bool disposing)
         {

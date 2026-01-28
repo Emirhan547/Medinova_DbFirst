@@ -10,16 +10,16 @@
             <PropertyRef Name="AboutItemId" />
           </Key>
           <Property Name="AboutItemId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Icon" Type="nvarchar" MaxLength="50" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="Icon" Type="nvarchar(max)" />
+          <Property Name="Name" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Abouts">
           <Key>
             <PropertyRef Name="AboutId" />
           </Key>
           <Property Name="AboutId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar" MaxLength="250" />
+          <Property Name="Title" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="ImageUrl" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="ActivityLogs">
@@ -28,10 +28,10 @@
           </Key>
           <Property Name="LogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UserId" Type="int" />
-          <Property Name="Action" Type="nvarchar" MaxLength="250" Nullable="false" />
-          <Property Name="Controller" Type="nvarchar" MaxLength="100" />
-          <Property Name="Area" Type="nvarchar" MaxLength="100" />
-          <Property Name="IpAddress" Type="nvarchar" MaxLength="50" />
+          <Property Name="Action" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Controller" Type="nvarchar(max)" />
+          <Property Name="Area" Type="nvarchar(max)" />
+          <Property Name="IpAddress" Type="nvarchar(max)" />
           <Property Name="LogDate" Type="datetime" />
           <Property Name="Details" Type="nvarchar(max)" />
         </EntityType>
@@ -60,26 +60,26 @@
             <PropertyRef Name="AppointmentId" />
           </Key>
           <Property Name="AppointmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FullName" Type="nvarchar" MaxLength="100" />
+          <Property Name="FullName" Type="nvarchar(max)" />
           <Property Name="DoctorId" Type="int" />
-          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="50" />
-          <Property Name="Email" Type="nvarchar" MaxLength="100" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="Email" Type="nvarchar(max)" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="AppointmentDate" Type="date" />
-          <Property Name="AppointmentTime" Type="nvarchar" MaxLength="50" />
+          <Property Name="AppointmentTime" Type="nvarchar(max)" />
           <Property Name="PatientId" Type="int" />
-          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="nvarchar(max)" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="ModifiedDate" Type="datetime" />
-          <Property Name="CancellationReason" Type="nvarchar" MaxLength="500" />
+          <Property Name="CancellationReason" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Banners">
           <Key>
             <PropertyRef Name="BannerId" />
           </Key>
           <Property Name="BannerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Title" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar" MaxLength="100" />
+          <Property Name="Title" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
           <Property Name="ImageUrl" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Departments">
@@ -87,25 +87,26 @@
             <PropertyRef Name="DepartmentId" />
           </Key>
           <Property Name="DepartmentId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Name" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Doctors">
           <Key>
             <PropertyRef Name="DoctorId" />
           </Key>
           <Property Name="DoctorId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FullName" Type="nvarchar" MaxLength="100" />
+          <Property Name="FullName" Type="nvarchar(max)" />
           <Property Name="ImageUrl" Type="nvarchar(max)" />
           <Property Name="DepartmentId" Type="int" />
-          <Property Name="Description" Type="nvarchar" MaxLength="250" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="UserId" Type="int" />
         </EntityType>
         <EntityType Name="EmailLogs">
           <Key>
             <PropertyRef Name="EmailLogId" />
           </Key>
           <Property Name="EmailLogId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="RecipientEmail" Type="nvarchar" MaxLength="250" Nullable="false" />
-          <Property Name="Subject" Type="nvarchar" MaxLength="500" />
+          <Property Name="RecipientEmail" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Subject" Type="nvarchar(max)" />
           <Property Name="Body" Type="nvarchar(max)" />
           <Property Name="SentDate" Type="datetime" />
           <Property Name="IsSent" Type="bit" />
@@ -188,6 +189,10 @@
           <Property Name="Password" Type="nvarchar" MaxLength="50" />
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
+          <Property Name="ImageUrl" Type="nvarchar" MaxLength="500" />
+          <Property Name="HeightCm" Type="int" />
+          <Property Name="WeightKg" Type="int" />
+          <Property Name="BloodType" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <Association Name="FK__ActivityL__UserI__19DFD96B">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
@@ -330,16 +335,16 @@
             <PropertyRef Name="AboutItemId" />
           </Key>
           <Property Name="AboutItemId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Icon" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Icon" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="About">
           <Key>
             <PropertyRef Name="AboutId" />
           </Key>
           <Property Name="AboutId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ImageUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Appointment">
@@ -347,19 +352,19 @@
             <PropertyRef Name="AppointmentId" />
           </Key>
           <Property Name="AppointmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FullName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DoctorId" Type="Int32" />
-          <Property Name="PhoneNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="IsActive" Type="Boolean" />
           <Property Name="AppointmentDate" Type="DateTime" Precision="0" />
-          <Property Name="AppointmentTime" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+          <Property Name="AppointmentTime" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="Doctor" Relationship="MedinovaDbModel.FK_Appointments_Doctors" FromRole="Appointment" ToRole="Doctor" />
           <Property Name="PatientId" Type="Int32" />
-          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="CreatedDate" Type="DateTime" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
-          <Property Name="CancellationReason" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CancellationReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="User" Relationship="MedinovaDbModel.FK__Appointme__Patie__160F4887" FromRole="Appointment" ToRole="User" />
         </EntityType>
         <EntityType Name="Banner">
@@ -367,8 +372,8 @@
             <PropertyRef Name="BannerId" />
           </Key>
           <Property Name="BannerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Description" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Title" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ImageUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Department">
@@ -376,7 +381,7 @@
             <PropertyRef Name="DepartmentId" />
           </Key>
           <Property Name="DepartmentId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Doctors" Relationship="MedinovaDbModel.FK_Doctors_Departments" FromRole="Department" ToRole="Doctor" />
         </EntityType>
         <EntityType Name="Doctor">
@@ -384,12 +389,13 @@
             <PropertyRef Name="DoctorId" />
           </Key>
           <Property Name="DoctorId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FullName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="FullName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ImageUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="DepartmentId" Type="Int32" />
-          <Property Name="Description" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Appointments" Relationship="MedinovaDbModel.FK_Appointments_Doctors" FromRole="Doctor" ToRole="Appointment" />
           <NavigationProperty Name="Department" Relationship="MedinovaDbModel.FK_Doctors_Departments" FromRole="Doctor" ToRole="Department" />
+          <Property Name="UserId" Type="Int32" />
         </EntityType>
         <EntityContainer Name="MedinovaContext" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="AboutItems" EntityType="Self.AboutItem" />
@@ -486,6 +492,10 @@
           <NavigationProperty Name="AIConversations" Relationship="MedinovaDbModel.FK__AIConvers__UserI__2180FB33" FromRole="User" ToRole="AIConversation" />
           <NavigationProperty Name="Appointments" Relationship="MedinovaDbModel.FK__Appointme__Patie__160F4887" FromRole="User" ToRole="Appointment" />
           <NavigationProperty Name="UserRoles" Relationship="MedinovaDbModel.FK__UserRoles__UserI__123EB7A3" FromRole="User" ToRole="UserRole" />
+          <Property Name="ImageUrl" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="HeightCm" Type="Int32" />
+          <Property Name="WeightKg" Type="Int32" />
+          <Property Name="BloodType" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Plan">
           <Key>
@@ -534,10 +544,10 @@
           </Key>
           <Property Name="LogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UserId" Type="Int32" />
-          <Property Name="Action" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Controller" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Area" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="IpAddress" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Action" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Controller" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Area" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IpAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="LogDate" Type="DateTime" Precision="3" />
           <Property Name="Details" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="User" Relationship="MedinovaDbModel.FK__ActivityL__UserI__19DFD96B" FromRole="ActivityLog" ToRole="User" />
@@ -568,8 +578,8 @@
             <PropertyRef Name="EmailLogId" />
           </Key>
           <Property Name="EmailLogId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="RecipientEmail" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
-          <Property Name="Subject" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="RecipientEmail" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Subject" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Body" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="SentDate" Type="DateTime" Precision="3" />
           <Property Name="IsSent" Type="Boolean" />
@@ -720,6 +730,7 @@
           <EntitySetMapping Name="Doctors">
             <EntityTypeMapping TypeName="MedinovaDbModel.Doctor">
               <MappingFragment StoreEntitySet="Doctors">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="DoctorId" ColumnName="DoctorId" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
@@ -742,6 +753,10 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="MedinovaDbModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="BloodType" ColumnName="BloodType" />
+                <ScalarProperty Name="WeightKg" ColumnName="WeightKg" />
+                <ScalarProperty Name="HeightCm" ColumnName="HeightCm" />
+                <ScalarProperty Name="ImageUrl" ColumnName="ImageUrl" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
                 <ScalarProperty Name="Password" ColumnName="Password" />

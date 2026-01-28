@@ -21,15 +21,14 @@ namespace Medinova.Models
         }
     
         public int DoctorId { get; set; }
-        public Nullable<int> UserId { get; set; }
         public string FullName { get; set; }
         public string ImageUrl { get; set; }
         public Nullable<int> DepartmentId { get; set; }
         public string Description { get; set; }
+        public Nullable<int> UserId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Appointment> Appointments { get; set; }
         public virtual Department Department { get; set; }
-        public virtual User User { get; set; }
     }
 }

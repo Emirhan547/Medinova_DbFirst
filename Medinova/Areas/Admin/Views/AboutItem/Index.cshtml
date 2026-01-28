@@ -27,13 +27,13 @@
                 <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 hover:shadow-lg transition-shadow">
                     <div class="flex items-start justify-between mb-4">
                         <div class="p-3 rounded-lg bg-primary/10 text-primary">
-                            @if (!string.IsNullOrEmpty(item.Icon))
+                            @if (!string.IsNullOrWhiteSpace(item.Icon))
                             {
-                                <span class="material-symbols-outlined !text-2xl">@item.Icon</span>
+                                <i class="@item.Icon text-2xl"></i>
                             }
                             else
                             {
-                                <span class="material-symbols-outlined !text-2xl">check_circle</span>
+                                <i class="fa-solid fa-circle-check text-2xl"></i>
                             }
                         </div>
                         <div class="flex items-center gap-1">

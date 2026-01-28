@@ -5,6 +5,38 @@
     ViewBag.Title = "Hasta Paneli";
     Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
 }
+@functions {
+    public string SafeDoctorName(object doctor)
+    {
+        if (doctor == null)
+            return "-";
+
+        // Eğer string geldiyse direkt bas
+        if (doctor is string)
+            return doctor.ToString();
+
+        try
+        {
+            // dynamic hack
+            dynamic d = doctor;
+
+            // FullName varsa
+            if (d.FullName != null)
+                return d.FullName.ToString();
+
+            // FirstName + LastName varsa
+            if (d.FirstName != null && d.LastName != null)
+                return $"{d.FirstName} {d.LastName}";
+        }
+        catch
+        {
+            // hiçbir şey yapma
+        }
+
+        // Proxy ismini ASLA basma
+        return "-";
+    }
+}
 
 <!-- CLEAN DASHBOARD -->
 <div class="min-h-screen bg-gradient-to-b from-background to-white">
@@ -88,7 +120,9 @@
                                             <span class="material-symbols-outlined text-xl">medical_services</span>
                                         </div>
                                         <div>
-                                            <p class="font-bold text-navyDark">Dr. @(a.Doctor?.FullName)</p>
+                                            <!-- ✅ DÜZELTİLEN SATIR -->
+                                            <p class="font-bold text-navyDark">@SafeDoctorName(a.Doctor)</p>
+
                                             <div class="flex items-center gap-4 mt-1">
                                                 <span class="text-sm text-navy/70">
                                                     <span class="material-symbols-outlined align-middle text-base">calendar_month</span>
@@ -188,7 +222,7 @@
                                 {
                                     <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
                                         <div>
-                                            <p class="font-medium text-navy">@(a.Doctor?.FullName)</p>
+                                            <p class="font-medium text-navy">@SafeDoctorName(a.Doctor)</p>
                                             <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd.MM.yyyy"))</p>
                                         </div>
                                         <span class="text-xs font-bold bg-red-100 text-red-800 px-2 py-1 rounded">İptal Edildi</span>
@@ -310,7 +344,7 @@
                                         <span class="material-symbols-outlined text-emerald-600 text-sm">check</span>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-navy truncate">@(a.Doctor?.FullName)</p>
+                                        <p class="text-sm font-medium text-navy truncate">@SafeDoctorName(a.Doctor)</p>
                                         <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd MMM"))</p>
                                     </div>
                                 </div>
@@ -325,7 +359,7 @@
                                         <span class="material-symbols-outlined text-primary text-sm">event</span>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-navy truncate">@(a.Doctor?.FullName)</p>
+                                        <p class="text-sm font-medium text-navy truncate">@SafeDoctorName(a.Doctor)</p>
                                         <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd MMM"))</p>
                                     </div>
                                 </div>

@@ -4,6 +4,7 @@ using Medinova.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 
@@ -54,9 +55,13 @@ namespace Medinova.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult UpdateBanner(Banner banner, HttpPostedFileBase ImageFile)
         {
-            var values=context.Banners.Find(banner.BannerId);
-            values.Description = banner.Description;
+            var values = context.Banners.Find(banner.BannerId);
+            if (values == null)
+                return HttpNotFound();
+
             values.Title = banner.Title;
+            values.Description = banner.Description;
+
             if (ImageFile != null && ImageFile.ContentLength > 0)
             {
                 try
@@ -66,17 +71,19 @@ namespace Medinova.Areas.Admin.Controllers
                 catch (Exception ex)
                 {
                     ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
-                    return View(banner);
+                    return View(values);
                 }
             }
-            else
-                values.ImageUrl = banner.ImageUrl;
+ 
+
             context.SaveChanges();
             return RedirectToAction("Index");
         }
+
         public ActionResult DeleteBanner(int id)
         {
-            context.Banners.Find(id);
+           var values= context.Banners.Find(id);
+            context.Banners.Remove(values);
             context.SaveChanges();
             return RedirectToAction("Index");
         }

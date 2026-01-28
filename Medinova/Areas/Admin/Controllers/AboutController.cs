@@ -29,22 +29,19 @@ namespace Medinova.Areas.Admin.Controllers
         [HttpPost]
         public ActionResult CreateAbout(About about, HttpPostedFileBase ImageFile)
         {
-            if (ImageFile != null && ImageFile.ContentLength > 0)
+            if (ImageFile == null || ImageFile.ContentLength == 0)
             {
-                try
-                {
-                    about.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
-                }
-                catch (System.Exception ex)
-                {
-                    ModelState.AddModelError(string.Empty, $"Görsel yüklenemedi: {ex.Message}");
-                    return View(about);
-                }
+                ModelState.AddModelError("", "Görsel zorunludur.");
+                return View(about);
             }
+
+            about.ImageUrl = imageUploadService.UploadImage(ImageFile, "abouts");
+
             context.Abouts.Add(about);
             context.SaveChanges();
             return RedirectToAction("Index");
         }
+
         [HttpGet]
         public ActionResult UpdateAbout(int id)
         {
