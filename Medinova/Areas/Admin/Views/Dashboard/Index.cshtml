@@ -58,7 +58,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Doctors</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Toplam Doktor</p>
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalDoctors.ToString("N0")</h3>
             <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
                 <span class="material-symbols-outlined !text-sm">groups</span> Güncel toplam
@@ -70,7 +70,7 @@
     </div>
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Patients</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Toplam Hasta</p>
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalPatients.ToString("N0")</h3>
             <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
                 <span class="material-symbols-outlined !text-sm">group</span> Kayıtlı hasta sayısı
@@ -82,7 +82,7 @@
     </div>
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Total Appointments</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Toplam Randevu</p>
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TotalAppointments.ToString("N0")</h3>
             <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
                 <span class="material-symbols-outlined !text-sm">calendar_month</span> Tüm randevular
@@ -94,7 +94,7 @@
     </div>
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
         <div>
-            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Today's Appointments</p>
+            <p class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Bugünkü Randevular</p>
             <h3 class="text-2xl font-bold text-slate-900 dark:text-white">@Model.TodayAppointments.ToString("N0")</h3>
             <p class="text-slate-500 text-xs font-semibold mt-2 flex items-center gap-1">
                 <span class="material-symbols-outlined !text-sm">event</span> Bugünkü randevular
@@ -110,12 +110,12 @@
     <div class="lg:col-span-2 bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div class="flex items-center justify-between mb-6">
             <div>
-                <h4 class="text-slate-900 dark:text-white font-bold text-lg">Weekly Appointment Trends</h4>
-                <p class="text-slate-400 text-sm">Overview of clinic activity this week</p>
+                <h4 class="text-slate-900 dark:text-white font-bold text-lg">Haftalık Randevu Trendi</h4>
+                <p class="text-slate-400 text-sm">Bu haftanın klinik aktivite özeti</p>
             </div>
             <select class="bg-slate-50 dark:bg-slate-800 border-none text-xs font-bold rounded-lg focus:ring-primary py-1 px-3">
-                <option>This Week</option>
-                <option>Last Week</option>
+                <option>Bu Hafta</option>
+                <option>Geçen Hafta</option>
             </select>
         </div>
         <div class="h-64 relative mt-4">
@@ -128,9 +128,7 @@
                 </defs>
                 <path id="weekly-line" fill="none" stroke="#007bff" stroke-linecap="round" stroke-width="4"></path>
                 <path id="weekly-area" fill="url(#chartGradient)"></path>
-                <circle id="weekly-peak-point" fill="#007bff" r="6" stroke="#fff" stroke-width="2"></circle>
-                <rect id="weekly-peak-box" fill="#0f1923" height="30" rx="4" width="120"></rect>
-                <text id="weekly-peak-text" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle"></text>
+                <g id="data-points"></g>
             </svg>
         </div>
         <div class="flex justify-between px-2 mt-4 text-slate-400 text-xs font-bold uppercase tracking-widest">
@@ -141,8 +139,8 @@
         </div>
     </div>
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-1">Patient Distribution</h4>
-        <p class="text-slate-400 text-sm mb-6">By Departments</p>
+        <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-1">Hasta Dağılımı</h4>
+        <p class="text-slate-400 text-sm mb-6">Departmanlara Göre</p>
         <div class="relative h-48 flex items-center justify-center">
             <svg class="w-32 h-32 transform -rotate-90">
                 <circle class="dark:stroke-slate-800" cx="64" cy="64" fill="transparent" r="50" stroke="#e2e8f0" stroke-width="12"></circle>
@@ -167,7 +165,7 @@
             </svg>
             <div class="absolute inset-0 flex flex-col items-center justify-center">
                 <span class="text-2xl font-extrabold">@Model.TotalPatients.ToString("N0")</span>
-                <span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Total</span>
+                <span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Toplam</span>
             </div>
         </div>
         <div class="mt-8 space-y-3">
@@ -190,18 +188,18 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
     <div class="lg:col-span-2 bg-white dark:bg-background-dark rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
         <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-            <h4 class="text-slate-900 dark:text-white font-bold text-lg">Recent Appointments</h4>
-            <button class="text-primary text-sm font-bold hover:underline" type="button">View All</button>
+            <h4 class="text-slate-900 dark:text-white font-bold text-lg">Son Randevular</h4>
+            <button class="text-primary text-sm font-bold hover:underline" type="button">Tümünü Gör</button>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left">
                 <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">
                     <tr>
-                        <th class="px-6 py-4">Patient</th>
-                        <th class="px-6 py-4">Doctor</th>
-                        <th class="px-6 py-4">Date & Time</th>
-                        <th class="px-6 py-4">Status</th>
-                        <th class="px-6 py-4 text-right">Action</th>
+                        <th class="px-6 py-4">Hasta</th>
+                        <th class="px-6 py-4">Doktor</th>
+                        <th class="px-6 py-4">Tarih & Saat</th>
+                        <th class="px-6 py-4">Durum</th>
+                        <th class="px-6 py-4 text-right">İşlem</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -220,7 +218,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">@appointment.DoctorName</td>
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd MMM", CultureInfo.InvariantCulture) : string.Empty) @appointment.AppointmentTime
+                                    @(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd MMM", new CultureInfo("tr-TR")) : string.Empty) @appointment.AppointmentTime
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="px-2.5 py-1 rounded-full @GetStatusClasses(appointment.Status) text-[10px] font-bold uppercase tracking-wider">
@@ -246,7 +244,7 @@
         </div>
     </div>
     <div class="bg-white dark:bg-background-dark p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-        <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-6">Top 5 Doctors</h4>
+        <h4 class="text-slate-900 dark:text-white font-bold text-lg mb-6">En İyi 5 Doktor</h4>
         <div class="space-y-6">
             @if (Model.TopDoctors != null && Model.TopDoctors.Any())
             {
@@ -258,7 +256,7 @@
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doctor headshot" style="background-image: url('@imageUrl');"></div>
+                                <div class="size-10 rounded-lg bg-cover bg-center" data-alt="Doktor fotoğrafı" style="background-image: url('@imageUrl');"></div>
                                 <div>
                                     <p class="text-sm font-bold">@doctor.DoctorName</p>
                                     <p class="text-[10px] text-slate-400 uppercase tracking-tighter">@doctor.DepartmentName</p>
@@ -309,19 +307,29 @@
         document.getElementById("weekly-line").setAttribute("d", linePath);
         document.getElementById("weekly-area").setAttribute("d", areaPath);
 
-        var peakPoint = points.reduce(function(current, next) {
-            return next.count > current.count ? next : current;
-        }, points[0]);
+        // Her noktaya daire ve sayı ekle
+        var dataPointsGroup = document.getElementById("data-points");
+        points.forEach(function(point) {
+            // Daire
+            var circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", point.x);
+            circle.setAttribute("cy", point.y);
+            circle.setAttribute("r", "6");
+            circle.setAttribute("fill", "#007bff");
+            circle.setAttribute("stroke", "#fff");
+            circle.setAttribute("stroke-width", "2");
+            dataPointsGroup.appendChild(circle);
 
-        document.getElementById("weekly-peak-point").setAttribute("cx", peakPoint.x);
-        document.getElementById("weekly-peak-point").setAttribute("cy", peakPoint.y);
-
-        var box = document.getElementById("weekly-peak-box");
-        var text = document.getElementById("weekly-peak-text");
-        box.setAttribute("x", peakPoint.x - 60);
-        box.setAttribute("y", Math.max(0, peakPoint.y - 40));
-        text.setAttribute("x", peakPoint.x);
-        text.setAttribute("y", Math.max(0, peakPoint.y - 20));
-        text.textContent = peakPoint.label + ": " + peakPoint.count;
+            // Sayı etiketi
+            var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", point.x);
+            text.setAttribute("y", point.y - 12);
+            text.setAttribute("text-anchor", "middle");
+            text.setAttribute("fill", "#007bff");
+            text.setAttribute("font-size", "12");
+            text.setAttribute("font-weight", "bold");
+            text.textContent = point.count;
+            dataPointsGroup.appendChild(text);
+        });
     })();
 </script>

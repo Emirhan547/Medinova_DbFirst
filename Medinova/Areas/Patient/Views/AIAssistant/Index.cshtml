@@ -1,30 +1,53 @@
 ﻿@model IEnumerable<Medinova.Models.AIConversation>
+@using System.Text.RegularExpressions
 @{
     ViewBag.Title = "AI Asistan";
     Layout = "~/Areas/Patient/Views/Shared/_PatientLayout.cshtml";
+
+    // AI mesajlarından markdown karakterlerini temizleyen fonksiyon
+    Func<string, string> CleanAIMessage = (message) =>
+    {
+        if (string.IsNullOrEmpty(message)) return message;
+
+        // **bold** formatını temizle
+        message = Regex.Replace(message, @"\*\*(.*?)\*\*", "$1");
+        // *italic* formatını temizle
+        message = Regex.Replace(message, @"\*(.*?)\*", "$1");
+        // Başında kalan * işaretlerini - ile değiştir
+        message = Regex.Replace(message, @"^\*+\s*", "- ", RegexOptions.Multiline);
+
+        return message;
+    };
 }
 
 <div class="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
 
-    <!-- HEADER -->
-    <div class="mb-6">
-        <div class="flex items-center justify-between">
-            <div>
+    <!-- HEADER - İyileştirilmiş -->
+    <div class="mb-6 bg-gradient-to-r from-purple-50 to-blue-50 rounded-2xl p-6 border border-purple-100 shadow-sm">
+        <div class="flex items-center justify-between flex-wrap gap-4">
+            <div class="flex-1">
                 <h1 class="text-3xl font-black text-navyDark flex items-center gap-3">
-                    <span class="material-symbols-outlined text-purple-600">smart_toy</span>
+                    <div class="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-md">
+                        <span class="material-symbols-outlined text-white text-3xl">smart_toy</span>
+                    </div>
                     AI Sağlık Asistanı
                 </h1>
-                <p class="text-navy/70 mt-2 max-w-2xl">
-                    Sağlık sorularınızı sorun, genel öneriler alın. <span class="text-red-600 font-bold">NOT:</span> Acil durumlarda 112'yi arayın.
+                <p class="text-navy/70 mt-3 max-w-2xl text-sm leading-relaxed">
+                    Şikayetlerinizi yazın, sohbet şeklinde genel öneriler ve uygun bölüm yönlendirmesi alın.
+                    <span class="inline-flex items-center gap-1 text-red-600 font-bold mt-1">
+                        <span class="material-symbols-outlined text-sm">emergency</span>
+                        Acil durumlarda 112'yi arayın.
+                    </span>
                 </p>
             </div>
             <div class="flex items-center gap-3">
-                <span class="inline-flex items-center gap-2 rounded-full bg-purple-100 px-4 py-2 text-sm font-bold text-purple-700">
-                    <span class="material-symbols-outlined text-base">psychology</span>
+                <span class="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-purple-700 px-5 py-2.5 text-sm font-bold text-white shadow-md">
+                    <span class="material-symbols-outlined text-base animate-pulse">psychology</span>
                     GPT-4 Powered
                 </span>
-                <button onclick="clearChat()"
-                        class="inline-flex items-center gap-2 rounded-xl border border-gray-300 px-4 py-2 text-sm font-bold text-navy hover:bg-gray-50 transition-colors">
+                <button type="button"
+                        onclick="clearChat()"
+                        class="inline-flex items-center gap-2 rounded-xl bg-white border border-gray-300 px-5 py-2.5 text-sm font-bold text-navy hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm hover:shadow">
                     <span class="material-symbols-outlined text-base">delete</span>
                     Temizle
                 </button>
@@ -32,39 +55,47 @@
         </div>
     </div>
 
-    <!-- CHAT CONTAINER -->
+    <!-- CHAT CONTAINER - İyileştirilmiş -->
     <div id="chatContainer"
-         class="flex-1 overflow-y-auto rounded-2xl bg-gradient-to-b from-gray-50 to-white border border-gray-200 p-6 space-y-6">
+         class="flex-1 overflow-y-auto rounded-2xl bg-gradient-to-br from-gray-50 via-white to-purple-50/30 border border-gray-200 shadow-inner p-6 space-y-6 scroll-smooth">
 
         @if (Model != null && Model.Any())
         {
             foreach (var conv in Model.OrderBy(c => c.CreatedDate))
             {
-                <!-- User Message -->
-                <div class="flex justify-end">
-                    <div class="max-w-[75%] rounded-2xl rounded-br-md bg-gradient-to-r from-primary to-primaryDark text-white p-5 shadow-sm">
-                        <div class="text-sm">
+                <!-- User Message - İyileştirilmiş -->
+                <div class="flex justify-end animate-fadeIn">
+                    <div class="max-w-[75%] rounded-2xl rounded-br-md bg-gradient-to-r from-primary to-primaryDark text-white p-5 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-sm leading-relaxed">
                             @Html.Raw(HttpUtility.HtmlEncode(conv.UserMessage).Replace("\n", "<br/>"))
                         </div>
-                        <div class="mt-3 text-xs text-white/70 flex items-center justify-end gap-1">
+                        <div class="mt-3 pt-3 border-t border-white/20 text-xs text-white/80 flex items-center justify-end gap-2">
                             <span class="material-symbols-outlined text-xs">schedule</span>
-                            @conv.CreatedDate?.ToString("HH:mm") · Siz
+                            @(conv.CreatedDate.HasValue ? conv.CreatedDate.Value.ToString("dd.MM.yyyy HH:mm") : "")
+                            <span class="inline-flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5">
+                                <span class="material-symbols-outlined text-xs">person</span>
+                                Siz
+                            </span>
                         </div>
                     </div>
                 </div>
 
-                <!-- AI Response -->
-                <div class="flex justify-start gap-4">
-                    <div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm">
-                        <span class="material-symbols-outlined text-white">smart_toy</span>
+                <!-- AI Response - İyileştirilmiş -->
+                <div class="flex justify-start gap-4 animate-fadeIn">
+                    <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md flex-shrink-0">
+                        <span class="material-symbols-outlined text-white text-xl">smart_toy</span>
                     </div>
-                    <div class="max-w-[75%] rounded-2xl rounded-bl-md bg-white border border-gray-200 p-5 shadow-sm">
+                    <div class="max-w-[75%] rounded-2xl rounded-bl-md bg-white border border-gray-200 p-5 shadow-md hover:shadow-lg transition-shadow">
                         <div class="text-sm text-navy leading-relaxed">
-                            @Html.Raw(HttpUtility.HtmlEncode(conv.AIResponse).Replace("\n", "<br/>"))
+                            @Html.Raw(HttpUtility.HtmlEncode(CleanAIMessage(conv.AIResponse)).Replace("\n", "<br/>"))
                         </div>
-                        <div class="mt-3 text-xs text-navy/50 flex items-center gap-1">
+                        <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-navy/60 flex items-center gap-2">
                             <span class="material-symbols-outlined text-xs">schedule</span>
-                            @conv.CreatedDate?.ToString("HH:mm") · AI Asistan
+                            @(conv.CreatedDate.HasValue ? conv.CreatedDate.Value.ToString("dd.MM.yyyy HH:mm") : "")
+                            <span class="inline-flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full px-2 py-0.5 font-medium">
+                                <span class="material-symbols-outlined text-xs">smart_toy</span>
+                                AI Asistan
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -72,64 +103,71 @@
         }
         else
         {
-            <!-- WELCOME SCREEN -->
-            <div class="h-full flex flex-col items-center justify-center text-center px-4">
-                <div class="mb-6">
-                    <div class="h-20 w-20 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center mb-4">
-                        <span class="material-symbols-outlined text-4xl text-purple-600">psychology_alt</span>
+            <!-- WELCOME SCREEN - İyileştirilmiş -->
+            <div id="welcomeScreen" class="h-full flex flex-col items-center justify-center text-center px-4">
+                <div class="mb-8 animate-fadeIn">
+                    <div class="h-24 w-24 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 shadow-xl mx-auto">
+                        <span class="material-symbols-outlined text-5xl text-white">psychology_alt</span>
                     </div>
-                    <h3 class="text-2xl font-black text-navyDark mb-2">AI Sağlık Asistanına Hoş Geldiniz</h3>
-                    <p class="text-navy/70 max-w-md">
+                    <h3 class="text-3xl font-black text-navyDark mb-3">AI Sağlık Asistanına Hoş Geldiniz</h3>
+                    <p class="text-navy/70 max-w-md text-base">
                         Sağlıkla ilgili sorularınızı sorun, genel bilgiler ve öneriler alın.
                     </p>
                 </div>
 
-                <!-- QUICK QUESTIONS -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl w-full">
-                    <button onclick="askQuickQuestion('Baş ağrısı için ne yapmalıyım?')"
-                            class="rounded-xl border border-gray-200 bg-white p-4 hover:border-primary/50 hover:shadow-sm transition-all text-left group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                                <span class="material-symbols-outlined text-blue-600">sick</span>
+                <!-- QUICK QUESTIONS - İyileştirilmiş -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl w-full mb-8">
+                    <button type="button"
+                            onclick="askQuickQuestion('Karnım ağrıyor, ne yapmalıyım?')"
+                            class="rounded-2xl border-2 border-gray-200 bg-white p-5 hover:border-blue-400 hover:shadow-lg transition-all text-left group transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                                <span class="material-symbols-outlined text-white text-xl">sick</span>
                             </div>
-                            <span class="font-bold text-navy">Baş Ağrısı</span>
+                            <span class="font-bold text-navy text-base">Karın Ağrısı</span>
                         </div>
-                        <p class="text-xs text-navy/60">Baş ağrısı için öneriler</p>
+                        <p class="text-xs text-navy/60 leading-relaxed">Karın ağrısı için öneriler alın</p>
                     </button>
 
-                    <button onclick="askQuickQuestion('Grip oldum, ne yapmalıyım?')"
-                            class="rounded-xl border border-gray-200 bg-white p-4 hover:border-primary/50 hover:shadow-sm transition-all text-left group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center group-hover:bg-emerald-200 transition-colors">
-                                <span class="material-symbols-outlined text-emerald-600">coronavirus</span>
+                    <button type="button"
+                            onclick="askQuickQuestion('Başım ağrıyor ve mide bulantım var, ne yapmalıyım?')"
+                            class="rounded-2xl border-2 border-gray-200 bg-white p-5 hover:border-emerald-400 hover:shadow-lg transition-all text-left group transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                                <span class="material-symbols-outlined text-white text-xl">coronavirus</span>
                             </div>
-                            <span class="font-bold text-navy">Grip & Soğuk Algınlığı</span>
+                            <span class="font-bold text-navy text-base">Grip & Soğuk Algınlığı</span>
                         </div>
-                        <p class="text-xs text-navy/60">Grip için tavsiyeler</p>
+                        <p class="text-xs text-navy/60 leading-relaxed">Grip için tavsiyeler alın</p>
                     </button>
 
-                    <button onclick="askQuickQuestion('Sağlıklı beslenme önerileri nelerdir?')"
-                            class="rounded-xl border border-gray-200 bg-white p-4 hover:border-primary/50 hover:shadow-sm transition-all text-left group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <div class="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
-                                <span class="material-symbols-outlined text-amber-600">nutrition</span>
+                    <button type="button"
+                            onclick="askQuickQuestion('Eklem ağrım var, hangi bölüme gitmeliyim?')"
+                            class="rounded-2xl border-2 border-gray-200 bg-white p-5 hover:border-amber-400 hover:shadow-lg transition-all text-left group transform hover:-translate-y-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform shadow-md">
+                                <span class="material-symbols-outlined text-white text-xl">healing</span>
                             </div>
-                            <span class="font-bold text-navy">Beslenme</span>
+                            <span class="font-bold text-navy text-base">Kas/İskelet</span>
                         </div>
-                        <p class="text-xs text-navy/60">Sağlıklı beslenme ipuçları</p>
+                        <p class="text-xs text-navy/60 leading-relaxed">Uygun bölüm önerisi alın</p>
                     </button>
                 </div>
 
-                <!-- WARNING -->
-                <div class="mt-8 max-w-md">
-                    <div class="rounded-xl bg-red-50 border border-red-200 p-4">
-                        <div class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-red-600">warning</span>
+                <!-- WARNING - İyileştirilmiş -->
+                <div class="max-w-lg w-full">
+                    <div class="rounded-2xl bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 p-5 shadow-md">
+                        <div class="flex items-start gap-4">
+                            <div class="h-10 w-10 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
+                                <span class="material-symbols-outlined text-red-600 text-xl">warning</span>
+                            </div>
                             <div class="text-left">
-                                <p class="text-sm font-bold text-red-800">Önemli Uyarı</p>
-                                <p class="text-xs text-red-700 mt-1">
+                                <p class="text-sm font-bold text-red-800 mb-2 flex items-center gap-2">
+                                    Önemli Uyarı
+                                </p>
+                                <p class="text-xs text-red-700 leading-relaxed">
                                     Bu sistem yalnızca bilgilendirme amaçlıdır. Teşhis veya tedavi önerisi değildir.
-                                    <strong>Acil durumlarda 112'yi arayın veya en yakın sağlık kuruluşuna başvurun.</strong>
+                                    <strong class="block mt-2">⚡ Acil durumlarda 112'yi arayın veya en yakın sağlık kuruluşuna başvurun.</strong>
                                 </p>
                             </div>
                         </div>
@@ -138,7 +176,305 @@
             </div>
         }
 
-        <!-- TYPING INDICATOR (Hidden by default) -->
-        <div id="typingIndicator" class="hidden flex justify-start gap-4">
-            <div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm">
-                <span class="material-symbols-outlined text-white">smart_toy</span>
+        <!-- TYPING INDICATOR - İyileştirilmiş -->
+        <div id="typingIndicator" class="hidden flex justify-start gap-4 animate-fadeIn">
+            <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md animate-pulse">
+                <span class="material-symbols-outlined text-white text-xl">smart_toy</span>
+            </div>
+            <div class="max-w-[75%] rounded-2xl rounded-bl-md bg-white border border-purple-200 p-5 shadow-md">
+                <div class="flex items-center gap-3 text-sm text-navy/70">
+                    <span class="inline-flex gap-1.5">
+                        <span class="h-2.5 w-2.5 rounded-full bg-purple-500 animate-bounce"></span>
+                        <span class="h-2.5 w-2.5 rounded-full bg-purple-500 animate-bounce [animation-delay:120ms]"></span>
+                        <span class="h-2.5 w-2.5 rounded-full bg-purple-500 animate-bounce [animation-delay:240ms]"></span>
+                    </span>
+                    <span class="font-medium">Yanıt hazırlanıyor...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INPUT AREA - İyileştirilmiş -->
+    <div class="mt-6">
+        <form id="chatForm" class="flex gap-3 items-start">
+            <div class="flex-1">
+                <label class="sr-only" for="chatInput">Mesajınız</label>
+                <div class="relative">
+                    <textarea id="chatInput"
+                              rows="1"
+                              class="w-full resize-none rounded-xl border-2 border-gray-200 bg-white px-5 py-3 pr-16 text-sm text-navy shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                              placeholder="Şikayetinizi yazın (örn: karnım ağrıyor, başım dönüyor)"
+                              style="min-height: 48px; max-height: 120px;"></textarea>
+                    <div class="absolute bottom-3 right-3 text-xs text-navy/40" id="charCount">0/500</div>
+                </div>
+                <p class="mt-2 text-xs text-navy/50 flex items-center gap-1">
+                    <span class="material-symbols-outlined text-xs">info</span>
+                    Yanıtlar bilgilendirme amaçlıdır; kesin teşhis için doktora başvurun.
+                </p>
+            </div>
+            <button type="submit"
+                    id="sendButton"
+                    class="flex-shrink-0 inline-flex items-center justify-center rounded-xl bg-primary text-white hover:bg-primaryDark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    style="height: 48px; width: 48px; margin-top: 0;">
+                <span class="material-symbols-outlined text-xl">send</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+<style>
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    .scroll-smooth {
+        scroll-behavior: smooth;
+    }
+
+    #chatContainer::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #chatContainer::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    #chatContainer::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom, #a855f7, #9333ea);
+        border-radius: 10px;
+    }
+
+    #chatContainer::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(to bottom, #9333ea, #7e22ce);
+    }
+
+    #chatInput:focus {
+        outline: none;
+    }
+
+    @@media (max-width: 768px) {
+        #chatForm {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        #sendButton {
+            width: 100%;
+            height: 48px !important;
+        }
+    }
+</style>
+
+<script>
+    const chatContainer = document.getElementById("chatContainer");
+    const chatForm = document.getElementById("chatForm");
+    const chatInput = document.getElementById("chatInput");
+    const typingIndicator = document.getElementById("typingIndicator");
+    const sendButton = document.getElementById("sendButton");
+    const charCount = document.getElementById("charCount");
+
+    // Karakter sayacı
+    chatInput.addEventListener("input", () => {
+        const length = chatInput.value.length;
+        charCount.textContent = `${length}/500`;
+
+        if (length > 500) {
+            charCount.classList.add("text-red-600");
+            charCount.classList.remove("text-navy/40");
+        } else {
+            charCount.classList.remove("text-red-600");
+            charCount.classList.add("text-navy/40");
+        }
+    });
+
+    const scrollToBottom = () => {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    };
+
+    const removeWelcomeScreen = () => {
+        const welcomeScreen = document.getElementById("welcomeScreen");
+        if (welcomeScreen) {
+            welcomeScreen.style.opacity = "0";
+            setTimeout(() => welcomeScreen.remove(), 300);
+        }
+    };
+
+    const createMessageHtml = (message, sender) => {
+        const now = new Date();
+        const timeLabel = now.toLocaleString("tr-TR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+        if (sender === "user") {
+            return `
+                <div class="flex justify-end animate-fadeIn">
+                    <div class="max-w-[75%] rounded-2xl rounded-br-md bg-gradient-to-r from-primary to-primaryDark text-white p-5 shadow-md hover:shadow-lg transition-shadow">
+                        <div class="text-sm leading-relaxed">${message}</div>
+                        <div class="mt-3 pt-3 border-t border-white/20 text-xs text-white/80 flex items-center justify-end gap-2">
+                            <span class="material-symbols-outlined text-xs">schedule</span>
+                            ${timeLabel}
+                            <span class="inline-flex items-center gap-1 bg-white/20 rounded-full px-2 py-0.5">
+                                <span class="material-symbols-outlined text-xs">person</span>
+                                Siz
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="flex justify-start gap-4 animate-fadeIn">
+                <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md flex-shrink-0">
+                    <span class="material-symbols-outlined text-white text-xl">smart_toy</span>
+                </div>
+                <div class="max-w-[75%] rounded-2xl rounded-bl-md bg-white border border-gray-200 p-5 shadow-md hover:shadow-lg transition-shadow">
+                    <div class="text-sm text-navy leading-relaxed">${message}</div>
+                    <div class="mt-3 pt-3 border-t border-gray-100 text-xs text-navy/60 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-xs">schedule</span>
+                        ${timeLabel}
+                        <span class="inline-flex items-center gap-1 bg-purple-100 text-purple-700 rounded-full px-2 py-0.5 font-medium">
+                            <span class="material-symbols-outlined text-xs">smart_toy</span>
+                            AI Asistan
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    const appendMessage = (message, sender) => {
+        let cleaned = message;
+
+        // AI mesajlarında * ve ** işaretlerini temizle
+        if (sender === "ai") {
+            // **bold** formatını temizle
+            cleaned = cleaned.replace(/\*\*(.*?)\*\*/g, '$1');
+            // *italic* formatını temizle
+            cleaned = cleaned.replace(/\*(.*?)\*/g, '$1');
+            // Başında kalan * işaretlerini temizle
+            cleaned = cleaned.replace(/^\*+\s*/gm, '- ');
+        }
+
+        const sanitized = cleaned
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\n/g, "<br/>");
+        chatContainer.insertAdjacentHTML("beforeend", createMessageHtml(sanitized, sender));
+        scrollToBottom();
+    };
+
+    const toggleTyping = (show) => {
+        if (show) {
+            typingIndicator.classList.remove("hidden");
+            sendButton.disabled = true;
+        } else {
+            typingIndicator.classList.add("hidden");
+            sendButton.disabled = false;
+        }
+        scrollToBottom();
+    };
+
+    const sendMessage = async (message) => {
+        if (!message || message.length > 500) {
+            return;
+        }
+
+        removeWelcomeScreen();
+        appendMessage(message, "user");
+        toggleTyping(true);
+
+        try {
+            const response = await fetch("/Patient/AIAssistant/AskQuestion", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                },
+                body: new URLSearchParams({ question: message })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                appendMessage(result.response, "ai");
+            } else {
+                appendMessage(result.message || "Yanıt alınamadı. Lütfen tekrar deneyin.", "ai");
+            }
+        } catch (error) {
+            appendMessage("Bir hata oluştu. Lütfen daha sonra tekrar deneyin.", "ai");
+        } finally {
+            toggleTyping(false);
+        }
+    };
+
+    const askQuickQuestion = (question) => {
+        chatInput.value = question;
+        chatForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+    };
+
+    const clearChat = () => {
+        if (confirm("Sohbet geçmişini temizlemek istediğinizden emin misiniz?")) {
+            chatContainer.innerHTML = "";
+            const emptyState = document.createElement("div");
+            emptyState.className = "h-full flex flex-col items-center justify-center text-center px-4 animate-fadeIn";
+            emptyState.id = "welcomeScreen";
+            emptyState.innerHTML = `
+                <div class="mb-8">
+                    <div class="h-24 w-24 rounded-3xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-6 shadow-xl mx-auto">
+                        <span class="material-symbols-outlined text-5xl text-white">psychology_alt</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-navyDark mb-3">Yeni bir sohbet başlatın</h3>
+                    <p class="text-navy/70 max-w-md text-base">Şikayetlerinizi yazın; öneri ve bölüm yönlendirmesi alın.</p>
+                </div>
+            `;
+            chatContainer.appendChild(emptyState);
+            chatContainer.appendChild(typingIndicator);
+            typingIndicator.classList.add("hidden");
+        }
+    };
+
+    window.askQuickQuestion = askQuickQuestion;
+    window.clearChat = clearChat;
+
+    chatForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const message = chatInput.value.trim();
+        if (message.length <= 500) {
+            chatInput.value = "";
+            charCount.textContent = "0/500";
+            sendMessage(message);
+        }
+    });
+
+    // Enter tuşu ile gönderme (Shift+Enter ile yeni satır)
+    chatInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            chatForm.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+        }
+    });
+
+    // Textarea otomatik yükseklik ayarlama
+    chatInput.addEventListener("input", () => {
+        chatInput.style.height = "48px";
+        const newHeight = Math.min(chatInput.scrollHeight, 120);
+        chatInput.style.height = newHeight + "px";
+    });
+
+    scrollToBottom();
+</script>

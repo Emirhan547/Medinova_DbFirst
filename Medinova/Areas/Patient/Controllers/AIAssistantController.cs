@@ -65,7 +65,18 @@ namespace Medinova.Areas.Patient.Controllers
 
                 var userId = (int)Session["userId"];
 
-                var aiResponse = await aiService.GetHealthAdvice(question);
+                var departmentNames = context.Departments
+                     .Select(d => d.Name)
+                     .Where(name => name != null && name != "")
+                     .AsEnumerable()
+                     .Select(name => name.Trim())
+                     .Where(name => !string.IsNullOrWhiteSpace(name))
+                     .Distinct()
+                     .ToList();
+
+                var aiResponse = departmentNames.Any()
+                    ? await aiService.GetPatientAssistantResponse(question, departmentNames)
+                    : await aiService.GetHealthAdvice(question);
 
                 var conversation = new AIConversation
                 {

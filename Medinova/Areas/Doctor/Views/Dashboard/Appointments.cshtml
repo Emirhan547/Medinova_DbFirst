@@ -1,0 +1,162 @@
+﻿@model IEnumerable<Medinova.Models.Appointment>
+
+@{
+    ViewBag.Title = "Randevular";
+    Layout = "~/Areas/Doctor/Views/Shared/_DoctorLayout.cshtml";
+}
+
+<div class="max-w-7xl mx-auto space-y-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Randevular</h1>
+            <p class="text-gray-600 mt-1">Randevularınızı görüntüleyin ve durumlarını yönetin</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Toplam Randevu</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">@((ViewBag.TotalAppointments ?? 0).ToString())</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-blue-600">event</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Aktif</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">@((ViewBag.ActiveAppointments ?? 0).ToString())</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-green-600">check_circle</span>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 card-hover">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Pasif / İptal</p>
+                    <p class="text-2xl font-bold text-gray-900 mt-1">@((ViewBag.CancelledAppointments ?? 0).ToString())</p>
+                </div>
+                <div class="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-600">cancel</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
+                        <tr>
+                            <th class="px-6 py-3 text-left font-medium">Tarih / Saat</th>
+                            <th class="px-6 py-3 text-left font-medium">Hasta</th>
+                            <th class="px-6 py-3 text-left font-medium">Durum</th>
+                            <th class="px-6 py-3 text-left font-medium">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        @foreach (var appointment in Model)
+                        {
+                            var patientName = appointment.User != null
+                                ? string.Format("{0} {1}", appointment.User.FirstName, appointment.User.LastName).Trim()
+                                : appointment.FullName;
+                            var status = appointment.Status ?? "Belirsiz";
+                            var statusLabel = status == "Active"
+                                ? "Aktif"
+                                : status == "Cancelled"
+                                    ? "Pasif"
+                                    : status;
+                            var statusClass = status == "Active"
+                                ? "bg-green-100 text-green-700"
+                                : status == "Cancelled"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-gray-100 text-gray-700";
+                            <tr class="text-gray-700">
+                                <td class="px-6 py-4">
+                                    <div class="font-semibold">@(appointment.AppointmentDate.HasValue ? appointment.AppointmentDate.Value.ToString("dd.MM.yyyy") : string.Empty)</div>
+                                    <div class="text-xs text-gray-500">@appointment.AppointmentTime</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="font-semibold">@patientName</div>
+                                    <div class="text-xs text-gray-500">@appointment.Email</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-semibold @statusClass">@statusLabel</span>
+                                    @if (!string.IsNullOrWhiteSpace(appointment.CancellationReason))
+                                    {
+                                        <div class="text-xs text-gray-500 mt-1">@appointment.CancellationReason</div>
+                                    }
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-2">
+                                        @if (status == "Active")
+                                        {
+                                            using (Html.BeginForm("Deactivate", "Dashboard",
+                                                new { area = "Doctor", id = appointment.AppointmentId },
+                                                FormMethod.Post,
+                                                new { @class = "inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-100 text-amber-700 hover:bg-amber-200"
+                                                        onclick="return confirm('Randevuyu pasife almak istediğinize emin misiniz?');">
+                                                    Pasife Al
+                                                </button>
+                                            }
+
+                                            using (Html.BeginForm("CancelAppointment", "Dashboard",
+                                                new { area = "Doctor", id = appointment.AppointmentId },
+                                                FormMethod.Post,
+                                                new { @class = "inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-100 text-red-700 hover:bg-red-200"
+                                                        onclick="return confirm('Randevuyu iptal etmek istediğinize emin misiniz?');">
+                                                    İptal Et
+                                                </button>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            using (Html.BeginForm("Activate", "Dashboard",
+                                                new { area = "Doctor", id = appointment.AppointmentId },
+                                                FormMethod.Post,
+                                                new { @class = "inline" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit"
+                                                        class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-100 text-blue-700 hover:bg-blue-200">
+                                                    Aktife Al
+                                                </button>
+                                            }
+                                        }
+
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <span class="material-symbols-outlined text-gray-400 text-2xl">event</span>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">Henüz randevu bulunmuyor</h3>
+            <p class="text-gray-500">Randevularınız burada listelenecek.</p>
+        </div>
+    }
+</div>

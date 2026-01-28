@@ -11,7 +11,7 @@
     <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="flex items-center gap-4">
-                <a href="@Url.Action("Index", "Patients", new { area = "Doctor" })"
+               <a href="@Url.Action("Index", "User", new { area = "Doctor" })"
                    class="p-2 rounded-lg hover:bg-gray-100 transition-colors">
                     <span class="material-symbols-outlined text-gray-600">arrow_back</span>
                 </a>
@@ -26,11 +26,7 @@
                     <span class="material-symbols-outlined text-lg">chat</span>
                     Mesaj Gönder
                 </button>
-                <button onclick="scheduleAppointment(@Model.PatientId)"
-                        class="px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
-                    <span class="material-symbols-outlined text-lg">event_available</span>
-                    Randevu Al
-                </button>
+               
             </div>
         </div>
     </div>
@@ -64,10 +60,7 @@
 
                 <!-- Patient Info -->
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between py-3 border-b border-gray-100">
-                        <span class="text-sm font-medium text-gray-500">Hasta No</span>
-                        <span class="text-sm font-medium text-gray-900">#@Model.PatientId</span>
-                    </div>
+                    
 
                     <div class="flex items-center justify-between py-3 border-b border-gray-100">
                         <span class="text-sm font-medium text-gray-500">Kan Grubu</span>
@@ -156,13 +149,26 @@
                     <div class="divide-y divide-gray-100">
                         @foreach (var appointment in Model.Appointments)
                         {
-                            var statusClass = appointment.Status switch
+                            string statusClass;
+
+                            switch (appointment.Status)
                             {
-                                "Completed" => "bg-blue-100 text-blue-800",
-                                "Cancelled" => "bg-red-100 text-red-800",
-                                "Active" => "bg-blue-100 text-blue-800",
-                                _ => "bg-gray-100 text-gray-800"
-                            };
+                                case "Completed":
+                                    statusClass = "bg-blue-100 text-blue-800";
+                                    break;
+
+                                case "Cancelled":
+                                    statusClass = "bg-red-100 text-red-800";
+                                    break;
+
+                                case "Active":
+                                    statusClass = "bg-blue-100 text-blue-800";
+                                    break;
+
+                                default:
+                                    statusClass = "bg-gray-100 text-gray-800";
+                                    break;
+                            }
 
                             <div class="px-6 py-4 hover:bg-gray-50/50 transition-colors">
                                 <div class="flex items-center justify-between">
@@ -183,6 +189,7 @@
                                 </div>
                             </div>
                         }
+
                     </div>
                 }
                 else
@@ -193,10 +200,7 @@
                         </div>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">Randevu geçmişi bulunmuyor</h3>
                         <p class="text-gray-500 mb-6">Bu hasta için henüz randevu kaydı oluşturulmamış.</p>
-                        <button onclick="scheduleAppointment(@Model.PatientId)"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                            İlk Randevuyu Oluştur
-                        </button>
+                       
                     </div>
                 }
             </div>

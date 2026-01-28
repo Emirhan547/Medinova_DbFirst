@@ -73,6 +73,38 @@ Kısa, anlaşılır Türkçe cevap ver.";
 
             return text?.Text ?? string.Empty;
         }
+        public async Task<string> GetPatientAssistantResponse(string question, IReadOnlyCollection<string> departmentNames)
+        {
+            var departmentsList = string.Join(", ", departmentNames);
+            var systemPrompt = $@"Sen yardımsever bir sağlık asistanısın. Kullanıcı semptomlarını (ör. ''karnım ağrıyor'') yazdığında:
+1) Kısa ve anlaşılır genel öneriler ver.
+2) Uygun hastane bölümünü öner ve 'Önerilen bölüm:' ifadesiyle belirt.
+3) Acil durum belirtilerinde 112 veya acil servise yönlendir.
+Tıbbi teşhis koyma ve ilaç önerme.
+Mevcut bölümler: {departmentsList}.
+Önerini yalnızca bu listede yer alan bölümler üzerinden yap.
+Yanıtın Türkçe, kısa ve sohbet tarzında olsun.";
 
+            var messages = new List<Message>
+            {
+                new Message(RoleType.User, question)
+            };
+
+            var parameters = new MessageParameters
+            {
+                Messages = messages,
+                Model = "claude-sonnet-4-20250514",
+                MaxTokens = 900,
+                System = new List<SystemMessage> { new SystemMessage(systemPrompt) }
+            };
+
+            var response = await _client.Messages.GetClaudeMessageAsync(parameters);
+
+            var text = response.Content
+                .OfType<TextContent>()
+                .FirstOrDefault();
+
+            return text?.Text ?? string.Empty;
+        }
     }
 }

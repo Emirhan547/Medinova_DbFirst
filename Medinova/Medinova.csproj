@@ -481,6 +481,7 @@
     <Content Include="Areas\Doctor\Views\User\Index.cshtml" />
     <Content Include="Areas\Doctor\Views\User\Details.cshtml" />
     <Content Include="Areas\Patient\Views\Dashboard\MyAppointments.cshtml" />
+    <Content Include="Areas\Doctor\Views\Dashboard\Appointments.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -502,6 +503,7 @@
     <Content Include="Templates\Medinova-1.0.0\hospital-website-template.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\about - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\about.jpg" />
+    <Content Include="Content\images\users\ben %281%29.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\blog-1 - Copy.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\blog-1.jpg" />
     <Content Include="Templates\Medinova-1.0.0\img\blog-2 - Copy.jpg" />

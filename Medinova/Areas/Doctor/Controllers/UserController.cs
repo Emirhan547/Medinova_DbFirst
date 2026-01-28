@@ -22,28 +22,46 @@ namespace Medinova.Areas.Doctor.Controllers
             if (doctor == null)
                 return RedirectToAction("Logout", "Account", new { area = "" });
 
-            var patients = context.Appointments
-     .Where(a => a.DoctorId == doctor.DoctorId && a.PatientId.HasValue)
-     .AsEnumerable() // 🔥 EF → LINQ to Objects
-     .GroupBy(a => a.PatientId)
-     .Select(g =>
-     {
-         var first = g.First();
+            var doctorAppointments = context.Appointments
+                 .Where(a => a.DoctorId == doctor.DoctorId && a.PatientId.HasValue)
+                 .ToList();
 
-         return new DoctorPatientSummaryDto
-         {
-             PatientId = g.Key.Value,
-             FullName = (first.User.FirstName + " " + first.User.LastName).Trim(),
-             ImageUrl = first.User.ImageUrl,
-             BloodType = first.User.BloodType,
-             HeightCm = first.User.HeightCm,
-             WeightKg = first.User.WeightKg,
-             LastAppointmentDate = g.Max(a => a.AppointmentDate),
-             AppointmentCount = g.Count()
-         };
-     })
-     .OrderByDescending(p => p.LastAppointmentDate)
-     .ToList();
+            var patients = doctorAppointments
+                .GroupBy(a => a.PatientId)
+                .Select(g =>
+                {
+                    var first = g.First();
+
+                    return new DoctorPatientSummaryDto
+                    {
+                        PatientId = g.Key.Value,
+                        FullName = (first.User.FirstName + " " + first.User.LastName).Trim(),
+                        ImageUrl = first.User.ImageUrl,
+                        BloodType = first.User.BloodType,
+                        HeightCm = first.User.HeightCm,
+                        WeightKg = first.User.WeightKg,
+                        LastAppointmentDate = g.Max(a => a.AppointmentDate),
+                        AppointmentCount = g.Count()
+                    };
+                })
+                .OrderByDescending(p => p.LastAppointmentDate)
+                .ToList();
+
+            var monthStart = new System.DateTime(System.DateTime.Today.Year, System.DateTime.Today.Month, 1);
+            var nextMonthStart = monthStart.AddMonths(1);
+
+            ViewBag.ActivePatientCount = doctorAppointments
+                .Where(a => string.Equals(a.Status, "Active", System.StringComparison.OrdinalIgnoreCase))
+                .Select(a => a.PatientId)
+                .Distinct()
+                .Count();
+            ViewBag.MonthlyAppointmentCount = doctorAppointments.Count(a =>
+                a.AppointmentDate.HasValue &&
+                a.AppointmentDate.Value >= monthStart &&
+                a.AppointmentDate.Value < nextMonthStart);
+            ViewBag.AverageAppointmentCount = patients.Any()
+                ? patients.Average(p => p.AppointmentCount)
+                : 0;
 
 
             return View(patients);

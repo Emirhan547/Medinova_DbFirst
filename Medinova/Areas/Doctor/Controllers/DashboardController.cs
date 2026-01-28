@@ -95,7 +95,9 @@ namespace Medinova.Areas.Doctor.Controllers
                 .OrderByDescending(a => a.AppointmentDate)
                 .ThenBy(a => a.AppointmentTime)
                 .ToList();
-
+            ViewBag.TotalAppointments = appointments.Count;
+            ViewBag.ActiveAppointments = appointments.Count(a => a.Status == "Active");
+            ViewBag.CancelledAppointments = appointments.Count(a => a.Status == "Cancelled");
             return View(appointments);
         }
 
@@ -105,7 +107,10 @@ namespace Medinova.Areas.Doctor.Controllers
             var appointment = context.Appointments.Find(id);
             if (appointment != null)
             {
-                ApplyCancellation(appointment, reason, "CancelAppointment");
+                var cancellationReason = string.IsNullOrWhiteSpace(reason)
+                   ? "Doktor tarafından iptal edildi."
+                   : reason;
+                ApplyCancellation(appointment, cancellationReason, "CancelAppointment");
                 await SendCancellationEmail(appointment);
             }
 
@@ -122,7 +127,23 @@ namespace Medinova.Areas.Doctor.Controllers
                 await SendCancellationEmail(appointment);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Appointments");
+        }
+
+        [HttpPost]
+        public ActionResult Activate(int id)
+        {
+            var appointment = context.Appointments.Find(id);
+            if (appointment != null)
+            {
+                appointment.Status = "Active";
+                appointment.CancellationReason = null;
+                appointment.ModifiedDate = DateTime.Now;
+                appointment.IsActive = true;
+                context.SaveChanges();
+            }
+
+            return RedirectToAction("Appointments");
         }
 
         private void ApplyCancellation(Appointment appointment, string reason, string source)

@@ -61,7 +61,29 @@
                     Yeni Randevu
                 </a>
             </div>
+            @{
+                var doctorNames = Enumerable.Empty<string>();
 
+                if (Model?.ActiveAppointments != null)
+                {
+                    doctorNames = doctorNames.Concat(Model.ActiveAppointments.Select(a => SafeDoctorName(a.Doctor)));
+                }
+
+                if (Model?.PastAppointments != null)
+                {
+                    doctorNames = doctorNames.Concat(Model.PastAppointments.Select(a => SafeDoctorName(a.Doctor)));
+                }
+
+                if (Model?.PassiveAppointments != null)
+                {
+                    doctorNames = doctorNames.Concat(Model.PassiveAppointments.Select(a => SafeDoctorName(a.Doctor)));
+                }
+
+                var uniqueDoctors = doctorNames
+                    .Where(name => !string.IsNullOrWhiteSpace(name) && name != "-")
+                    .Distinct()
+                    .ToList();
+            }
             <!-- SIMPLE STATS -->
             <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-6 border border-primary/20">
@@ -73,11 +95,11 @@
                 </div>
 
                 <div class="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 rounded-xl p-6 border border-emerald-500/20">
-                    <p class="text-sm font-bold text-navy/70 uppercase tracking-wide mb-2">Geçmiş Randevular</p>
+                    <p class="text-sm font-bold text-navy/70 uppercase tracking-wide mb-2">Doktorlarım</p>
                     <div class="text-4xl font-black text-emerald-600 mb-1">
-                        @(Model?.PastAppointments?.Count() ?? 0)
+                        @uniqueDoctors.Count
                     </div>
-                    <p class="text-sm text-navy/60">Tamamlanan görüşmeler</p>
+                    <p class="text-sm text-navy/60">Takip ettiğiniz doktor sayısı</p>
                 </div>
 
                 <div class="bg-gradient-to-br from-red-500/10 to-red-500/5 rounded-xl p-6 border border-red-500/20">
@@ -178,36 +200,43 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     <!-- HISTORY -->
                     <div class="bg-white rounded-xl border border-gray-200 p-6">
-                        <h3 class="text-lg font-bold text-navyDark mb-4">Geçmiş Randevular</h3>
+                        <h3 class="text-lg font-bold text-navyDark mb-4">Doktorlarım</h3>
+                        <p class="text-sm text-navy/60 mb-4">
+                            Randevularınızda görüştüğünüz doktorlar.
+                        </p>
 
-                        @if (Model.PastAppointments != null && Model.PastAppointments.Any())
+                        @if (uniqueDoctors.Any())
                         {
                             <div class="space-y-3">
-                                @foreach (var a in Model.PastAppointments.Take(4))
+                                @foreach (var doctor in uniqueDoctors.Take(4))
                                 {
-                                    <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-0">
-                                        <div>
-                                            <p class="font-medium text-navy">@(a.Doctor?.FullName)</p>
-                                            <p class="text-xs text-navy/60">@(a.AppointmentDate?.ToString("dd.MM.yyyy"))</p>
+                                    <div class="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+                                        <div class="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                            <span class="material-symbols-outlined text-lg">stethoscope</span>
                                         </div>
-                                        <span class="text-xs font-bold bg-emerald-100 text-emerald-800 px-2 py-1 rounded">Tamamlandı</span>
+                                        <span class="font-medium text-navy">@doctor</span>
                                     </div>
                                 }
                             </div>
 
-                            if (Model.PastAppointments.Count() > 4)
+                            if (uniqueDoctors.Count > 4)
                             {
-                                <div class="mt-4 text-center">
-                                    <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
-                                       class="text-sm text-primary font-bold hover:text-primaryDark">
-                                        +@(Model.PastAppointments.Count() - 4) daha
-                                    </a>
-                                </div>
+                                <p class="text-xs text-navy/60 mt-3">+@(uniqueDoctors.Count - 4) doktor daha</p>
                             }
                         }
                         else
                         {
-                            <p class="text-sm text-navy/60 text-center py-4">Geçmiş randevunuz yok.</p>
+                            <div class="mt-5">
+                                <a href="@Url.Action("MyAppointments", "Dashboard", new { area = "Patient" })"
+                                   class="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primaryDark">
+                                    Randevularımı görüntüle
+                                    <span class="material-symbols-outlined text-base">arrow_forward</span>
+                                </a>
+                            </div>
+                            <div class="text-center py-6">
+                                <span class="material-symbols-outlined text-3xl text-gray-400 mb-2">person_off</span>
+                                <p class="text-sm text-navy/60">Henüz doktor kaydınız yok.</p>
+                            </div>
                         }
                     </div>
 
@@ -257,14 +286,14 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                                    <span class="material-symbols-outlined text-emerald-600">check_circle</span>
+                                    <span class="material-symbols-outlined text-emerald-600">stethoscope</span>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-navy">Tamamlanan</p>
-                                    <p class="text-xs text-navy/60">Geçmiş randevular</p>
+                                    <p class="font-medium text-navy">Doktorlarım</p>
+                                    <p class="text-xs text-navy/60">Görüştüğünüz doktorlar</p>
                                 </div>
                             </div>
-                            <span class="text-xl font-black text-emerald-600">@(Model?.PastAppointments?.Count() ?? 0)</span>
+                            <span class="text-xl font-black text-emerald-600">@uniqueDoctors.Count</span>
                         </div>
 
                         <div class="flex items-center justify-between">
